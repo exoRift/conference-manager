@@ -1,0 +1,9 @@
+/* Invalid room selected */
+.invalidRoomContainer {
+  text-align: center;
+  padding-top: 10%;
+}
+font.invalidRoomText {
+  font-size: 10vw;
+  opacity: 0.5;
+}
