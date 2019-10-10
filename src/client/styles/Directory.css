@@ -1,0 +1,90 @@
+/* Add clock support */
+#head {
+  display: flex;
+}
+
+/* Banner */
+.bannerContainer {
+  display: block;
+  margin: 0px auto;
+}
+.banner {
+  display: block;
+  margin: 0px auto;
+  width: 20vw;
+}
+
+/* Clock */
+.clockContainer {
+  font-size: 2.8rem;
+  margin: 1%;
+  right: 1%;
+  position: absolute;
+  padding: 0.5% 1%;
+  background: var(--clock-background);
+  border-radius: 20px;
+}
+
+/* Conference cards */
+.conferenceCardContainer {
+  padding: 1% 1%;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 25%);
+}
+
+.conferenceCard {
+  transition: 0.3s;
+  width: 80%;
+  margin: 10% auto;
+}
+.conferenceCard:hover {
+  transition: 0.3s;
+  transform: translate(-2%, -2%);
+}
+.conferenceCard .head {
+  padding: 0px 1%;
+  text-align: center;
+  border-top-right-radius: 25px;
+  border-top-left-radius: 5px;
+  border: 1px solid var(--card-border);
+  box-shadow: 2px 4px black;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.conferenceCard#upcoming .head {
+  background: var(--card-head-background);
+}
+.conferenceCard#soon .head {
+  background: var(--card-head-soon-background)
+}
+.conferenceCard#active .head {
+  background: var(--card-head-active-background)
+}
+.conferenceCard#over .head {
+  background: var(--card-head-over-background)
+}
+.conferenceCard .body {
+  padding: 2% 5%;
+  border-bottom-right-radius: 5px;
+  border-bottom-left-radius: 25px;
+  color: var(--card-body-text);
+  background: var(--card-body-background);
+  border: 1px solid var(--card-border);
+  box-shadow: 2px 4px black;
+}
+.conferenceCard .body .roomNumberContainer {
+  display: flex;
+}
+.conferenceCard .body .roomNumberContainer .roomNumber {
+  color: var(--info);
+  margin-left: 2%;
+}
+.conferenceCard .body .chronals {
+  display: flex;
+  justify-content: space-between;
+  color: var(--teal);
+}
+.conferenceCard .body .attendees {
+  word-wrap: break-word;
+  color: var(--info);
+}
