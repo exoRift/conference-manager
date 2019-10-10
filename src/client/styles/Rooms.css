@@ -1,0 +1,25 @@
+/* Room selector */
+.roomContainer {
+  display: flex;
+  overflow: hidden;
+  height: 100vh;
+}
+.roomButton {
+  transition: 0.3s;
+  display: flex;
+  margin: auto auto;
+  background: var(--blue);
+  box-shadow: 2px 4px black;
+  width: 30%;
+  height: 80%;
+  border-radius: 25px 25px;
+}
+.roomButton:hover {
+  transition: 0.3s;
+  transform: translate(2%, 2%);
+}
+.roomButton .roomNumberContainer {
+  font-size: 20em;
+  color: black;
+  margin: auto auto;
+}
