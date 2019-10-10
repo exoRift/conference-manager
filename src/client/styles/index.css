@@ -1,0 +1,50 @@
+/* Definitions */
+:root {
+  --card-body-background: #444;
+  --card-border: #666;
+  --card-divider: #222;
+  --card-head-background: #333;
+  --card-body-text: #dcdcdc;
+  --card-head-soon-background: #004918;
+  --card-head-active-background: #5f0000;
+  --card-head-over-background: #5b256d;
+  --clock-background: #111;
+}
+
+/* Global resources */
+.divider {
+  height: 1px;
+  background: var(--card-divider);
+  margin-bottom: 2%;
+}
+/* No scheduled conferences */
+.emptyMessageContainer {
+  margin-top: 20vh;
+  text-align: center;
+  opacity: 0.2;
+  font-size: 7vw;
+}
+
+/* Miscellaneous */
+h1 {
+  font-size: 3vw;
+}
+h2 {
+  font-size: 2.5vw;
+}
+h3 {
+  font-size: 2vw;
+}
+h4 {
+  font-size: 1.40625vw;
+}
+h5 {
+  font-size: 1.171875vw;
+}
+h6 {
+  font-size: 0.9375vw;
+}
+
+a:hover {
+  text-decoration: none;
+}
