@@ -7,3 +7,97 @@ font.invalidRoomText {
   font-size: 10vw;
   opacity: 0.5;
 }
+
+/* Next conference */
+.roomCard .head {
+  padding: 0 0.3%;
+  text-align: center;
+  border-top-right-radius: 50px;
+  border-top-left-radius: 20px;
+  border: 1px solid var(--card-border);
+  overflow: hidden;
+  white-space: nowrap;
+}
+.roomCard .head h1 {
+  margin-bottom: 0;
+}
+.roomCard#upcoming .head {
+  background: var(--card-head-background);
+}
+.roomCard#soon .head {
+  background: var(--card-head-soon-background);
+}
+.roomCard#active .head {
+  background: var(--card-head-active-background);
+}
+.roomCard#over .head {
+  background: var(--card-head-over-background);
+}
+
+.roomCard .body {
+  padding: 1% 2%;
+  border-bottom-right-radius: 20px;
+  border-bottom-left-radius: 50px;
+  color: var(--card-body-text);
+  background: var(--card-body-background);
+  border: 1px solid var(--card-border);
+  bottom: 5%;
+  height: 75vh;
+}
+.roomCard .body .roomNumberContainer {
+  display: flex;
+  margin-bottom: 0.8%;
+}
+.roomCard .body .roomNumberContainer .roomNumber {
+  color: var(--info);
+  margin-left: 0.3%;
+}
+.roomCard .body .chronals {
+  display: flex;
+  justify-content: space-between;
+  color: var(--teal);
+  margin-bottom: 1%;
+}
+.roomCard .body .description {
+  word-wrap: break-word;
+  margin-bottom: 0.5%;
+  color: var(--white)
+}
+.roomCard .body .attendeesContainer {
+  margin-top: 0.5%;
+  position: absolute;
+}
+.roomCard .body .attendeesContainer .attendees {
+  word-wrap: break-word;
+  color: var(--info);
+}
+
+/* Upcoming conference */
+.upcomingConfContainer {
+  display: flex;
+  margin-top: 0.4%;
+}
+.upcomingConfContainer .upcomingConfTitle {
+  margin-left: 0.5%;
+  font-weight: bold;
+}
+
+/* Headers */
+.roomCard h1 {
+  font-size: 6.9vw;
+}
+.roomCard h2 {
+  font-size: 6.3vw;
+}
+.roomCard h3 {
+  font-size: 5.8vw;
+}
+.roomCard h4 {
+  font-size: 4.2vw;
+}
+.roomCard h5 {
+  font-size: 3.3vw;
+}
+.roomCard h6 {
+  font-size: 2.7vw;
+}
