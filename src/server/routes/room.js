@@ -12,19 +12,20 @@ module.exports = {
     const room = parseInt(req.query.room)
   
     if (!room || room > ROOM_COUNT) return send(res, 400, 'invalid room')
+
+    const current = new Date()
   
-    return req.db.select({
-      table: 'confs',
-      where: {
-        room: room
-      },
-      sort: {
-        column: 'starttime',
-        order: 'desc'
-      },
-      limit: 2
-    })
-      .then(([next, upcoming]) => send(res, 200, { next, upcoming }))
-      .catch((err) => send(res, 503, err.message))
+    return req.db('confs')
+      .select()
+      .where({
+        room
+      })
+      .andWhere((builder) => {
+        builder.where('endtime', '>', current)
+      })
+      .orderBy('starttime')
+      .limit(2)
+        .then(([next, upcoming]) => send(res, 200, { next, upcoming }))
+        .catch((err) => send(res, 503, err.message))
   }
 }

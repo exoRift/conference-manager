@@ -6,7 +6,7 @@ const {
 } = require('./middleware/')
 const cors = require('cors')
 
-const tables = require('./config/database.json')
+const tables = require('./config/tables.js')
 
 const routes = require('./routes/')
 

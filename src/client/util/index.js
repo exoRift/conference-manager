@@ -20,11 +20,14 @@ function router (routes) {
 }
 
 function getConfStatus (conf) {
+  const startTime = new Date(conf.starttime).getTime()
+  const endTime = new Date(conf.endtime).getTime()
+
   const time = Date.now()
 
-  if (time > conf.endtime) return 'over'
-  else if (time > conf.starttime && time < conf.endtime) return 'active'
-  else if (conf.starttime - time <= 7200000) return 'soon'
+  if (time > endTime) return 'over'
+  else if (time > startTime && time < endTime) return 'active'
+  else if (conf.startTime - time <= 7200000) return 'soon'
   else return 'upcoming'
 }
 

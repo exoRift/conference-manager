@@ -1,11 +1,11 @@
-const QueryBuilder = require('simple-knex')
+const Knex = require('knex')
 
 module.exports = function database (dbInfo, tables) {
-  const db = new QueryBuilder(dbInfo)
+  const db = new Knex(dbInfo)
 
   for (const table of tables) {
-    db.createTable(table).catch((err) => {
-      if (!err.desc.endsWith('already exists.')) console.error(err)
+    db.schema.hasTable(table.name).then((exists) => {
+      if (!exists) db.schema.createTable(table.name, table.schema).then()
     })
   }
 

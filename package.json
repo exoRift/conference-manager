@@ -22,14 +22,14 @@
   "dependencies": {
     "@polka/send-type": "^0.5.2",
     "cors": "^2.8.5",
+    "knex": "^0.19.5",
     "pg": "^7.12.1",
     "polka": "^0.5.2",
     "query-string": "^6.8.3",
     "react": "^16.10.1",
     "react-dom": "^16.10.1",
     "react-router-dom": "^5.1.2",
-    "react-scripts": "^3.1.2",
-    "simple-knex": "git+https://github.com/alex-taxiera/simple-knex.git#development"
+    "react-scripts": "^3.1.2"
   },
   "devDependencies": {
     "concurrently": "^4.1.2",

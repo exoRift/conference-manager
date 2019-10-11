@@ -75,7 +75,7 @@ class Directory extends React.Component {
                 const startDate = new Date(c.starttime)
 
                 return (
-                  <div className='conferenceCard' key={c.id} id={getConfStatus(c)}>
+                  <div className='conferenceCard' id={getConfStatus(c)} key={c.id}>
                     <div className='head'>
                       <h3 className='title'>{c.title}</h3>
                     </div>
