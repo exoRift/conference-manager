@@ -9,6 +9,8 @@
   --card-head-active-background: #5f0000;
   --card-head-over-background: #5b256d;
   --clock-background: #111;
+  --login-success: #0a8547;
+  --login-fail: #9c2727;
 }
 
 /* Global resources */

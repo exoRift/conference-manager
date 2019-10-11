@@ -56,7 +56,6 @@ class Room extends React.Component {
   }
 
   render () {
-    console.log(this.state)
     if (this.state.invalid) {
       return (
         <div className='invalidRoomContainer'>

@@ -2,6 +2,7 @@ import Home from '../Home.jsx'
 import Directory from '../Directory.jsx'
 import Rooms from '../Rooms.jsx'
 import Room from '../Room.jsx'
+import Login from '../Login.jsx'
 
 const routes = [
   {
@@ -23,6 +24,11 @@ const routes = [
   {
     path: '/room',
     component: Room,
+    hidden: true
+  },
+  {
+    path: '/login',
+    component: Login,
     hidden: true
   }
 ]

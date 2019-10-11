@@ -2,6 +2,9 @@ require('dotenv').config()
 
 const polka = require('polka')
 const {
+  json
+} = require('body-parser')
+const {
   database
 } = require('./middleware/')
 const cors = require('cors')
@@ -17,6 +20,10 @@ const {
 } = process.env
 
 const app = polka()
+
+// Util
+app
+  .use(json())
 
 // Auths
 app

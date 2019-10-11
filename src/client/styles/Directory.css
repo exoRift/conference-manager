@@ -39,7 +39,6 @@
   margin: 10% auto;
 }
 .conferenceCard:hover {
-  transition: 0.3s;
   transform: translate(-2%, -2%);
 }
 .conferenceCard .head {

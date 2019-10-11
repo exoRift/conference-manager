@@ -6,7 +6,7 @@ module.exports = {
     return req.db('confs')
       .select()
       .orderBy('starttime')
-        .then((rows) => send(res, 200, rows))
         .catch((err) => send(res, 503, err.message))
+        .then((rows) => send(res, 200, rows))
   }
 }

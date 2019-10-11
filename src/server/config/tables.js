@@ -4,7 +4,7 @@ module.exports = [
     schema: (builder) => {
       builder.string('id').primary()
       builder.string('name')
-      builder.string('password')
+      builder.string('pass')
       builder.string('token')
     }
   },

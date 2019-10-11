@@ -25,7 +25,7 @@ module.exports = {
       })
       .orderBy('starttime')
       .limit(2)
-        .then(([next, upcoming]) => send(res, 200, { next, upcoming }))
         .catch((err) => send(res, 503, err.message))
+        .then(([next, upcoming]) => send(res, 200, { next, upcoming }))
   }
 }
