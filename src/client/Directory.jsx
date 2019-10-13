@@ -34,7 +34,11 @@ class Directory extends React.Component {
   }
 
   tick () {
-    fetch(REACT_APP_API_URL + '/directory').then((data) => {
+    fetch(REACT_APP_API_URL + '/directory', {
+      headers: {
+        'Accept': 'application/json'
+      }
+    }).then((data) => {
       data.json().then((confs) => this.setState({
         confs
       }))

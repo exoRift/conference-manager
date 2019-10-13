@@ -41,7 +41,9 @@ class Login extends React.Component {
   sendLogin (event) {
     event.preventDefault()
 
-    fetch(REACT_APP_API_URL + '/getUser', {
+    if (this.state.authState === 'success') return
+
+    fetch(REACT_APP_API_URL + '/login', {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
@@ -53,14 +55,14 @@ class Login extends React.Component {
       })
     }).then((data) => {
       if (data.status === 200) {
-        data.json().then(({ token, name }) => {
+        data.json().then(({ id, token }) => {
           this.setState({
             authState: 'success'
           })
-  
+
           setTimeout(() => {
             localStorage.setItem('auth', token)
-            localStorage.setItem('name', name)
+            localStorage.setItem('id', id)
 
             this.setState({})
           }, 1200)
@@ -73,13 +75,14 @@ class Login extends React.Component {
               <h4 className='error'>{this.formatStatusMessage(msg)}</h4>
             </div>
           )
-  
+
           this.setState({
             authState: 'failure',
             error
           })
-  
-          setTimeout(() => {
+
+          clearTimeout(this.timer)
+          this.timer = setTimeout(() => {
             this.setState({
               authState: 'waiting',
               error: null
@@ -102,7 +105,7 @@ class Login extends React.Component {
         <div className='loginBox' id={this.state.authState}>
           <div className='headerSpace'>
             <h1 className='loginHeader'>Log into your account to schedule meetings</h1>
-            <h4 className='loginSubheader'>Don't have an account? Ask the building manager to open one for you</h4>
+            <h4 className='loginSubheader'>Don&apos;t have an account? Ask the building manager to open one for you</h4>
           </div>
 
           <div className='inputSpace'>

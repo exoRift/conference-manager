@@ -11,7 +11,13 @@ const cors = require('cors')
 
 const tables = require('./config/tables.js')
 
-const routes = require('./routes/')
+const {
+  directory,
+  room,
+  roomCount,
+  login,
+  user
+} = require('./controllers/')
 
 const {
   API_PORT,
@@ -37,9 +43,11 @@ app
   }, tables))
 
 // Routes
-for (const route of routes) {
-  if (route.type === 'post') app.post(route.path, route.action)
-  else app.get(route.path, route.action)
-}
+app.get('/directory', directory)
+app.get('/room/:room', room)
+app.get('/roomCount', roomCount)
+app.get('/user/:id/name', user.name)
+
+app.post('/login', login)
 
 app.listen(API_PORT)

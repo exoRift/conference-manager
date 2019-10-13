@@ -19,11 +19,15 @@ class Rooms extends React.Component {
   }
 
   componentDidMount () {
-    fetch(REACT_APP_API_URL + '/roomCount')
+    fetch(REACT_APP_API_URL + '/roomCount', {
+      headers: {
+        'Accept': 'text/plain'
+      }
+    })
       .then((data) => data.text()
-      .then((roomCount) => this.setState({
-        roomCount
-      })))
+        .then((count) => this.setState({
+          roomCount: parseInt(count)
+        })))
   }
 
   render () {

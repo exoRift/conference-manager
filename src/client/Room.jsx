@@ -31,13 +31,13 @@ class Room extends React.Component {
 
     this.dbTimer = setInterval(() => this.tick(this.params.room), 60000)
   }
-  
+
   componentWillUnmount () {
     clearInterval(this.dbTimer)
   }
 
   tick (room) {
-    fetch(REACT_APP_API_URL + '/room?room=' + room).then((data) => {
+    fetch(REACT_APP_API_URL + '/room/' + room).then((data) => {
       if (data.status === 200) {
         data.json().then(({ next, upcoming }) => {
           this.setState({
@@ -91,7 +91,7 @@ class Room extends React.Component {
               </div>
             </div>
           </div>
-  
+
           {this.state.upcoming
             ? (
               <div className='upcomingConfContainer'>

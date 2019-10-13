@@ -1,6 +1,6 @@
 import React from 'react'
 
-export default function Index ({ match }) {
+export default function Home () {
   return (
     <>
       <h1>Hello</h1>
