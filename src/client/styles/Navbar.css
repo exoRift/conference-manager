@@ -55,7 +55,15 @@
 #navbar .userContainer .nameContainer {
   width: 100%;
   font-size: 1vw;
-  word-spacing: 100vw;
   color: white;
   margin: auto;
+}
+
+#navbar .userContainer#unlogged .nameContainer {
+  word-spacing: inherit;
+  white-space: nowrap;
+}
+
+#navbar .userContainer#logged .nameContainer {
+  word-spacing: 100vw;
 }

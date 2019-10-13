@@ -18,7 +18,7 @@ class Navbar extends React.Component {
     super(props)
 
     this.state = {
-      name: ''
+      name: null
     }
   }
 
@@ -28,11 +28,13 @@ class Navbar extends React.Component {
         'Accept': 'text/plain'
       }
     }).then((data) => {
-      data.text().then((name) => {
-        this.setState({
-          name
+      if (data.status === 200) {
+        data.text().then((name) => {
+          this.setState({
+            name
+          })
         })
-      })
+      }
     })
   }
 
@@ -51,12 +53,12 @@ class Navbar extends React.Component {
           ))}
         </div>
 
-        <Link className='userContainer' to='/account'>
+        <Link className='userContainer' to={this.state.name ? '/account' : '/login'} id={this.state.name ? 'logged' : 'unlogged'}>
           <div className='iconContainer'>
             <img alt='accountIcon' src={accountIcon}/>
           </div>
           <div className='nameContainer'>
-            <strong>{this.state.name}</strong>
+            <strong>{this.state.name || 'Log in'}</strong>
           </div>
         </Link>
       </div>

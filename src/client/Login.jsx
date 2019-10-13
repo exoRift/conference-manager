@@ -65,6 +65,8 @@ class Login extends React.Component {
             localStorage.setItem('id', id)
 
             this.setState({})
+
+            window.location.reload()
           }, 1200)
         })
       } else {
