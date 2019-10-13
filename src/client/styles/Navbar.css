@@ -20,10 +20,42 @@
   padding: 1% 0;
   opacity: 0.4;
 }
+#navbar .routes {
+  transition: 0.5s;
+  padding: 0 0;
+}
 
 #navbar:hover {
   transition: 0.8s;
   width: 10%;
-  padding: 1% 0.5%;
   opacity: 1;
+}
+#navbar:hover .routes {
+  transition: 0.8s;
+  padding: 0 0 0 6%;
+}
+
+/* User section */
+#navbar .userContainer {
+  display: flex;
+  bottom: 3%;
+  position: absolute;
+  width: 100%;
+  padding-left: 2.5%;
+  background: var(--card-body-background);
+  border-radius: 20px 0 0 10px;
+}
+#navbar .userContainer .iconContainer {
+  width: 30%;
+  margin: auto 5% auto 0;
+}
+#navbar .userContainer .iconContainer img {
+  width: 100%;
+}
+#navbar .userContainer .nameContainer {
+  width: 100%;
+  font-size: 1vw;
+  word-spacing: 100vw;
+  color: white;
+  margin: auto;
 }
