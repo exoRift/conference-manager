@@ -58,12 +58,14 @@ class Account extends React.Component {
   }
 
   onEditToggle (event) {
-    if (this.state.editing[event.target.id]) this.setState({
-      final: {
-        ...this.state.final,
-        [event.target.id]: this.state.user[event.target.id]
-      }
-    })
+    if (this.state.editing[event.target.id]) {
+      this.setState({
+        final: {
+          ...this.state.final,
+          [event.target.id]: this.state.user[event.target.id]
+        }
+      })
+    }
 
     this.setState({
       editing: {
@@ -89,7 +91,7 @@ class Account extends React.Component {
         this.setState({
           saved: true
         })
-  
+
         setTimeout(() => window.location.reload(), 1000)
       } else {
         data.text().then((err) => {

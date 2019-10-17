@@ -20,7 +20,7 @@ module.exports = function room (req, res) {
       })
       .orderBy('starttime')
       .limit(2)
-        .catch(() => res.send(503, 'database unavailable'))
-        .then(([next, upcoming]) => res.send(200, { next, upcoming }))
+      .catch(() => res.send(503, 'database unavailable'))
+      .then(([next, upcoming]) => res.send(200, { next, upcoming }))
   } else res.send(400, 'no room provided')
 }

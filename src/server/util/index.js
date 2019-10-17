@@ -30,41 +30,41 @@ function updateUser (db, salt, user, data) {
     .where({
       id: user
     })
-      .then(([row]) => {
-        if (row) {
-          if (data.pass) {
-            try {
-              data.pass = bcrypt.hashSync(data.pass, salt)
-            } catch (err) {
-              throw Error('password hash')
-            }
-          }
-
-          let token
+    .then(([row]) => {
+      if (row) {
+        if (data.pass) {
           try {
-            token = jwt.sign({
-              id: user,
-              name: data.name || row.name,
-              email: data.email || row.email,
-              admin: data.admin || row.admin
-            }, TOKEN_SECRET)
+            data.pass = bcrypt.hashSync(data.pass, salt)
           } catch (err) {
-            throw Error('token encryption')
+            throw Error('password hash')
           }
-  
-          return db('users')
-            .update({
-              ...data,
-              token
-            })
-            .where({
-              id: user
-            })
-              .catch(() => {
-                throw Error('database unavailable')
-              })
-        } else throw Error('invalid user')
-      })
+        }
+
+        let token
+        try {
+          token = jwt.sign({
+            id: user,
+            name: data.name || row.name,
+            email: data.email || row.email,
+            admin: data.admin || row.admin
+          }, TOKEN_SECRET)
+        } catch (err) {
+          throw Error('token encryption')
+        }
+
+        return db('users')
+          .update({
+            ...data,
+            token
+          })
+          .where({
+            id: user
+          })
+          .catch(() => {
+            throw Error('database unavailable')
+          })
+      } else throw Error('invalid user')
+    })
 }
 
 module.exports = {

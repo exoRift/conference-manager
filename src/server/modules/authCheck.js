@@ -10,6 +10,7 @@ module.exports = function authCheck (req, res, next) {
       if (err) return res.send(503, 'token decoding')
 
       if (match) {
+        req.authUser = match
         req.auth = match.admin || match.id === req.params.id
 
         next()
