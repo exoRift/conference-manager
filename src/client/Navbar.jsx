@@ -23,19 +23,22 @@ class Navbar extends React.Component {
   }
 
   componentDidMount () {
-    fetch(`${REACT_APP_API_URL}/user/${localStorage.getItem('id')}/name`, {
-      headers: {
-        'Accept': 'text/plain'
-      }
-    }).then((data) => {
-      if (data.status === 200) {
-        data.text().then((name) => {
-          this.setState({
-            name
+    if (localStorage.getItem('auth')) {
+      fetch(REACT_APP_API_URL + '/user/current/name', {
+        headers: {
+          Accept: 'text/plain',
+          Authorization: localStorage.getItem('auth')
+        }
+      }).then((data) => {
+        if (data.status === 200) {
+          data.text().then((name) => {
+            this.setState({
+              name
+            })
           })
-        })
-      }
-    })
+        }
+      })
+    }
   }
 
   render () {
@@ -48,7 +51,7 @@ class Navbar extends React.Component {
                 <h4>{route.name}</h4>
               </Link>
 
-              <div className='divider'></div>
+              <div id='divider'></div>
             </div>
           ))}
         </div>

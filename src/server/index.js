@@ -4,10 +4,17 @@ const polka = require('polka')
 const {
   json
 } = require('body-parser')
-const {
-  database
-} = require('./middleware/')
 const cors = require('cors')
+const {
+  database,
+  mailer,
+  sender
+} = require('./middleware/')
+const {
+  authCheck,
+  getUser,
+  saltGen
+} = require('./modules/')
 
 const tables = require('./config/tables.js')
 
@@ -16,13 +23,21 @@ const {
   room,
   roomCount,
   login,
-  user
+  user,
+  inviteUser,
+  createUser,
+  updateUser
 } = require('./controllers/')
 
 const {
   API_PORT,
   DATABASE_CLIENT,
-  DATABASE_URL
+  DATABASE_URL,
+  MAILER_HOST,
+  MAILER_PORT,
+  MAILER_USER,
+  MAILER_PASS,
+  SALT_ROUNDS
 } = process.env
 
 const app = polka()
@@ -37,17 +52,40 @@ app
 
 // Middleware
 app
+  .use(sender)
   .use(database({
     client: DATABASE_CLIENT,
     connection: DATABASE_URL
   }, tables))
+  .use(mailer({
+    host: MAILER_HOST,
+    port: MAILER_PORT,
+    auth: {
+      user: MAILER_USER,
+      pass: MAILER_PASS
+    }
+  }))
+
+const salter = saltGen(parseInt(SALT_ROUNDS))
 
 // Routes
 app.get('/directory', directory)
 app.get('/room/:room', room)
 app.get('/roomCount', roomCount)
-app.get('/user/:id/name', user.name)
+app.get('/user/:id/:prop', authCheck, getUser, user)
 
 app.post('/login', login)
+app.post('/inviteUser', inviteUser)
+app.post('/createUser/:id', salter, createUser)
+app.post('/user/:id/update', authCheck, getUser, salter, updateUser)
 
-app.listen(API_PORT)
+const {
+  server
+} = app.listen(API_PORT, () => {
+  const {
+    address,
+    port
+  } = server.address()
+
+  console.log('API online listening at http://%s:%s', address, port)
+})

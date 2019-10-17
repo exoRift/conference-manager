@@ -36,7 +36,7 @@ class Directory extends React.Component {
   tick () {
     fetch(REACT_APP_API_URL + '/directory', {
       headers: {
-        'Accept': 'application/json'
+        Accept: 'application/json'
       }
     }).then((data) => {
       data.json().then((confs) => this.setState({
@@ -93,7 +93,7 @@ class Directory extends React.Component {
                           - {new Date(c.endtime).toLocaleTimeString('en-US', { timeStyle: 'short' })}</h6>
                         <h6 className='date'>{startDate.toDateString().slice(0, -(String(startDate.getFullYear()).length + 1))}</h6>
                       </div>
-                      <div className='divider'/>
+                      <div id='divider'/>
                       <h6>Attendees:</h6>
                       <div className='attendees'>
                         <h5>{c.attendees.reduce((a, at) => `${a}${a ? ', ' : ''}${at}`, '')}</h5>

@@ -21,7 +21,7 @@ class Rooms extends React.Component {
   componentDidMount () {
     fetch(REACT_APP_API_URL + '/roomCount', {
       headers: {
-        'Accept': 'text/plain'
+        Accept: 'text/plain'
       }
     })
       .then((data) => data.text()

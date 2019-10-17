@@ -1,28 +1,26 @@
-const send = require('@polka/send-type')
-
 const {
   ROOM_COUNT
 } = process.env
 
 module.exports = function room (req, res) {
-  if (!req.params.room) return send(res, 400, 'no room provided')
+  if (req.params.room) {
+    const room = parseInt(req.params.room)
 
-  const room = parseInt(req.params.room)
+    if (!room || room > ROOM_COUNT) return res.send(400, 'invalid room')
 
-  if (!room || room > ROOM_COUNT) return send(res, 400, 'invalid room')
+    const current = new Date()
 
-  const current = new Date()
-
-  return req.db('confs')
-    .select()
-    .where({
-      room
-    })
-    .andWhere((builder) => {
-      builder.where('endtime', '>', current)
-    })
-    .orderBy('starttime')
-    .limit(2)
-      .catch((err) => send(res, 503, err.message))
-      .then(([next, upcoming]) => send(res, 200, { next, upcoming }))
+    return req.db('confs')
+      .select()
+      .where({
+        room
+      })
+      .andWhere((builder) => {
+        builder.where('endtime', '>', current)
+      })
+      .orderBy('starttime')
+      .limit(2)
+        .catch(() => res.send(503, 'database unavailable'))
+        .then(([next, upcoming]) => res.send(200, { next, upcoming }))
+  } else res.send(400, 'no room provided')
 }

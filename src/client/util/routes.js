@@ -3,6 +3,8 @@ import Directory from '../Directory.jsx'
 import Rooms from '../Rooms.jsx'
 import Room from '../Room.jsx'
 import Login from '../Login.jsx'
+import Account from '../Account.jsx'
+import Logout from '../Logout.jsx'
 
 const routes = [
   {
@@ -29,6 +31,16 @@ const routes = [
   {
     path: '/login',
     component: Login,
+    hidden: true
+  },
+  {
+    path: '/account',
+    component: Account,
+    hidden: true
+  },
+  {
+    path: '/logout',
+    component: Logout,
     hidden: true
   }
 ]

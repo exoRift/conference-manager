@@ -81,7 +81,7 @@ class Room extends React.Component {
                   - {new Date(this.state.next.endtime).toLocaleTimeString('en-US', { timeStyle: 'short' })}</h6>
                 <h6 className='date'>{startDate.toDateString().slice(0, -(String(startDate.getFullYear()).length + 1))}</h6>
               </div>
-              <div className='divider'/>
+              <div id='divider'/>
               <h4 className='description'>{this.state.next.desc}</h4>
               <div className='attendeesContainer'>
                 <h5>Attendees:</h5>

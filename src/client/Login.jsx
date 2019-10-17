@@ -46,7 +46,7 @@ class Login extends React.Component {
     fetch(REACT_APP_API_URL + '/login', {
       method: 'POST',
       headers: {
-        'Accept': 'application/json',
+        Accept: 'text/plain',
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
@@ -55,14 +55,13 @@ class Login extends React.Component {
       })
     }).then((data) => {
       if (data.status === 200) {
-        data.json().then(({ id, token }) => {
+        data.text().then((token) => {
           this.setState({
             authState: 'success'
           })
 
           setTimeout(() => {
             localStorage.setItem('auth', token)
-            localStorage.setItem('id', id)
 
             this.setState({})
 

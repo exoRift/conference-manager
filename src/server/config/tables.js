@@ -5,7 +5,9 @@ module.exports = [
       builder.string('id').primary()
       builder.string('name')
       builder.string('pass')
+      builder.string('email')
       builder.string('token')
+      builder.boolean('admin')
     }
   },
   {

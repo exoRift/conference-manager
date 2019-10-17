@@ -8,7 +8,7 @@
   height: 65%;
   width: 65%;
   margin: 0 auto;
-  border-radius: 25px 25px;
+  border-radius: 25px;
   background: var(--secondary);
 }
 .loginBox#success {
@@ -20,9 +20,9 @@
   background: var(--login-fail);
 }
 .loginBox:hover {
+  transition: 0.4s;
   height: 66%;
   width: 66%;
-  transition: 0.4s;
 }
 .headerSpace {
   margin: 0.5%;
@@ -56,17 +56,4 @@
 }
 .loginBox input[type='submit']:hover {
   transform: scale(1.1);
-}
-.errorContainer {
-  margin-top: 5%;
-  margin-left: 7%;
-  padding: 1% 1%;
-  width: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  border-radius: 25px 25px;
-  text-align: center;
-  overflow: hidden;
-}
-.errorContainer .error {
-  margin-top: 10%;
 }

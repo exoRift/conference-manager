@@ -9,7 +9,7 @@ module.exports = function database (dbInfo, tables) {
     })
   }
 
-  return async (req, res, next) => {
+  return (req, res, next) => {
     req.db = db
 
     next()

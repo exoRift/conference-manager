@@ -22,7 +22,7 @@
 }
 #navbar .routes {
   transition: 0.5s;
-  padding: 0 0;
+  padding: 0;
 }
 
 #navbar:hover {
