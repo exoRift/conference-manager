@@ -1,13 +1,3 @@
-/* Loading */
-.loadingContainer {
-  text-align: center;
-  padding-top: 15%;
-}
-font.loadingText {
-  font-size: 10vw;
-  opacity: 0.5;
-}
-
 /* Account */
 .accountPage {
   display: flex;

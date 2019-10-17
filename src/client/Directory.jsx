@@ -6,9 +6,7 @@ import './styles/Directory.css'
 
 import Banner from '../assets/banner.png'
 
-import {
-  getConfStatus
-} from './util/'
+import ConferenceCard from './util/ConferenceCard.jsx'
 
 const {
   REACT_APP_API_URL
@@ -75,38 +73,9 @@ class Directory extends React.Component {
         {this.state.confs.length
           ? (
             <div className='conferenceCardContainer'>
-              {this.state.confs.map((c) => {
-                const startDate = new Date(c.starttime)
-
-                return (
-                  <div className='conferenceCard' id={getConfStatus(c)} key={c.id}>
-                    <div className='head'>
-                      <h3 className='title'>{c.title}</h3>
-                    </div>
-                    <div className='body'>
-                      <div className='roomNumberContainer'>
-                        <h5>Conference Room: </h5>
-                        <h5 className='roomNumber'>{c.room}</h5>
-                      </div>
-                      <div className='chronals'>
-                        <h6 className='time'>{startDate.toLocaleTimeString('en-US', { timeStyle: 'short' })}
-                          - {new Date(c.endtime).toLocaleTimeString('en-US', { timeStyle: 'short' })}</h6>
-                        <h6 className='date'>{startDate.toDateString().slice(0, -(String(startDate.getFullYear()).length + 1))}</h6>
-                      </div>
-                      <div id='divider'/>
-                      <h6>Attendees:</h6>
-                      <div className='attendeesContainer'>
-                        {c.attendees.reduce((ac, a, i) => ac.concat([(
-                          <div className='attendee' key={i}>
-                            <h5 className='name'>{a}</h5>
-                            {i === c.attendees.length - 1 ? undefined : (<h5 className='separator'>,</h5>)}
-                          </div>
-                        )]), [])}
-                      </div>
-                    </div>
-                  </div>
-                )
-              })}
+              {this.state.confs.map((c, i) => (
+                <ConferenceCard conference={c} key={i}/>
+              ))}
             </div>
           )
           : (
