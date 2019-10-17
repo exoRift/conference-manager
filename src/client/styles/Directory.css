@@ -84,7 +84,14 @@
   justify-content: space-between;
   color: var(--teal);
 }
-.conferenceCard .body .attendees {
-  word-wrap: break-word;
+.conferenceCard .body .attendeesContainer {
+  display: flex;
+  flex-wrap: wrap;
+}
+.conferenceCard .body .attendeesContainer .attendee {
+  display: flex;
+  margin-right: 1%;
+}
+.conferenceCard .body .attendeesContainer .attendee .name {
   color: var(--info);
 }

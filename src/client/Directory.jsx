@@ -95,8 +95,13 @@ class Directory extends React.Component {
                       </div>
                       <div id='divider'/>
                       <h6>Attendees:</h6>
-                      <div className='attendees'>
-                        <h5>{c.attendees.reduce((a, at) => `${a}${a ? ', ' : ''}${at}`, '')}</h5>
+                      <div className='attendeesContainer'>
+                        {c.attendees.reduce((ac, a, i) => ac.concat([(
+                          <div className='attendee' key={i}>
+                            <h5 className='name'>{a}</h5>
+                            {i === c.attendees.length - 1 ? undefined : (<h5 className='separator'>,</h5>)}
+                          </div>
+                        )]), [])}
                       </div>
                     </div>
                   </div>
