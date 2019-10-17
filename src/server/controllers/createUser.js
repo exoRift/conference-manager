@@ -1,16 +1,13 @@
-const bcrypt = require('bcrypt')
-const jwt = require('jsonwebtoken')
-
 const {
-  TOKEN_SECRET
-} = process.env
+  updateUser
+} = require('../util/')
 
 const requiredKeys = ['pass']
 
 module.exports = function createUser (req, res) {
-  if (req.params.id) {
+  if (req.auth) {
     req.db('users')
-      .select('name', 'email', 'token')
+      .select('id', 'token')
       .where({
         id: req.params.id
       })
@@ -19,29 +16,11 @@ module.exports = function createUser (req, res) {
           if (row) {
             if (row.token) res.send(400, 'user already created')
             else if (requiredKeys.every((key) => req.body.includes(key))) {
-              bcrypt.hash(req.body.pass, req.salt, (err, hash) => {
-                if (err) res.send(503, 'password encryption')
-                else {
-                  const token = jwt.sign({
-                    id: req.params.id,
-                    name: row.name,
-                    email: row.email
-                  }, TOKEN_SECRET)
-
-                  req.db('users')
-                    .update({
-                      pass: hash,
-                      token
-                    })
-                    .where({
-                      id: req.params.id
-                    })
-                      .catch(() => res.send(503, 'database unavailable'))
-                      .then(() => res.send(200))
-                }
-              })
+              updateUser(req.db, req.salt, req.user.id, req.body)
+                .catch((err) => res.send(503, err.message))
+                .then(() => res.send(200))
             } else res.send(400, 'invalid body')
           } else res.send(400, 'invalid user')
         })
-  } else res.send(res, 400, 'no id provided')
+  } else res.send(401)
 }

@@ -54,7 +54,7 @@ class Login extends React.Component {
         pass: this.state.pass
       })
     }).then((data) => {
-      if (data.status === 200) {
+      if (data.ok) {
         data.text().then((token) => {
           this.setState({
             authState: 'success'

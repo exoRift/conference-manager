@@ -7,10 +7,13 @@ const {
 module.exports = function authCheck (req, res, next) {
   if (req.headers.authorization) {
     jwt.verify(req.headers.authorization, TOKEN_SECRET, (err, match) => {
-      if (err) res.send(503, 'token decoding')
-  
-      if (match) next()
-      else res.send(400, 'invalid token')
+      if (err) return res.send(503, 'token decoding')
+
+      if (match) {
+        req.auth = match.admin || match.id === req.params.id
+
+        next()
+      } else res.send(400, 'invalid token')
     })
   } else res.send(400, 'no token provided')
 }

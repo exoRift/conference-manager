@@ -5,6 +5,7 @@ import Room from '../Room.jsx'
 import Login from '../Login.jsx'
 import Account from '../Account.jsx'
 import Logout from '../Logout.jsx'
+import Admin from '../Admin.jsx'
 
 const routes = [
   {
@@ -41,6 +42,11 @@ const routes = [
   {
     path: '/logout',
     component: Logout,
+    hidden: true
+  },
+  {
+    path: '/admin',
+    component: Admin,
     hidden: true
   }
 ]

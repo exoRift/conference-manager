@@ -72,9 +72,11 @@ class Directory extends React.Component {
 
         {this.state.confs.length
           ? (
-            <div className='conferenceCardContainer'>
+            <div className='conferenceCardList'>
               {this.state.confs.map((c, i) => (
-                <ConferenceCard conference={c} key={i}/>
+                <div className='conferenceCardContainer' key={i}>
+                  <ConferenceCard conference={c}/>
+                </div>
               ))}
             </div>
           )

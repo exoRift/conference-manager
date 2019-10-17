@@ -30,7 +30,7 @@ class Navbar extends React.Component {
           Authorization: localStorage.getItem('auth')
         }
       }).then((data) => {
-        if (data.status === 200) {
+        if (data.ok) {
           data.text().then((name) => {
             this.setState({
               name

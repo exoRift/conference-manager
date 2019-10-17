@@ -26,18 +26,18 @@
 }
 
 /* Conference cards */
-.conferenceCardContainer {
+.conferenceCardList {
   padding: 1%;
   display: grid;
   grid-template-columns: repeat(auto-fill, 25%);
   overflow: hidden;
 }
 
-.conferenceCardContainer .conferenceCard {
+.conferenceCardList .conferenceCard {
   transition: 0.3s;
   width: 80%;
   margin: 10% auto;
 }
-.conferenceCardContainer .conferenceCard:hover {
+.conferenceCardList .conferenceCard:hover {
   transform: translate(-2%, -2%);
 }

@@ -32,6 +32,7 @@
   background: var(--light);
   font-size: 1vw;
   padding: 1%;
+  outline: none !important;
 }
 .accountContainer input[type='submit'] {
   margin-left: 1%;
@@ -42,17 +43,12 @@
 .accountContainer input[type='submit']:hover {
   opacity: 0.8;
 }
-.accountContainer input:focus {
-  outline: none;
-}
 .accountContainer button {
   width: 4%;
   font-size: 2vw;
   border-radius: 0 10px 10px 0;
   font-family: "EmojiSymbols";
-}
-.accountContainer button:focus {
-  outline: none;
+  outline: none !important;
 }
 
 .inputArea {

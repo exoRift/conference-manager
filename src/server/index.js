@@ -13,7 +13,8 @@ const {
 const {
   authCheck,
   getUser,
-  saltGen
+  saltGen,
+  parseIdParam
 } = require('./modules/')
 
 const tables = require('./config/tables.js')
@@ -72,12 +73,12 @@ const salter = saltGen(parseInt(SALT_ROUNDS))
 app.get('/directory', directory)
 app.get('/room/:room', room)
 app.get('/roomCount', roomCount)
-app.get('/user/:id/:prop', authCheck, getUser, user)
+app.get('/user/:id/:prop', parseIdParam, authCheck, getUser, user)
 
 app.post('/login', login)
-app.post('/inviteUser', inviteUser)
-app.post('/createUser/:id', salter, createUser)
-app.post('/user/:id/update', authCheck, getUser, salter, updateUser)
+app.post('/inviteUser', parseIdParam, authCheck, inviteUser)
+app.post('/createUser/:id', parseIdParam, authCheck, salter, createUser)
+app.post('/user/:id/update', parseIdParam, authCheck, getUser, salter, updateUser)
 
 const {
   server

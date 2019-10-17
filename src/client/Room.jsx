@@ -36,7 +36,7 @@ class Room extends React.Component {
 
   tick (room) {
     fetch(REACT_APP_API_URL + '/room/' + room).then((data) => {
-      if (data.status === 200) {
+      if (data.ok) {
         data.json().then(({ next, upcoming }) => {
           this.setState({
             selected: true,

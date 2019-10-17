@@ -49,9 +49,9 @@
   border-radius: 10px;
   font-size: 200%;
   padding: 0 1%;
+  outline: none !important;
 }
 .loginBox input:focus {
-  outline: none;
   border: 2px solid var(--blue);
 }
 .loginBox input[type='submit']:hover {

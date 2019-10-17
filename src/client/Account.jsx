@@ -85,7 +85,7 @@ class Account extends React.Component {
         pass: this.state.final.pass && this.state.final.pass.length ? this.state.pass : undefined
       })
     }).then((data) => {
-      if (data.status === 200) {
+      if (data.ok) {
         this.setState({
           saved: true
         })

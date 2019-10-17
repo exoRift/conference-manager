@@ -5,5 +5,5 @@ module.exports = function user (req, res) {
       pass: undefined,
       ...req.user
     })
-  } else res.send(200, req.user[req.params.prop])
+  } else res.send(200, typeof req.user[req.params.prop] === 'boolean' ? String(req.user[req.params.prop]) : req.user[req.params.prop])
 }

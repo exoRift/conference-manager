@@ -19,6 +19,7 @@
   border-bottom-right-radius: 20%;
   padding: 1% 0;
   opacity: 0.4;
+  z-index: 10;
 }
 #navbar .routes {
   transition: 0.5s;
