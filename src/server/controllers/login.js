@@ -5,7 +5,6 @@ module.exports = function login (req, res) {
     .select('pass', 'token')
     .where(req.db.raw('LOWER("name") = ?', req.body.name.toLowerCase()))
     .limit(1)
-    .catch(() => res.send(503, 'database unavailable'))
     .then(([row]) => {
       if (row) {
         bcrypt.compare(req.body.pass, row.pass, (err, match) => {
@@ -16,4 +15,5 @@ module.exports = function login (req, res) {
         })
       } else res.send(400, 'invalid user')
     })
+    .catch(() => res.send(503, 'database unavailable'))
 }

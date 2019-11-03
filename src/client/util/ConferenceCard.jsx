@@ -19,6 +19,11 @@ function ConferenceCard ({ conference, showDesc }) {
           <h5 className='roomNumber'>{conference.room}</h5>
         </div>
 
+        <div className='creatorContainer'>
+          <h6>Creator: </h6>
+          <h6 className='creator'>{conference.creator}</h6>
+        </div>
+
         <div className='chronals'>
           <h6 className='time'>{startDate.toLocaleTimeString('en-US', { timeStyle: 'short' })}
             - {new Date(conference.endtime).toLocaleTimeString('en-US', { timeStyle: 'short' })}</h6>

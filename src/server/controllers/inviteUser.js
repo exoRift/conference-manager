@@ -17,7 +17,6 @@ module.exports = function createUser (req, res) {
           name: req.body.name,
           email: req.body.email
         })
-        .catch(() => res.send(503, 'database unavailable'))
         .then(() => {
           ejs.renderFile('../templates/email.ejs', {
             name: req.body.name,
@@ -31,11 +30,12 @@ module.exports = function createUser (req, res) {
                 subject: `You've been invited by ${req.authUser.name} to create an account for the 525 Chestnut office building`,
                 html
               })
-                .catch(() => res.send(503, 'database unavailable'))
                 .then(() => res.send(200))
+                .catch(() => res.send(503, 'database unavailable'))
             }
           })
         })
+        .catch(() => res.send(503, 'database unavailable'))
     } else res.send(400, 'invalid body')
   } else res.send(401)
 }

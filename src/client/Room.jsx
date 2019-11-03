@@ -37,11 +37,19 @@ class Room extends React.Component {
   tick (room) {
     fetch(REACT_APP_API_URL + '/room/' + room).then((data) => {
       if (data.ok) {
-        data.json().then(({ next, upcoming }) => {
+        data.json().then(async (confs) => {
+          for (const conf in confs) {
+            confs[conf].creator = await fetch(`${REACT_APP_API_URL}/user/${confs[conf].creator}/name`, {
+              headers: {
+                Authorization: localStorage.getItem('auth'),
+                Accept: 'text/plain'
+              }
+            }).then((data) => data.text())
+          }
+
           this.setState({
             selected: true,
-            next,
-            upcoming
+            ...confs
           })
         })
       } else {

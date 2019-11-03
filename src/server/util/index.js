@@ -24,50 +24,185 @@ function requireDirToObject (path) {
   return content
 }
 
-function updateUser (db, salt, user, data) {
-  return db('users')
-    .select()
-    .where({
-      id: user
-    })
-    .then(([row]) => {
-      if (row) {
-        if (data.pass) {
-          try {
-            data.pass = bcrypt.hashSync(data.pass, salt)
-          } catch (err) {
-            throw Error('password hash')
+async function updateUser (db, salt, user, data) {
+  for (const param in data) {
+    if ((typeof data[param] === 'string' && !data[param].length) || data[param] === undefined) delete data[param]
+  }
+
+  if (Object.keys(data).length) {
+    return db('users')
+      .select()
+      .where({
+        id: user
+      })
+      .limit(1)
+      .then(([row]) => {
+        if (row) {
+          if (data.pass) {
+            try {
+              data.pass = bcrypt.hashSync(data.pass, salt)
+            } catch (err) {
+              const error = Error('password hash')
+              error.code = 503
+
+              throw error
+            }
           }
-        }
 
-        let token
-        try {
-          token = jwt.sign({
-            id: user,
-            name: data.name || row.name,
-            email: data.email || row.email,
-            admin: data.admin || row.admin
-          }, TOKEN_SECRET)
-        } catch (err) {
-          throw Error('token encryption')
-        }
+          let token
+          try {
+            token = jwt.sign({
+              id: user,
+              name: data.name || row.name,
+              email: data.email || row.email,
+              admin: data.admin || row.admin
+            }, TOKEN_SECRET)
+          } catch (err) {
+            const error = Error('token encryption')
+            error.code = 503
 
-        return db('users')
-          .update({
-            ...data,
-            token
-          })
-          .where({
-            id: user
-          })
-          .catch(() => {
-            throw Error('database unavailable')
-          })
-      } else throw Error('invalid user')
-    })
+            throw error
+          }
+
+          return db('users')
+            .update({
+              ...data,
+              token
+            })
+            .where({
+              id: user
+            })
+            .then(() => token)
+        } else {
+          const err = Error('invalid user')
+          err.code = 400
+
+          throw err
+        }
+      })
+      .catch(() => {
+        const err = Error('database unavailable')
+        err.code = 503
+
+        throw err
+      })
+  } else {
+    const err = Error('empty object')
+    err.code = 400
+
+    throw err
+  }
+}
+
+async function updateConf (db, user, conference, data) {
+  for (const param in data) {
+    if ((typeof data[param] === 'string' && !data[param].length) || data[param] === undefined) delete data[param]
+  }
+
+  if (data.name) data.name = data.name.trim()
+  if (data.attendees) data.attendees = JSON.stringify(data.attendees)
+
+  if (Object.keys(data).length) {
+    return db('confs')
+      .select('id', 'creator')
+      .where({
+        id: conference
+      })
+      .limit(1)
+      .catch(() => {
+        const err = Error('database unavailable')
+        err.code = 503
+
+        throw err
+      })
+      .then(([row]) => {
+        if (row) {
+          if (user.id === row.creator || user.admin) {
+            return db('confs')
+              .update(data)
+              .where({
+                id: conference
+              })
+              .catch(() => {
+                const err = Error('database unavailable')
+                err.code = 503
+
+                throw err
+              })
+          } else {
+            const err = Error('not conference owner')
+            err.code = 401
+
+            throw err
+          }
+        } else {
+          const err = Error('invalid conference')
+          err.code = 400
+
+          throw err
+        }
+      })
+  } else {
+    const err = Error('empty object')
+    err.code = 400
+
+    throw err
+  }
+}
+
+function getUserProp (prop) {
+  function parseBool (prop) {
+    return typeof prop === 'boolean' ? String(prop) : prop
+  }
+
+  function userMap (user) {
+    for (const prop in user) {
+      user[prop] = parseBool(user[prop])
+    }
+
+    return user
+  }
+
+  return function (user) {
+    if (prop === 'defining') {
+      return {
+        ...userMap(user),
+        token: undefined,
+        pass: undefined
+      }
+    } else return parseBool(user[prop])
+  }
+}
+
+async function checkValidUsers (db, ids) {
+  for (const id of ids) {
+    db('users')
+      .select('id')
+      .where({
+        id
+      })
+      .limit(1)
+      .then(([row]) => {
+        if (!row) {
+          const err = Error('invalid user: ' + id)
+          err.code = 400
+
+          return err
+        }
+      })
+      .catch(() => {
+        const err = Error('database unavailable')
+        err.code = 503
+
+        return err
+      })
+  }
 }
 
 module.exports = {
   requireDirToObject,
-  updateUser
+  updateUser,
+  updateConf,
+  getUserProp,
+  checkValidUsers
 }

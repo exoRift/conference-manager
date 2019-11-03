@@ -14,20 +14,23 @@ const {
   authCheck,
   getUser,
   saltGen,
-  parseIdParam
+  parseIdParam,
+  typeDef,
+  getConf
 } = require('./modules/')
 
 const tables = require('./config/tables.js')
 
 const {
-  directory,
+  conf,
   room,
   roomCount,
   login,
   user,
   inviteUser,
   createUser,
-  updateUser
+  updateUser,
+  updateConf
 } = require('./controllers/')
 
 const {
@@ -40,6 +43,23 @@ const {
   MAILER_PASS,
   SALT_ROUNDS
 } = process.env
+
+const types = {
+  updateUser: {
+    name: 'string',
+    email: 'string',
+    pass: 'string',
+    admin: 'boolean'
+  },
+  updateConf: {
+    title: 'string',
+    room: ['number'],
+    desc: 'string',
+    attendees: 'array',
+    starttime: 'date',
+    endtime: 'date'
+  }
+}
 
 const app = polka()
 
@@ -70,7 +90,7 @@ app
 const salter = saltGen(parseInt(SALT_ROUNDS))
 
 // Routes
-app.get('/directory', directory)
+app.get('/conference/:id', getConf, conf)
 app.get('/room/:room', room)
 app.get('/roomCount', roomCount)
 app.get('/user/:id/:prop', parseIdParam, authCheck, getUser, user)
@@ -78,7 +98,8 @@ app.get('/user/:id/:prop', parseIdParam, authCheck, getUser, user)
 app.post('/login', login)
 app.post('/inviteUser', parseIdParam, authCheck, inviteUser)
 app.post('/createUser/:id', parseIdParam, authCheck, salter, createUser)
-app.post('/user/:id/update', parseIdParam, authCheck, getUser, salter, updateUser)
+app.post('/user/:id/update', parseIdParam, authCheck, getUser, salter, typeDef(types.updateUser), updateUser)
+app.post('/conference/:id/update', authCheck, getConf, typeDef(types.updateConf), updateConf)
 
 const {
   server

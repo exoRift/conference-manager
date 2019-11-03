@@ -66,6 +66,17 @@ font.loadingText {
 .conferenceCard .body .roomNumberContainer .roomNumber {
   color: var(--info);
   margin-left: 1%;
+  margin-top: 0.3%;
+  font-weight: bold;
+}
+.conferenceCard .body .creatorContainer {
+  display: flex;
+  margin-left: 3%;
+}
+.conferenceCard .body .creatorContainer .creator {
+  margin-left: 1%;
+  margin-top: 0.3%;
+  color: var(--info);
   font-weight: bold;
 }
 .conferenceCard .body .chronals {
@@ -80,7 +91,7 @@ font.loadingText {
 }
 .conferenceCard .body .attendeesContainer .attendee {
   display: flex;
-  margin-right: 1%;
+  margin-right: 2%;
 }
 .conferenceCard .body .attendeesContainer .attendee .name {
   color: var(--info);
@@ -105,6 +116,93 @@ font.loadingText {
 }
 .errorContainer .error {
   margin: 0 auto;
+}
+/* Tab */
+.tabContainer input {
+  transition: 0.3s;
+  width: 10%;
+  height: 3em;
+  border: none;
+  background: var(--card-body-background);
+  outline: none !important;
+  border-radius: none;
+  clip-path: polygon(80% 0, 100% 50%, 100% 100%, 0 100%, 0 50%, 20% 0);
+}
+.tabContainer input[active='true'] {
+  background: var(--dark);
+  border-radius: 25px 25px 0 0;
+  clip-path: polygon(100% 0, 100% 0, 100% 100%, 0 100%, 0 0, 0 0);
+}
+/* Attendees Input */
+.attendeesInputContainer {
+  transition: 1s;
+  display: flex;
+  width: 100%;
+  overflow: auto;
+  flex-grow: 1;
+  background: var(--light);
+  border-radius: 15px;
+  padding: 1%;
+  margin-right: 1%;
+}
+.attendeesInputContainer input {
+  flex-grow: 1;
+  border: none;
+  outline: none !important;
+  background: rgba(0, 0, 0, 0);
+}
+.attendeesInputContainer#focused {
+  background: gray;
+}
+.attendeesInputContainer .attendeeBubble {
+  transition: 0.5s;
+  display: flex;
+  white-space: nowrap;
+  min-width: fit-content;
+  background: lightgray;
+  color: black;
+  border-radius: 15px;
+  padding: 0 1%;
+  margin-right: 1%;
+}
+.attendeesInputContainer .attendeeBubble span {
+  margin: auto 0;
+}
+.attendeesInputContainer .attendeeBubble .x {
+  transition: 0.5s;
+  width: 0em;
+  overflow: hidden;
+  margin: 0.5% 0 0;
+  color: lightgray;
+  opacity: 0;
+  text-align: center;
+}
+.attendeesInputContainer .attendeeBubble#enabled:hover .x {
+  transform: rotate(180deg);
+  width: 1.1em;
+  opacity: 1;
+}
+.attendeesInputContainer .attendeeBubble#disabled:hover {
+  cursor: default;
+}
+.attendeesInputContainer .attendeeBubble#enabled:hover {
+  cursor: pointer;
+  background: gray;
+}
+.attendeesInputContainer::-webkit-scrollbar {
+  height: 10%;
+}
+.attendeesInputContainer::-webkit-scrollbar-track {
+  box-shadow: none;
+}
+.react-autocomplete-input {
+  background: black !important;
+  border-radius: 15px;
+  min-width: 12%;
+  overflow: hidden;
+}
+.react-autocomplete-input > li {
+  background: var(--blue);
 }
 
 /* Custom scrollbar */
@@ -143,6 +241,11 @@ h6 {
   font-size: 0.9375vw;
 }
 
+a {
+  color: var(--cyan);
+}
+
 a:hover {
+  color: var(--primary);
   text-decoration: none;
 }

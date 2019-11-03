@@ -24,10 +24,10 @@ class Rooms extends React.Component {
         Accept: 'text/plain'
       }
     })
-      .then((data) => data.text()
-        .then((count) => this.setState({
-          roomCount: parseInt(count)
-        })))
+      .then((data) => data.text())
+      .then((count) => this.setState({
+        roomCount: parseInt(count)
+      }))
   }
 
   render () {

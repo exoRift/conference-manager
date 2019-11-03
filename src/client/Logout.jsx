@@ -6,7 +6,7 @@ import {
 export default function Logout () {
   localStorage.removeItem('auth')
 
-  setTimeout(() => window.location.reload(), 500)
+  setTimeout(() => window.location.reload(), 1)
 
   return (
     <Redirect to='/'/>

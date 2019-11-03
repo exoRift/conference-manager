@@ -12,6 +12,7 @@
   display: block;
   margin: 0 auto;
   width: 20vw;
+  border-radius: 0 0 25px 25px;
 }
 
 /* Clock */

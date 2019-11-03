@@ -11,16 +11,17 @@ module.exports = function createUser (req, res) {
       .where({
         id: req.params.id
       })
-      .catch(() => res.send(503, 'database unavailable'))
+      .limit(1)
       .then(([row]) => {
         if (row) {
           if (row.token) res.send(400, 'user already created')
           else if (requiredKeys.every((key) => req.body.includes(key))) {
             updateUser(req.db, req.salt, req.user.id, req.body)
-              .catch((err) => res.send(503, err.message))
-              .then(() => res.send(200))
+              .then((token) => res.send(200, token))
+              .catch((err) => res.send(err.code, err.message))
           } else res.send(400, 'invalid body')
         } else res.send(400, 'invalid user')
       })
+      .catch(() => res.send(503, 'database unavailable'))
   } else res.send(401)
 }

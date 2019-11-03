@@ -32,18 +32,29 @@ class Directory extends React.Component {
   }
 
   tick () {
-    fetch(REACT_APP_API_URL + '/directory', {
+    fetch(REACT_APP_API_URL + '/conference/all', {
       headers: {
         Accept: 'application/json'
       }
-    }).then((data) => {
-      data.json().then((confs) => this.setState({
+    })
+      .then((data) => data.json())
+      .then((confs) => Promise.all(confs.map(async (c) => {
+        c.creator = await fetch(`${REACT_APP_API_URL}/user/${c.creator}/name`, {
+          headers: {
+            Authorization: localStorage.getItem('auth'),
+            Accept: 'text/plain'
+          }
+        }).then((data) => data.text())
+
+        return c
+      })))
+      .then((confs) => this.setState({
         confs
       }))
-    })
   }
 
   render () {
+    if (this.state.confs.length) console.log(this.state.confs[0].creator)
     if (this.state.confs.length > 12) {
       this.setState({
         confs: this.state.confs.reduce((a, c, i, arr) => {

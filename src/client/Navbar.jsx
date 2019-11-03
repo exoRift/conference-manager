@@ -18,7 +18,8 @@ class Navbar extends React.Component {
     super(props)
 
     this.state = {
-      name: null
+      name: null,
+      admin: false
     }
   }
 
@@ -31,10 +32,30 @@ class Navbar extends React.Component {
         }
       }).then((data) => {
         if (data.ok) {
-          data.text().then((name) => {
-            this.setState({
-              name
-            })
+          data.text().then((name) => this.setState({
+            name
+          }))
+        } else if (data.body === 'invalid token') localStorage.removeItem('auth')
+      })
+
+      fetch(REACT_APP_API_URL + '/user/current/admin', {
+        headers: {
+          Accept: 'text/plain',
+          Authorization: localStorage.getItem('auth')
+        }
+      }).then((data) => {
+        if (data.ok) {
+          data.text().then((admin) => {
+            if (JSON.parse(admin)) {
+              routes.push({
+                name: 'Admin Panel',
+                path: '/admin'
+              })
+
+              this.setState({
+                admin: true
+              })
+            }
           })
         }
       })

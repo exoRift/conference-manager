@@ -15,6 +15,7 @@ module.exports = [
     schema: (builder) => {
       builder.string('id').primary()
       builder.string('title')
+      builder.string('creator')
       builder.integer('room')
       builder.string('desc')
       builder.json('attendees')

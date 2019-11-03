@@ -63,8 +63,6 @@ class Login extends React.Component {
           setTimeout(() => {
             localStorage.setItem('auth', token)
 
-            this.setState({})
-
             window.location.reload()
           }, 1200)
         })
