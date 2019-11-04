@@ -147,9 +147,9 @@ font.loadingText {
 }
 .attendeesInputContainer input {
   flex-grow: 1;
-  border: none;
+  border-color: rgba(0, 0, 0, 0);
   outline: none !important;
-  background: rgba(0, 0, 0, 0);
+  background: none;
 }
 .attendeesInputContainer#focused {
   background: gray;
