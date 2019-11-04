@@ -44,10 +44,8 @@
   opacity: 0.8;
 }
 .accountContainer button {
-  width: 4%;
-  font-size: 2vw;
+  font-size: 180%;
   border-radius: 0 10px 10px 0;
-  font-family: "EmojiSymbols";
   outline: none !important;
 }
 
@@ -56,6 +54,36 @@
   padding-bottom: 4%;
 }
 
+.googleAuthContainer {
+  transition: 0.5s;
+  display: flex;
+  width: fit-content;
+  margin-left: auto;
+  margin-top: -8%;
+  margin-bottom: 5%;
+  white-space: nowrap;
+  padding: 1%;
+  background: var(--cyan);
+  color: white !important;
+  border-radius: 25px;
+}
+.googleAuthContainer:hover {
+  background: darkcyan;
+}
+.googleAuthContainer img {
+  width: 4em;
+  border-radius: 15px;
+  margin-right: 2%;
+}
+.googleAuthContainer .authText {
+  transition: 1s;
+  overflow: hidden;
+  width: 0em;
+  margin: auto 0;
+}
+.googleAuthContainer:hover .authText {
+  width: 23em;
+}
 .submitButtonContainer {
   display: flex;
 }
@@ -92,7 +120,7 @@
   font-size: 1.5vw;
 }
 .logoutContainer:hover {
-  background: red;
+  background: var(--red);
 }
 .logoutContainer:hover .logoutTextContainer {
   width: 4em;

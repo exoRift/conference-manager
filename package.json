@@ -26,7 +26,6 @@
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "ejs": "^2.7.1",
-    "googleapis": "^44.0.0",
     "jsonwebtoken": "^8.5.1",
     "knex": "^0.19.5",
     "nodemailer": "^6.3.1",

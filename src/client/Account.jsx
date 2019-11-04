@@ -7,9 +7,11 @@ import {
 import './styles/Account.css'
 
 import logoutIcon from '../assets/logout.svg'
+import googleIcon from '../assets/google_icon.png'
 
 const {
-  REACT_APP_API_URL
+  REACT_APP_API_URL,
+  REACT_APP_GOOGLE_CAL_ID
 } = process.env
 
 class Account extends React.Component {
@@ -76,10 +78,19 @@ class Account extends React.Component {
   }
 
   submitChanges () {
+    for (const param in this.state.final) {
+      if (param !== 'pass' && !this.state.final[param].length) {
+        return this.setState({
+          error: 'Parameter cannot be empty: ' + param.substring(0, 1).toUpperCase() + param.substring(1)
+        })
+      }
+    }
+
     fetch(REACT_APP_API_URL + '/user/current/update', {
       method: 'POST',
       headers: {
         Authorization: localStorage.getItem('auth'),
+        Accept: 'text/plain',
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
@@ -88,20 +99,18 @@ class Account extends React.Component {
       })
     }).then((data) => {
       if (data.ok) {
-        this.setState({
-          saved: true
-        })
+        data.text().then((token) => {
+          localStorage.setItem('auth', token)
 
-        setTimeout(() => window.location.reload(), 1000)
+          this.setState({
+            saved: true
+          })
+
+          setTimeout(() => window.location.reload(), 1000)
+        })
       } else {
         data.text().then((err) => {
-          if (err.startsWith('invalid param')) {
-            const param = err.substring(err.indexOf(':') + 2)
-
-            this.setState({
-              error: 'Parameter cannot be empty: ' + param.substring(0, 1).toUpperCase() + param.substring(1)
-            })
-          } else {
+          if (err !== 'empty object') {
             this.setState({
               error: err
             })
@@ -141,9 +150,18 @@ class Account extends React.Component {
                 <h3 className='inputHeader'>Password</h3>
                 <this.InputField placeholder='SET A NEW PASSWORD' id='pass'/>
               </div>
+
+              <a className='googleAuthContainer' href={'https://accounts.google.com/o/oauth2/v2/auth?' +
+                `client_id=${REACT_APP_GOOGLE_CAL_ID}&` +
+                'response_type=token&' +
+                `redirect_uri=${window.location.href}&` +
+                'scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcalendar'}>
+                <img src={googleIcon} alt='Google Icon'/>
+                <h5 className='authText'>Create calendar events by authorizing with Google</h5>
+              </a>
             </div>
 
-            <div id='divider'></div>
+            <div id='divider'/>
 
             <div className='submitButtonContainer'>
               <input type='submit' value='Save Changes' onClick={this.submitChanges}/>
@@ -185,8 +203,9 @@ class Account extends React.Component {
           placeholder={props.placeholder}
           disabled={!this.state.editing[props.id]}
           onChange={this.onChange} id={props.id}
-          type={props.id === 'pass' ? 'password' : 'text'}
+          type={props.id === 'pass' ? 'password' : props.id === 'email' ? 'email' : 'text'}
         />
+
         <button type='button' onClick={this.onEditToggle} id={props.id}>{this.state.editing[props.id] ? '\u2714' : '\u270E'}</button>
       </div>
     )
