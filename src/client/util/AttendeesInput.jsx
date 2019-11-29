@@ -34,9 +34,17 @@ class AttendeesInput extends React.Component {
 
   onChange (value) {
     if (value.trim().endsWith(',')) {
+      const name = value.trim().slice(0, -1)
+
+      if (this.state.attendees.includes(name)) {
+        return this.setState({
+          current: ''
+        })
+      }
+
       const changes = [
         ...this.state.attendees,
-        value.trim().slice(0, -1)
+        name
       ]
 
       this.setState({
