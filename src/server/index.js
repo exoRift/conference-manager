@@ -22,7 +22,8 @@ const {
 const tables = require('./config/tables.js')
 
 const {
-  conf,
+  conference,
+  conferencesOf,
   room,
   roomCount,
   login,
@@ -30,7 +31,9 @@ const {
   inviteUser,
   createUser,
   updateUser,
-  updateConf
+  updateConf,
+  deleteConf,
+  createConf
 } = require('./controllers/')
 
 const {
@@ -53,7 +56,15 @@ const types = {
   },
   updateConf: {
     title: 'string',
-    room: ['number'],
+    room: 'number',
+    desc: 'string',
+    attendees: 'array',
+    starttime: 'date',
+    endtime: 'date'
+  },
+  createConf: {
+    title: 'string',
+    room: 'number',
     desc: 'string',
     attendees: 'array',
     starttime: 'date',
@@ -90,16 +101,19 @@ app
 const salter = saltGen(parseInt(SALT_ROUNDS))
 
 // Routes
-app.get('/conference/:id', getConf, conf)
+app.get('/conference/:id', getConf, conference)
+app.get('/conferencesOf/:id', conferencesOf)
 app.get('/room/:room', room)
 app.get('/roomCount', roomCount)
 app.get('/user/:id/:prop', parseIdParam, authCheck, getUser, user)
 
 app.post('/login', login)
-app.post('/inviteUser', parseIdParam, authCheck, inviteUser)
-app.post('/createUser/:id', parseIdParam, authCheck, salter, createUser)
+app.post('/user/invite', parseIdParam, authCheck, inviteUser)
+app.post('/user/create/:id', parseIdParam, authCheck, salter, createUser)
 app.post('/user/:id/update', parseIdParam, authCheck, getUser, salter, typeDef(types.updateUser), updateUser)
 app.post('/conference/:id/update', authCheck, getConf, typeDef(types.updateConf), updateConf)
+app.post('/conference/delete/:id', authCheck, getConf, deleteConf)
+app.post('/conference/create', authCheck, typeDef(types.createConf), createConf)
 
 const {
   server

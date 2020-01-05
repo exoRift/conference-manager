@@ -19,6 +19,21 @@
   background: var(--card-divider);
   margin-bottom: 2%;
 }
+/* Inputs */
+input {
+  transition: 1s;
+  flex-grow: 1;
+  width: 100%;
+  border: none;
+  outline: none !important;
+  background: var(--light);
+  border-radius: 15px;
+  padding: 1% 5%;
+  margin-right: 1%;
+}
+input:focus {
+  background: gray;
+}
 /* Loading */
 .loadingContainer {
   text-align: center;
@@ -124,9 +139,10 @@ font.loadingText {
   height: 3em;
   border: none;
   background: var(--card-body-background);
-  outline: none !important;
-  border-radius: none;
+  border-radius: 0;
   clip-path: polygon(80% 0, 100% 50%, 100% 100%, 0 100%, 0 50%, 20% 0);
+  padding: 0;
+  margin-right: 0;
 }
 .tabContainer input[active='true'] {
   background: var(--dark);
@@ -149,7 +165,8 @@ font.loadingText {
   flex-grow: 1;
   border-color: rgba(0, 0, 0, 0);
   outline: none !important;
-  background: none;
+  background: none !important;
+  width: auto;
 }
 .attendeesInputContainer#focused {
   background: gray;
@@ -162,7 +179,7 @@ font.loadingText {
   background: lightgray;
   color: black;
   border-radius: 15px;
-  padding: 0 1%;
+  padding: 0 3%;
   margin-right: 1%;
 }
 .attendeesInputContainer .attendeeBubble span {
@@ -172,7 +189,7 @@ font.loadingText {
   transition: 0.5s;
   width: 0em;
   overflow: hidden;
-  margin: 0.5% 0 0;
+  margin-left: 3%;
   color: lightgray;
   opacity: 0;
   text-align: center;
@@ -187,7 +204,7 @@ font.loadingText {
 }
 .attendeesInputContainer .attendeeBubble#enabled:hover {
   cursor: pointer;
-  background: gray;
+  background: darkgray;
 }
 .attendeesInputContainer::-webkit-scrollbar {
   height: 10%;
@@ -203,6 +220,179 @@ font.loadingText {
 }
 .react-autocomplete-input > li {
   background: var(--blue);
+}
+
+/* Conference manager */
+.headers {
+  display: flex;
+  justify-items: stretch;
+  padding: 0 6% 0 1%;
+  color: lightgray;
+}
+.headers h3#room {
+  flex-grow: 1;
+  margin-left: 7%;
+}
+.headers h3 {
+  flex-grow: 1;
+}
+
+.objectContainer {
+  display: flex;
+  background: var(--secondary);
+  border-radius: 5px;
+  padding: 1%;
+  margin-bottom: 1%;
+}
+.objectContainer > input {
+  transition: 1s;
+  flex-grow: 1;
+  width: 100%;
+  border: none;
+  outline: none !important;
+  background: var(--light);
+  border-radius: 15px;
+  padding: 1%;
+  margin-right: 1%;
+}
+.objectContainer > input {
+  background: gray;
+}
+.objectContainer > input#room {
+  width: 6%;
+  flex-grow: 0;
+}
+.objectContainer > input[type='checkbox'] {
+  flex-grow: 0.1;
+  width: 6.3%;
+  margin: auto 1% auto 0;
+  height: 2em;
+}
+.objectContainer > input[type='checkbox']#admin:enabled:checked {
+  box-shadow: 0 0 0 2px red;
+}
+.objectContainer button {
+  margin: 0.5% 0 0.5% 0;
+  outline: none !important;
+  font-size: 180%;
+  border-radius: 5px;
+}
+
+.objectContainer .trashContainer {
+  transition: 1s;
+  margin: auto 1% auto 0;
+  padding: 0.5%;
+  width: 15%;
+  background: var(--red);
+  opacity: 0.6;
+  border-radius: 15px;
+  cursor: pointer;
+}
+.objectContainer .trashContainer#enabled {
+  opacity: 1;
+}
+.objectContainer .trashContainer .imgContainer {
+  width: 100%;
+  margin: 0 auto 0 auto;
+}
+.objectContainer .trashContainer .imgContainer img {
+  width: 100%;
+}
+
+.submitContainer {
+  display: flex;
+  margin: 1% auto 0;
+}
+.submitContainer button {
+  transition: 0.3s;
+  margin: auto;
+  background: var(--light);
+  border: 1px solid #222;
+  border-radius: 10px;
+  font-size: 200%;
+  outline: none !important;
+}
+.submitContainer button:hover {
+  transform: scale(1.1);
+}
+
+#popup {
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  top: 0;
+  left: 0;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 100;
+  animation: 0.5s ease-in 0s fade-in;
+}
+#popup .messageContainer {
+  text-align: center;
+  margin: 5% 0 8% 0;
+  background: rgba(0, 0, 0, 0.7);
+}
+.deletePopupOverlay .choices .choice {
+  transition: 1s;
+  width: fit-content;
+  padding: 0.5% 3% 0.5% 3%;
+  margin: 0 auto 3% auto;
+  border-radius: 40px;
+  cursor: pointer;
+}
+.deletePopupOverlay .choices .choice#no {
+  background: var(--red);
+}
+.deletePopupOverlay .choices .choice#no:hover {
+  background: darkred;
+}
+.deletePopupOverlay .choices .choice#yes {
+  background: var(--green);
+}
+.deletePopupOverlay .choices .choice#yes:hover {
+  background: green;
+}
+
+/* Date picker */
+.rdt {
+  margin-right: 1%;
+}
+.rdt input {
+  margin: 0;
+}
+.rdt.disabled:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+.form-control {
+  transition: 1s;
+  flex-grow: 1;
+  width: auto;
+  height: 100%;
+  border: none;
+  outline: none !important;
+  background: var(--light);
+  border-radius: 15px;
+  margin-left: 0.5%;
+}
+.form-control {
+  background: gray;
+}
+.rdtPicker {
+  background: var(--secondary) !important;
+  border: var(--card-body-background) !important;
+}
+.rdtPicker td.rdtDay:hover,
+  .rdtPicker td.rdtHour:hover,
+  .rdtPicker td.rdtMinute:hover,
+  .rdtPicker td.rdtSecond:hover,
+  .rdtPicker .rdtTimeToggle:hover,
+  .rdtPicker thead tr:first-child th:hover,
+  td.rdtMonth:hover, td.rdtYear:hover {
+  background: gray !important;
 }
 
 /* Custom scrollbar */
@@ -248,4 +438,12 @@ a {
 a:hover {
   color: var(--primary);
   text-decoration: none;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  } to {
+    opacity: 1;
+  }
 }

@@ -31,7 +31,6 @@ class Admin extends React.Component {
   }
 
   componentDidMount () {
-    // Verify admin status
     fetch(REACT_APP_API_URL + '/user/current/admin', {
       headers: {
         Authorization: localStorage.getItem('auth'),

@@ -8,7 +8,8 @@ const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 
 const {
-  TOKEN_SECRET
+  TOKEN_SECRET,
+  MAX_TITLE_LENGTH
 } = process.env
 
 const filenameRegex = /(.+?)\.js$/
@@ -95,59 +96,83 @@ async function updateUser (db, salt, user, data) {
 }
 
 async function updateConf (db, user, conference, data) {
-  for (const param in data) {
-    if ((typeof data[param] === 'string' && !data[param].length) || data[param] === undefined) delete data[param]
-  }
-
-  if (data.name) data.name = data.name.trim()
-  if (data.attendees) data.attendees = JSON.stringify(data.attendees)
-
-  if (Object.keys(data).length) {
-    return db('confs')
-      .select('id', 'creator')
-      .where({
-        id: conference
-      })
-      .limit(1)
-      .catch(() => {
-        const err = Error('database unavailable')
-        err.code = 503
-
-        throw err
-      })
-      .then(([row]) => {
-        if (row) {
-          if (user.id === row.creator || user.admin) {
-            return db('confs')
-              .update(data)
-              .where({
-                id: conference
-              })
-              .catch(() => {
-                const err = Error('database unavailable')
-                err.code = 503
-
-                throw err
-              })
-          } else {
-            const err = Error('not conference owner')
-            err.code = 401
+  return verifyValidConf(data)
+    .then((data) => {
+      if (Object.keys(data).length) {
+        return db('confs')
+          .select('id', 'creator')
+          .where({
+            id: conference
+          })
+          .limit(1)
+          .catch(() => {
+            const err = Error('database unavailable')
+            err.code = 503
 
             throw err
-          }
-        } else {
-          const err = Error('invalid conference')
-          err.code = 400
+          })
+          .then(([row]) => {
+            if (row) {
+              if (user.id === row.creator || user.admin) {
+                return db('confs')
+                  .update(data)
+                  .where({
+                    id: conference
+                  })
+                  .catch(() => {
+                    const err = Error('database unavailable')
+                    err.code = 503
 
-          throw err
+                    throw err
+                  })
+              } else {
+                const err = Error('not conference owner')
+                err.code = 401
+
+                throw err
+              }
+            } else {
+              const err = Error('invalid conference')
+              err.code = 400
+
+              throw err
+            }
+          })
+      } else {
+        const err = Error('empty object')
+        err.code = 400
+
+        throw err
+      }
+    })
+}
+
+async function createConf (db, user, data) {
+  return verifyValidConf(data)
+    .then((data) => {
+      if (Object.keys(data).length) {
+        const confData = {
+          ...data,
+          id: String(Date.now()),
+          creator: user.id
         }
-      })
-  } else {
-    const err = Error('empty object')
-    err.code = 400
 
-    throw err
-  }
+        return db('confs')
+          .insert(confData)
+          .then(() => confData)
+          .catch(() => {
+            const err = Error('database unavailable')
+            err.code = 503
+
+            throw err
+          })
+      } else {
+        const err = Error('empty object')
+        err.code = 400
+
+        throw err
+      }
+    })
 }
 
 function getUserProp (prop) {
@@ -199,10 +224,29 @@ async function checkValidUsers (db, ids) {
   }
 }
 
+async function verifyValidConf (data) {
+  for (const param in data) {
+    if ((typeof data[param] === 'string' && !data[param].length) || data[param] === undefined) delete data[param]
+  }
+
+  if (data.name) data.name = data.name.trim()
+  if (data.attendees) data.attendees = JSON.stringify(data.attendees)
+  else data.attendees = '[]'
+  if (data.tile && data.title.length > MAX_TITLE_LENGTH) {
+    const err = Error('title too long')
+    err.code = 400
+
+    throw err
+  }
+
+  return data
+}
+
 module.exports = {
   requireDirToObject,
   updateUser,
   updateConf,
+  createConf,
   getUserProp,
   checkValidUsers
 }

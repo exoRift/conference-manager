@@ -1,0 +1,111 @@
+.ownedConfContainer {
+  margin: 5% 4%;
+  background: var(--dark);
+  border-radius: 25px;
+  padding: 1%;
+}
+
+.confEditContainer {
+  display: flex;
+  background: var(--secondary);
+  border-radius: 5px;
+  padding: 1%;
+  margin-bottom: 1%;
+}
+
+.addContainer {
+  transition: 1s;
+  margin-left: auto;
+  cursor: pointer;
+  background: gray;
+  color: black;
+  height: 3em;
+  width: 3em;
+  border-radius: 10px;
+  padding: 0.3%;
+}
+.addContainer:hover {
+  transform: rotate(180deg);
+  background: green;
+}
+.addContainer img {
+  width: 100%;
+}
+
+.addConfContainer .closeContainer {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+.addConfContainer .closeContainer .closeButton {
+  transition: 0.3s;
+  background: var(--red);
+  opacity: 0.5;
+  width: 3vw;
+  height: 3vw;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 3vw;
+}
+.addConfContainer .closeContainer .closeButton:hover {
+  opacity: 1;
+}
+.addConfContainer .closeContainer .closeButton .xContainer {
+  width: fit-content;
+  height: fit-content;
+  margin: auto;
+  line-height: 100%;
+}
+.addConfContainer .messageContainer {
+  margin-bottom: 5% !important;
+}
+.addConfContainer .inputContainer {
+  display: flex;
+  justify-content: center;
+  margin: 0 auto 4%;
+}
+.addConfContainer .inputContainer .inputBox {
+  margin: 0 0 0 2%;
+  text-align: center;
+  max-width: 15%;
+}
+.addConfContainer .inputContainer .inputBox > input {
+  margin: 0 auto;
+  height: 30%
+}
+
+.addConfContainer .submitContainer button {
+  width: 10%;
+  height: 1.9em;
+  background: limegreen;
+}
+
+.addConfContainer .submitContainer button#saving {
+  border: 0px solid limegreen;
+  background: gray;
+  animation: savingOutline 0.5s linear infinite alternate;
+}
+
+.savingError {
+  margin: 3% 20% 0;
+  padding: 1%;
+  background: rgba(0, 0, 0, 0.7);
+  text-align: center;
+  border-radius: 25px;
+}
+.savingError .header {
+  font-size: 2.5vw;
+  display: block;
+}
+.savingError .message {
+  font-size: 2vw;
+  color: var(--red);
+}
+
+@keyframes savingOutline {
+  0% {
+    border-width: 0px;
+  } 100% {
+    border-width: 5px;
+  }
+}
