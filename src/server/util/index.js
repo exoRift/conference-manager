@@ -239,6 +239,20 @@ async function verifyValidConf (data) {
     throw err
   }
 
+  if (new Date(data.starttime).getTime() < Date.now()) {
+    const err = Error('start date cannot be earlier than current date')
+    err.code = 400
+
+    throw err
+  }
+
+  if (new Date(data.endtime).getTime() <= new Date(data.starttime).getTime()) {
+    const err = Error('end date cannot be earlier than or equal to the start date')
+    err.code = 400
+
+    throw err
+  }
+
   return data
 }
 

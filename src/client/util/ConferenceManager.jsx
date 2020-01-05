@@ -84,7 +84,10 @@ class ConferenceManager extends React.Component {
           }
         }
 
-        conf.attendees = newAttendees
+        return {
+          ...conf,
+          attendees: newAttendees
+        }
       }
     }
 
@@ -189,15 +192,15 @@ class ConferenceManager extends React.Component {
 
     for (const { ...conf } of this.state.final) {
       this.checkConf(conf)
-        .then((conf) => {
-          promises.push(fetch(`${REACT_APP_API_URL}/conference/${conf.id}/update`, {
+        .then((data) => {
+          promises.push(fetch(`${REACT_APP_API_URL}/conference/${data.id}/update`, {
             method: 'POST',
             headers: {
               Authorization: localStorage.getItem('auth'),
               Accept: 'text/plain',
               'Content-Type': 'application/json'
             },
-            body: JSON.stringify(conf)
+            body: JSON.stringify(data)
           }))
         })
         .catch((err) => {
@@ -232,13 +235,13 @@ class ConferenceManager extends React.Component {
 
   create (conf) {
     return this.checkConf(conf)
-      .then((conf) => fetch(REACT_APP_API_URL + '/conference/create', {
+      .then((data) => fetch(REACT_APP_API_URL + '/conference/create', {
         method: 'POST',
         headers: {
           Authorization: localStorage.getItem('auth'),
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(conf)
+        body: JSON.stringify(data)
       }))
       .then(async (data) => {
         if (data.ok) {
