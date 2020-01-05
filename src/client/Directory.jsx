@@ -46,6 +46,13 @@ class Directory extends React.Component {
           }
         }).then((data) => data.text())
 
+        c.attendees = await Promise.all(c.attendees.map((a) => fetch(`${REACT_APP_API_URL}/user/${a}/name`, {
+          headers: {
+            Authorization: localStorage.getItem('auth'),
+            Accept: 'text/plain'
+          }
+        }).then((data) => data.text())))
+
         return c
       })))
       .then((confs) => this.setState({
