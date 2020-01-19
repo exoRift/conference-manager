@@ -1,41 +1,13 @@
-const ejs = require('ejs')
-
 const {
-  REACT_DOMAIN
-} = process.env
+  inviteUser: invite
+} = require('../util/')
 
-const requiredKeys = ['name', 'email']
-
-module.exports = function createUser (req, res) {
-  if (req.auth) {
-    if (requiredKeys.every((key) => req.body.includes(key))) {
-      const id = String(Date.now())
-
-      req.db('users')
-        .insert({
-          id,
-          name: req.body.name,
-          email: req.body.email
-        })
-        .then(() => {
-          ejs.renderFile('../templates/email.ejs', {
-            name: req.body.name,
-            link: REACT_DOMAIN + '/createUser/' + id
-          }, (err, html) => {
-            if (err) res.send(503, 'email template compilation')
-            else {
-              req.mailer.sendMail({
-                from: 'Study Logic',
-                to: req.body.email,
-                subject: `You've been invited by ${req.authUser.name} to create an account for the 525 Chestnut office building`,
-                html
-              })
-                .then(() => res.send(200))
-                .catch(() => res.send(503, 'database unavailable'))
-            }
-          })
-        })
-        .catch(() => res.send(503, 'database unavailable'))
-    } else res.send(400, 'invalid body')
+function inviteUser (req, res) {
+  if (req.authUser.admin) {
+    invite(req.db, req.mailer, req.authUser.name, req.body)
+      .then((id) => res.send(200, id))
+      .catch((err) => res.send(err.code, err.message))
   } else res.send(401)
 }
+
+module.exports = inviteUser

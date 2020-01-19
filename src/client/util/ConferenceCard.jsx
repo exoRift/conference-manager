@@ -25,8 +25,7 @@ function ConferenceCard ({ conference, showDesc }) {
         </div>
 
         <div className='chronals'>
-          <h6 className='time'>{startDate.toLocaleTimeString('en-US', { timeStyle: 'short' })}
-            - {new Date(conference.endtime).toLocaleTimeString('en-US', { timeStyle: 'short' })}</h6>
+          <h6 className='time'>{startDate.toLocaleTimeString('en-US', { timeStyle: 'short' })} - {new Date(conference.endtime).toLocaleTimeString('en-US', { timeStyle: 'short' })}</h6>
           <h6 className='date'>{startDate.toDateString().slice(0, -(String(startDate.getFullYear()).length + 1))}</h6>
         </div>
 

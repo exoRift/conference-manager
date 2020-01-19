@@ -1,13 +1,11 @@
-const moment = require('moment')
-
 module.exports = function typeDef (types) {
   return function (req, res, next) {
     for (const type in types) {
       if (types[type] === 'date') {
-        const result = new Date(moment(req.body[type])._i)
+        const newDate = new Date(req.body[type])
 
-        if (isNaN(result)) return res.send(400, `invalid param type: ${type}. expected a valid date string`)
-        else req.body[type] = result
+        if (!isNaN(newDate)) req.body[type] = newDate
+        else return res.send(400, `invalid param type: ${type}. expected a valid date string`)
       } else {
         const receivedType = typeof req.body[type]
 

@@ -96,7 +96,6 @@ class Manage extends React.Component {
   }
 
   render () {
-    console.log(this.state)
     return localStorage.getItem('auth') ? (
       <div className='ownedConfContainer'>
         <ConferenceManager ref={this._refs.confs}/>
@@ -127,22 +126,22 @@ class Manage extends React.Component {
 
             <div className='inputContainer'>
               <div className='inputBox title'>
-                <h2>Title</h2>
+                <h3>Title</h3>
                 <input value={this.state.adding.title || ''} onChange={this.addChange} id='title'/>
               </div>
 
               <div className='inputBox room'>
-                <h2>Room</h2>
+                <h3>Room</h3>
                 <input value={this.state.adding.room || ''} onChange={this.addChange} id='room'/>
               </div>
 
               <div className='inputBox desc'>
-                <h2>Description</h2>
+                <h3>Description</h3>
                 <input value={this.state.adding.desc || ''} onChange={this.addChange} id='desc'/>
               </div>
 
               <div className='inputBox attendees'>
-                <h2>Attendees</h2>
+                <h3>Attendees</h3>
                 <AttendeesInput
                   attendees={[]}
                   users={this._refs.confs.current.state.users || []}
@@ -151,9 +150,9 @@ class Manage extends React.Component {
               </div>
 
               <div className='inputBox starttime'>
-                <h2>Start Time</h2>
+                <h3>Start Time</h3>
                 <DatePicker
-                  value={this.state.adding.starttime ? new Date(this.state.adding.starttime) : new Date()}
+                  value={this.state.adding.starttime || new Date()}
                   local='en-US'
                   dateFormat={momentDateFormat}
                   timeFormat={momentTimeFormat}
@@ -162,9 +161,9 @@ class Manage extends React.Component {
               </div>
 
               <div className='inputBox endtime'>
-                <h2>End Time</h2>
+                <h3>End Time</h3>
                 <DatePicker
-                  value={this.state.adding.endtime ? new Date(this.state.adding.endtime) : new Date()}
+                  value={this.state.adding.endtime || new Date()}
                   local='en-US'
                   dateFormat={momentDateFormat}
                   timeFormat={momentTimeFormat}

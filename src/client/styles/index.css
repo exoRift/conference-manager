@@ -167,6 +167,7 @@ font.loadingText {
   outline: none !important;
   background: none !important;
   width: auto;
+  height: 100%;
 }
 .attendeesInputContainer#focused {
   background: gray;
@@ -314,6 +315,69 @@ font.loadingText {
 }
 .submitContainer button:hover {
   transform: scale(1.1);
+}
+
+/* Add button */
+.addContainer {
+  transition: 1s;
+  margin-left: auto;
+  cursor: pointer;
+  background: gray;
+  color: black;
+  height: 3em;
+  width: 3em;
+  border-radius: 10px;
+  padding: 0.3%;
+}
+.addContainer:hover {
+  transform: rotate(180deg);
+  background: green;
+}
+.addContainer img {
+  width: 100%;
+}
+
+/* Close popup button */
+.closeContainer {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+.closeContainer .closeButton {
+  transition: 0.3s;
+  background: var(--red);
+  opacity: 0.5;
+  width: 3vw;
+  height: 3vw;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 3vw;
+}
+.closeContainer .closeButton:hover {
+  opacity: 1;
+}
+.closeContainer .closeButton .xContainer {
+  width: fit-content;
+  height: fit-content;
+  margin: auto;
+  line-height: 100%;
+}
+
+/* Popup inputs */
+#popup .inputContainer {
+  display: flex;
+  justify-content: center;
+  margin: 0 auto 4%;
+}
+#popup .inputContainer .inputBox {
+  padding: 0 2% 0 2%;
+  text-align: center;
+  max-width: 15%;
+}
+#popup .inputContainer .inputBox > input {
+  width: 100%;
+  margin: 0 auto;
+  height: 35%;
 }
 
 #popup {

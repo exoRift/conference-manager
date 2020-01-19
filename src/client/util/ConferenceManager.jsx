@@ -38,7 +38,7 @@ class ConferenceManager extends React.Component {
   }
 
   componentDidMount () {
-    fetch(REACT_APP_API_URL + '/conference/all').then((data) => {
+    return fetch(REACT_APP_API_URL + '/conference/all').then((data) => {
       if (data.ok) {
         data.json().then((confs) => {
           fetch(REACT_APP_API_URL + '/user/all/defining', {
@@ -50,6 +50,9 @@ class ConferenceManager extends React.Component {
               data.json().then((users) => {
                 for (const conf of confs) {
                   conf.attendees = conf.attendees.map((a) => users.find((u) => u.id === a).name)
+
+                  conf.starttime = new Date(conf.starttime)
+                  conf.endtime = new Date(conf.endtime)
                 }
 
                 this.setState({
@@ -245,16 +248,9 @@ class ConferenceManager extends React.Component {
       }))
       .then(async (data) => {
         if (data.ok) {
-          return data.text().then((id) => {
-            this.setState({
-              confs: this.state.confs.concat([{
-                ...conf,
-                id
-              }])
-            })
-
-            return data
-          })
+          return data.text()
+            .then(() => this.componentDidMount())
+            .then(() => data)
         } else throw Error(await data.text())
       })
   }
@@ -293,7 +289,7 @@ class ConferenceManager extends React.Component {
                   <input value={c.desc} onChange={onChange} id='desc' disabled={disabled}/>
                   {attendeesBox}
                   <DatePicker
-                    value={new Date(c.starttime)}
+                    value={c.starttime}
                     local='en-US'
                     dateFormat={momentDateFormat}
                     timeFormat={momentTimeFormat}
@@ -301,7 +297,7 @@ class ConferenceManager extends React.Component {
                     onChange={this.onChange(c.id, 'starttime')}
                   />
                   <DatePicker
-                    value={new Date(c.endtime)}
+                    value={c.endtime}
                     local='en-US'
                     dateFormat={momentDateFormat}
                     timeFormat={momentTimeFormat}

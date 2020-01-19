@@ -13,65 +13,12 @@
   margin-bottom: 1%;
 }
 
-.addContainer {
-  transition: 1s;
-  margin-left: auto;
-  cursor: pointer;
-  background: gray;
-  color: black;
-  height: 3em;
-  width: 3em;
-  border-radius: 10px;
-  padding: 0.3%;
-}
-.addContainer:hover {
-  transform: rotate(180deg);
-  background: green;
-}
-.addContainer img {
-  width: 100%;
-}
-
-.addConfContainer .closeContainer {
-  position: absolute;
-  top: 0;
-  right: 0;
-}
-.addConfContainer .closeContainer .closeButton {
-  transition: 0.3s;
-  background: var(--red);
-  opacity: 0.5;
-  width: 3vw;
-  height: 3vw;
-  border-radius: 10px;
-  cursor: pointer;
-  font-size: 3vw;
-}
-.addConfContainer .closeContainer .closeButton:hover {
-  opacity: 1;
-}
-.addConfContainer .closeContainer .closeButton .xContainer {
-  width: fit-content;
-  height: fit-content;
-  margin: auto;
-  line-height: 100%;
-}
 .addConfContainer .messageContainer {
   margin-bottom: 5% !important;
 }
-.addConfContainer .inputContainer {
-  display: flex;
-  justify-content: center;
-  margin: 0 auto 4%;
-}
-.addConfContainer .inputContainer .inputBox {
-  margin: 0 0 0 2%;
-  text-align: center;
-  max-width: 15%;
-}
-.addConfContainer .inputContainer .inputBox > input {
-  margin: 0 auto;
-  height: 30%
+
+.addConfContainer .attendeesInputContainer, .addConfContainer .rdt {
+  height: 35%;
 }
 
 .addConfContainer .submitContainer button {

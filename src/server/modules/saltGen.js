@@ -1,4 +1,4 @@
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcryptjs')
 
 module.exports = function saltGen (rounds) {
   const salt = bcrypt.genSaltSync(rounds)

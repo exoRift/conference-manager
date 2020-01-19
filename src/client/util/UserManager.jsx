@@ -19,10 +19,11 @@ class UserManager extends React.Component {
     this.onChange = this.onChange.bind(this)
     this.onToggle = this.onToggle.bind(this)
     this.onSubmit = this.onSubmit.bind(this)
+    this.create = this.create.bind(this)
   }
 
   componentDidMount () {
-    fetch(REACT_APP_API_URL + '/user/all/defining', {
+    return fetch(REACT_APP_API_URL + '/user/all/defining', {
       headers: {
         Authorization: localStorage.getItem('auth'),
         Accept: 'application/json'
@@ -74,6 +75,30 @@ class UserManager extends React.Component {
     this.setState({
       editing: changes
     })
+  }
+
+  async create (data) {
+    return fetch(REACT_APP_API_URL + '/user/invite', {
+      method: 'POST',
+      headers: {
+        Authorization: localStorage.getItem('auth'),
+        'Content-Type': 'application/json',
+        Accept: 'application/json'
+      },
+      body: JSON.stringify(data)
+    })
+      .then((data) => {
+        return data.json().then((content) => {
+          if (data.ok) {
+            return this.componentDidMount().then(() => content)
+          } else {
+            const error = Error(content)
+            content.code = data.status
+
+            throw error
+          }
+        })
+      })
   }
 
   onSubmit () {

@@ -1,3 +1,51 @@
-<div className='root'>
-  <% link %>
-</div>
+<!DOCTYPE html>
+
+<%
+  const colors = {
+    background: '#2c2f33',
+    accent: '#23272a',
+    blue: '#0345fc',
+    darkblue: '#001e70'
+  }
+%>
+
+<html>
+  <body>
+    <table bgcolor='<%= colors.background %>' width='60%' border='0' cellpadding='0' cellspacing='0' align='center' style='padding: 1% 0 1% 0; border-radius: 10px;'>
+      <tr>
+        <td>
+          <table bgcolor='<%= colors.accent %>' border='0' cellpadding='0' cellspacing='0' align='center' style='padding: 3% 18% 3% 18%; border-radius: 20%;'>
+            <tr>
+              <td>
+                <h1 style='color: white; text-align: center; margin: 1% 0 1% 0;'>Account Invitation</h1>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <h2 style='color: lightgray; text-align: center; margin-bottom: 2%;'>Invited by <%= inviter %></h2>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <table width='68%' border='0' cellpadding='0' cellspacing='0' align='center'>
+                  <tr>
+                    <td class='createButton' bgcolor='<%= colors.blue %>' style='border-radius: 30px;'>
+                      <a class='createButton' href='<%= link %>' bgcolor='<%= colors.blue %>' style='border: 10px solid <%= colors.blue %>; text-decoration: none; display: block; border-radius: 30px;'>
+                        <h2 align='center' style='color: white; margin: 1% 0 1% 0;'>Create Account</h2>
+                      </a>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <h4 align='center' style='color: gray'>Creating an account allows you to create and manage conferences in the 525 Chestnut building</h4>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>
