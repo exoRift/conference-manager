@@ -111,7 +111,7 @@ class Login extends React.Component {
             <form onSubmit={this.sendLogin}>
               <div className='nameSpace'>
                 <label>
-                  <h2>Name:</h2>
+                  <h2>Name or email:</h2>
                   <input name='name' type='text' onChange={this.handleChange}/>
                 </label>
               </div>

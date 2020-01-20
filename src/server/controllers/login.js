@@ -4,6 +4,7 @@ module.exports = function login (req, res) {
   req.db('users')
     .select('pass', 'token')
     .where(req.db.raw('LOWER("name") = ?', req.body.name.toLowerCase()))
+    .orWhere(req.db.raw('LOWER("email") = ?', req.body.name.toLowerCase()))
     .limit(1)
     .then(([row]) => {
       if (row) {
