@@ -14,7 +14,7 @@ const ejs = require('ejs')
 const {
   TOKEN_SECRET,
   MAX_TITLE_LENGTH,
-  REACT_APP_API_URL
+  REACT_DOMAIN
 } = process.env
 
 const filenameRegex = /(.+?)\.js$/
@@ -274,7 +274,11 @@ async function verifyValidConf (db, data) {
     throw err
   }
 
-  return db.raw(`SELECT title FROM confs WHERE (room = ${data.room}) AND (('${startString}'::date > starttime AND '${startString}'::date < endtime) OR ('${endString}'::date > starttime AND '${endString}'::date < endtime))`)
+  return db('confs')
+    .select('title')
+    .where(
+      db.raw(`(room = ${data.room}) AND (('${startString}'::date > starttime AND '${startString}'::date < endtime) OR ('${endString}'::date > starttime AND '${endString}'::date < endtime))`)
+    )
     .catch(() => {
       throw dbError
     })
@@ -319,7 +323,7 @@ async function inviteUser (db, mailer, inviter, { name, email }) {
             tempData: {
               name,
               inviter,
-              link: `${REACT_APP_API_URL}/user/create/${id}`
+              link: `${REACT_DOMAIN}/register/${id}?name=${name}`
             }
           }))
           .then(() => db('users')
