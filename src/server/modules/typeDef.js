@@ -9,13 +9,29 @@ module.exports = function typeDef (types) {
       } else {
         const receivedType = typeof req.body[type]
 
-        if (types[type] === 'array'
-          ? !Array.isArray(req.body[type]) && req.body[type].every((e) => typeof e === 'string')
-          : types[type] === 'number'
-            ? isNaN(Number(req.body[type]))
-            : Array.isArray(types[type])
-              ? !types[type].includes(receivedType)
-              : receivedType !== types[type]) return res.send(400, `invalid param type: ${type === 'array' ? 'array of strings' : type}. expected ${types[type]} instead got ${receivedType}`)
+        if (types[type].startsWith('opt:') && (receivedType === 'undefined' || (receivedType === 'string' && !req.body[type].length))) delete req.body[type]
+        else {
+          let msg
+
+          switch (types[type].slice(types[type].indexOf(':') + 1)) {
+            case 'array':
+              if (!Array.isArray(req.body[type])) msg = `invalid param type: ${type}. expected an array of strings instead got ${receivedType}`
+              break
+            case 'number':
+              if (isNaN(Number(req.body[type]))) msg = `invalid param type: ${type}. expected a valid number`
+              break
+            case 'string':
+              if (receivedType === 'string') {
+                if (!req.body[type].length) msg = `invalid param type: ${type}. expected string but recieved string is empty`
+              } else msg = `invalid param type: ${type}. expected ${types[type]} instead got ${receivedType}`
+              break
+            default:
+              if (types[type] !== receivedType) msg = `invalid param type: ${type}. expected ${types[type]} instead got ${receivedType}`
+              break
+          }
+
+          if (msg) res.send(400, msg)
+        }
       }
     }
 

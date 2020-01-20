@@ -49,18 +49,18 @@ const {
 
 const types = {
   updateUser: {
-    name: 'string',
-    email: 'string',
-    pass: 'string',
-    admin: 'boolean'
+    name: 'opt:string',
+    email: 'opt:string',
+    pass: 'opt:string',
+    admin: 'opt:boolean'
   },
   updateConf: {
-    title: 'string',
-    room: 'number',
-    desc: 'string',
-    attendees: 'array',
-    starttime: 'date',
-    endtime: 'date'
+    title: 'opt:string',
+    room: 'opt:number',
+    desc: 'opt:string',
+    attendees: 'opt:array',
+    starttime: 'opt:date',
+    endtime: 'opt:date'
   },
   createConf: {
     title: 'string',
@@ -70,11 +70,13 @@ const types = {
     starttime: 'date',
     endtime: 'date'
   },
-  inviteUser: {
+  createUser: {
     name: 'string',
     email: 'string'
   },
-  createUser: {
+  registerUser: {
+    name: 'string',
+    email: 'string',
     pass: 'string'
   }
 }
@@ -115,8 +117,8 @@ app.get('/roomCount', roomCount)
 app.get('/user/:id/:prop', parseIdParam, authCheck, getUser, user)
 
 app.post('/login', login)
-app.post('/user/invite', authCheck, typeDef(types.inviteUser), inviteUser)
-app.post('/user/create/:id', parseIdParam, authCheck, typeDef(types.createUser), salter, createUser)
+app.post('/user/create', authCheck, typeDef(types.createUser), inviteUser)
+app.post('/user/register/:id', parseIdParam, typeDef(types.registerUser), salter, createUser)
 app.post('/user/:id/update', parseIdParam, authCheck, getUser, salter, typeDef(types.updateUser), updateUser)
 app.post('/conference/:id/update', authCheck, getConf, typeDef(types.updateConf), updateConf)
 app.post('/conference/delete/:id', authCheck, getConf, deleteConf)
