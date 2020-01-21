@@ -19,6 +19,7 @@
   background: var(--card-divider);
   margin-bottom: 2%;
 }
+
 /* Inputs */
 input {
   transition: 1s;
@@ -34,6 +35,7 @@ input {
 input:focus {
   background: gray;
 }
+
 /* Loading */
 .loadingContainer {
   text-align: center;
@@ -43,6 +45,7 @@ font.loadingText {
   font-size: 10vw;
   opacity: 0.5;
 }
+
 /* Conference Card */
 .conferenceCard .head {
   padding: 0 1%;
@@ -111,6 +114,7 @@ font.loadingText {
 .conferenceCard .body .attendeesContainer .attendee .name {
   color: var(--info);
 }
+
 /* No scheduled conferences */
 .emptyMessageContainer {
   margin-top: 20vh;
@@ -118,12 +122,20 @@ font.loadingText {
   opacity: 0.2;
   font-size: 7vw;
 }
+
+/* Saving button */
+button#saving {
+  border: 0px solid limegreen;
+  background: gray;
+  animation: savingOutline 0.5s linear infinite alternate;
+}
+
 /* Error */
 .errorContainer {
   margin-top: 5%;
   margin-left: 7%;
   padding: 1%;
-  width: 100%;
+  width: 60%;
   background: rgba(0, 0, 0, 0.5);
   border-radius: 25px;
   text-align: center;
@@ -132,6 +144,7 @@ font.loadingText {
 .errorContainer .error {
   margin: 0 auto;
 }
+
 /* Tab */
 .tabContainer input {
   transition: 0.3s;
@@ -149,6 +162,7 @@ font.loadingText {
   border-radius: 25px 25px 0 0;
   clip-path: polygon(100% 0, 100% 0, 100% 100%, 0 100%, 0 0, 0 0);
 }
+
 /* Attendees Input */
 .attendeesInputContainer {
   transition: 1s;
@@ -457,6 +471,67 @@ font.loadingText {
   .rdtPicker thead tr:first-child th:hover,
   td.rdtMonth:hover, td.rdtYear:hover {
   background: gray !important;
+}
+
+/* Login pages */
+.loginPage {
+  display: flex;
+  align-items: center;
+  height: 100vh;
+}
+.loginBox {
+  transition: 0.2s;
+  height: 65%;
+  width: 65%;
+  margin: 0 auto;
+  border-radius: 25px;
+  background: var(--secondary);
+}
+.loginBox#success {
+  transition: 0.6s;
+  background: var(--login-success);
+}
+.loginBox#failure {
+  transition: 0.6s;
+  background: var(--login-fail);
+}
+.loginBox:hover {
+  transition: 0.4s;
+  height: 66%;
+  width: 66%;
+}
+.headerSpace {
+  margin: 0.5%;
+  text-align: center;
+}
+.inputSpace {
+  display: flex;
+  padding: 1% 5%;
+}
+.inputSpace form {
+  font-style: italic;
+  color: var(--light);
+}
+.nameSpace {
+  margin: 4% 0;
+}
+.passwordSpace {
+  margin: 3% 0;
+}
+.loginBox input {
+  transition: 0.3s;
+  background: var(--light);
+  border: 2px solid #222;
+  border-radius: 10px;
+  font-size: 200%;
+  padding: 0 1%;
+  outline: none !important;
+}
+.loginBox input:focus {
+  border: 2px solid var(--blue);
+}
+.loginBox input[type='submit']:hover {
+  transform: scale(1.1);
 }
 
 /* Custom scrollbar */

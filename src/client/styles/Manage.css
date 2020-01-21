@@ -27,12 +27,6 @@
   background: limegreen;
 }
 
-.addConfContainer .submitContainer button#saving {
-  border: 0px solid limegreen;
-  background: gray;
-  animation: savingOutline 0.5s linear infinite alternate;
-}
-
 .savingError {
   margin: 3% 20% 0;
   padding: 1%;

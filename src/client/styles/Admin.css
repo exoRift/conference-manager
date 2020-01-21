@@ -40,4 +40,10 @@
 }
 .addUserContainer .submitContainer button {
   width: 8%;
+  height: 1.9em;
+  background: limegreen;
+}
+
+.addUserContainer .errorContainer {
+  margin: 5% auto;
 }

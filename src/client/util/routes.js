@@ -7,6 +7,7 @@ import Account from '../Account.jsx'
 import Logout from '../Logout.jsx'
 import Admin from '../Admin.jsx'
 import Manage from '../Manage.jsx'
+import Register from '../Register.jsx'
 
 const routes = [
   {
@@ -54,6 +55,12 @@ const routes = [
     path: '/manage',
     name: 'Manage Conferences',
     component: Manage
+  },
+  {
+    path: '/register/:id',
+    name: 'Complete Registration',
+    component: Register,
+    hidden: true
   }
 ]
 

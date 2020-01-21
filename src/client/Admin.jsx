@@ -23,7 +23,7 @@ class Admin extends React.Component {
       verified: false,
       page: 'users',
       addingUser: null,
-      savinng: false,
+      saving: false,
       error: null
     }
 
@@ -176,8 +176,14 @@ class Admin extends React.Component {
               </div>
 
               <div className='submitContainer'>
-                <button onClick={this.state.adding ? null : this.onAdd} id={this.state.adding ? 'saving' : 'ready'}>Add</button>
+                <button onClick={this.state.saving ? null : this.onAdd} id={this.state.saving ? 'saving' : 'ready'}>Add</button>
               </div>
+
+              {this.state.error ? (
+                <div className='errorContainer'>
+                  <h3 className='error'>{this.state.error}</h3>
+                </div>
+              ) : null}
             </div>
           ) : null}
         </div>

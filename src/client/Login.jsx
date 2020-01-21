@@ -3,8 +3,6 @@ import {
   Redirect
 } from 'react-router-dom'
 
-import './styles/Login.css'
-
 const {
   REACT_APP_API_URL
 } = process.env
@@ -14,8 +12,10 @@ class Login extends React.Component {
     super(props)
 
     this.state = {
-      name: '',
-      pass: '',
+      data: {
+        name: '',
+        pass: ''
+      },
       authState: 'waiting',
       error: null
     }
@@ -26,7 +26,10 @@ class Login extends React.Component {
 
   handleChange (event) {
     this.setState({
-      [event.target.name]: event.target.value
+      data: {
+        ...this.state.data,
+        [event.target.name]: event.target.value
+      }
     })
   }
 
@@ -46,13 +49,10 @@ class Login extends React.Component {
     fetch(REACT_APP_API_URL + '/login', {
       method: 'POST',
       headers: {
-        Accept: 'text/plain',
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        Accept: 'text/plain'
       },
-      body: JSON.stringify({
-        name: this.state.name,
-        pass: this.state.pass
-      })
+      body: JSON.stringify(this.state.data)
     }).then((data) => {
       if (data.ok) {
         data.text().then((token) => {
@@ -122,6 +122,7 @@ class Login extends React.Component {
                   <input name='pass' type='password' onChange={this.handleChange}/>
                 </label>
               </div>
+
               <input type='submit' value='Login'/>
             </form>
 

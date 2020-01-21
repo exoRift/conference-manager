@@ -1,5 +1,5 @@
 const {
   requireDirToObject
-} = require('../util')
+} = require('../util/')
 
 module.exports = requireDirToObject(__dirname)

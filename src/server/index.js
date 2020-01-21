@@ -28,8 +28,8 @@ const {
   roomCount,
   login,
   user,
-  inviteUser,
   createUser,
+  registerUser,
   updateUser,
   updateConf,
   deleteConf,
@@ -48,6 +48,10 @@ const {
 } = process.env
 
 const types = {
+  login: {
+    name: 'string',
+    pass: 'string'
+  },
   updateUser: {
     name: 'opt:string',
     email: 'opt:string',
@@ -66,7 +70,7 @@ const types = {
     title: 'string',
     room: 'number',
     desc: 'string',
-    attendees: 'array',
+    attendees: 'opt:array',
     starttime: 'date',
     endtime: 'date'
   },
@@ -114,11 +118,12 @@ app.get('/conference/:id', getConf, conference)
 app.get('/conferencesOf/:id', conferencesOf)
 app.get('/room/:room', room)
 app.get('/roomCount', roomCount)
+app.get('/user/:id/name', parseIdParam, getUser, user)
 app.get('/user/:id/:prop', parseIdParam, authCheck, getUser, user)
 
-app.post('/login', login)
-app.post('/user/create', authCheck, typeDef(types.createUser), inviteUser)
-app.post('/user/register/:id', parseIdParam, typeDef(types.registerUser), salter, createUser)
+app.post('/login', typeDef(types.login), login)
+app.post('/user/create', authCheck, typeDef(types.createUser), createUser)
+app.post('/user/register/:id', parseIdParam, typeDef(types.registerUser), salter, registerUser)
 app.post('/user/:id/update', parseIdParam, authCheck, getUser, salter, typeDef(types.updateUser), updateUser)
 app.post('/conference/:id/update', authCheck, getConf, typeDef(types.updateConf), updateConf)
 app.post('/conference/delete/:id', authCheck, getConf, deleteConf)

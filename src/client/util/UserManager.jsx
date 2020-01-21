@@ -77,25 +77,30 @@ class UserManager extends React.Component {
     })
   }
 
-  async create (data) {
-    return fetch(REACT_APP_API_URL + '/user/invite', {
+  async create (user) {
+    return fetch(REACT_APP_API_URL + '/user/create', {
       method: 'POST',
       headers: {
         Authorization: localStorage.getItem('auth'),
         'Content-Type': 'application/json',
-        Accept: 'application/json'
+        Accept: 'text/plain'
       },
-      body: JSON.stringify(data)
+      body: JSON.stringify(user)
     })
       .then((data) => {
-        return data.json().then((content) => {
+        return data.text().then((content) => {
           if (data.ok) {
-            return this.componentDidMount().then(() => content)
+            return this.componentDidMount().then(() => {
+              return {
+                id: content,
+                ...user
+              }
+            })
           } else {
-            const error = Error(content)
-            content.code = data.status
+            const err = Error(content)
+            err.code = data.status
 
-            throw error
+            throw err
           }
         })
       })

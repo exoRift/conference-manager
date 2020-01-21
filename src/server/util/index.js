@@ -34,83 +34,67 @@ function requireDirToObject (path) {
   return content
 }
 
-async function updateUser (db, salt, user, data) {
-  for (const param in data) {
-    if ((typeof data[param] === 'string' && !data[param].length) || data[param] === undefined) delete data[param]
-  }
-
-  if (data.email) data.email = data.email.toLowerCase()
-
-  if (data.email.match(emailRegex)) {
-    if (Object.keys(data).length) {
-      return db('users')
-        .select()
-        .where({
-          id: user
-        })
-        .limit(1)
-        .then(([row]) => {
-          if (row) {
-            if (data.pass) {
-              try {
-                data.pass = bcrypt.hashSync(data.pass, salt)
-              } catch (err) {
-                const error = Error('password hash')
-                error.code = 503
-
-                throw error
-              }
-            }
-
-            let token
+function updateUser (db, salt, user, data) {
+  return verifyValidUser(db, data, user)
+    .then((data) => db('users')
+      .select('id')
+      .where({
+        id: user
+      })
+      .limit(1)
+      .catch(() => {
+        throw dbError
+      })
+      .then((existing) => {
+        if (existing) {
+          if (data.pass) {
             try {
-              token = jwt.sign({
-                id: user,
-                name: data.name || row.name,
-                email: data.email || row.email,
-                admin: data.admin || row.admin
-              }, TOKEN_SECRET)
-            } catch (err) {
-              const error = Error('token encryption')
-              error.code = 503
+              data.pass = bcrypt.hashSync(data.pass, salt)
+            } catch {
+              const err = Error('password hash')
+              err.code = 503
 
-              throw error
+              throw err
             }
+          }
 
-            return db('users')
-              .update({
-                ...data,
-                token
-              })
-              .where({
-                id: user
-              })
-              .then(() => token)
-          } else {
-            const err = Error('invalid user')
-            err.code = 400
+          let token
+          try {
+            token = jwt.sign({
+              id: user,
+              name: data.name || existing.name,
+              email: data.email || existing.email,
+              admin: data.admin || existing.admin
+            }, TOKEN_SECRET)
+          } catch {
+            const err = Error('token encryption')
+            err.code = 503
 
             throw err
           }
-        })
-        .catch(() => {
-          throw dbError
-        })
-    } else {
-      const err = Error('empty object')
-      err.code = 400
 
-      throw err
-    }
-  } else {
-    const err = Error('invalid email provided')
-    err.code = 400
+          return db('users')
+            .update({
+              ...data,
+              token
+            })
+            .where({
+              id: user
+            })
+            .catch(() => {
+              throw dbError
+            })
+            .then(() => token)
+        } else {
+          const err = Error('invalid user')
+          err.code = 400
 
-    throw err
-  }
+          throw err
+        }
+      }))
 }
 
-async function updateConf (db, user, conference, data) {
+function updateConf (db, user, conference, data) {
   return verifyValidConf(db, data)
     .then((data) => {
       if (Object.keys(data).length) {
@@ -156,11 +140,12 @@ async function updateConf (db, user, conference, data) {
     })
 }
 
-async function createConf (db, user, data) {
+function createConf (db, user, data) {
   return verifyValidConf(db, data)
     .then((data) => {
       if (Object.keys(data).length) {
         const confData = {
+          attendees: [],
           ...data,
           id: String(Date.now()),
           creator: user.id
@@ -243,12 +228,12 @@ async function verifyValidConf (db, data) {
   }
 
   const start = new Date(data.starttime).getTime()
-  const startString = new Date(data.starttime).toLocaleDateString('en-US', {
+  const startString = new Date(data.starttime).toLocaleString('en-US', {
     dateStyle: 'short',
     timeStyle: 'short'
   })
   const end = new Date(data.endtime).getTime()
-  const endString = new Date(data.endtime).toLocaleDateString('en-US', {
+  const endString = new Date(data.endtime).toLocaleString('en-US', {
     dateStyle: 'short',
     timeStyle: 'short'
   })
@@ -274,17 +259,25 @@ async function verifyValidConf (db, data) {
     throw err
   }
 
+  if (end - start < 900000) {
+    const err = Error('conference must be at least 15 minutes')
+    err.code = 400
+
+    throw err
+  }
+
   return db('confs')
-    .select('title')
+    .select('title', 'starttime', 'endtime')
     .where(
       db.raw(`(room = ${data.room}) AND (('${startString}'::date > starttime AND '${startString}'::date < endtime) OR ('${endString}'::date > starttime AND '${endString}'::date < endtime))`)
     )
+    .limit(1)
     .catch(() => {
       throw dbError
     })
-    .then((res) => {
-      if (res.rows.length) {
-        const err = Error('conference overlaps existing conference: ' + res.rows[0].title)
+    .then(([overlap]) => {
+      if (overlap) {
+        const err = Error(`conference overlaps existing conference: ${overlap.title} which is in session from ${startString} to ${endString}`)
         err.code = 400
 
         throw err
@@ -292,57 +285,31 @@ async function verifyValidConf (db, data) {
     })
 }
 
-async function inviteUser (db, mailer, inviter, { name, email }) {
-  email = email.toLowerCase()
+function createUser (db, mailer, inviter, { name, email }) {
+  return verifyValidUser(db, { name, email })
+    .then(({ name, email }) => {
+      const id = String(Date.now())
 
-  if (email.match(emailRegex)) {
-    const id = String(Date.now())
-
-    return db('users')
-      .select('id')
-      .where(
-        db.raw('LOWER("name") = ?', name.toLowerCase())
-      )
-      .orWhere({
-        email
-      })
-      .catch(() => {
-        throw dbError
-      })
-      .then(([user]) => {
-        if (user) {
-          const err = Error('user with name or email already exists')
-          err.code = 400
-
-          throw err
-        }
-
-        return readFile('src/server/templates/email.ejs', { encoding: 'utf8' })
-          .then((temp) => emailUser(mailer, email, inviter, {
-            temp,
-            tempData: {
-              name,
-              inviter,
-              link: `${REACT_DOMAIN}/register/${id}?name=${name}`
-            }
+      return readFile('src/server/templates/email.ejs', { encoding: 'utf8' })
+        .then((temp) => emailUser(mailer, email, inviter, {
+          temp,
+          tempData: {
+            name,
+            inviter,
+            link: `${REACT_DOMAIN}/register/${id}?name=${name}&email=${email}`
+          }
+        }))
+        .then(() => db('users')
+          .insert({
+            id,
+            name,
+            email
+          })
+          .catch(() => {
+            throw dbError
           }))
-          .then(() => db('users')
-            .insert({
-              id,
-              name,
-              email
-            })
-            .catch(() => {
-              throw dbError
-            }))
-          .then(() => id)
-      })
-  } else {
-    const err = Error('invalid email provided')
-    err.code = 400
-
-    throw err
-  }
+        .then(() => id)
+    })
 }
 
 async function emailUser (mailer, email, inviter, { temp, tempData }) {
@@ -363,15 +330,57 @@ async function emailUser (mailer, email, inviter, { temp, tempData }) {
     subject: `You've been invited by ${inviter} to create an account for the 525 Chestnut office building`,
     html
   })
-    .then(() => {
-      throw Error('test')
-    })
     .catch(() => {
       const err = Error('mailing engine unavailable')
       err.code = 503
 
       throw err
     })
+}
+
+async function verifyValidUser (db, user, exclude) {
+  let {
+    name,
+    email
+  } = user
+  email = email.toLowerCase()
+
+  if (name && name.match(emailRegex)) {
+    const err = Error('name cannot be email format')
+    err.code = 400
+
+    throw err
+  }
+
+  if (email.match(emailRegex)) {
+    return db('users')
+      .select('id')
+      .where(
+        db.raw('id != ? AND (LOWER("name") = ? OR email = ?)', [exclude || '', name.toLowerCase(), email])
+      )
+      .limit(1)
+      .catch(() => {
+        throw dbError
+      })
+      .then(([res]) => {
+        if (res) {
+          const err = Error('user with name or email already exists')
+          err.code = 400
+
+          throw err
+        }
+
+        return {
+          ...user,
+          email
+        }
+      })
+  } else {
+    const err = Error('invalid email provided')
+    err.code = 400
+
+    throw err
+  }
 }
 
 module.exports = {
@@ -381,6 +390,8 @@ module.exports = {
   createConf,
   getUserProp,
   checkValidUsers,
-  inviteUser,
-  emailUser
+  verifyValidConf,
+  createUser,
+  emailUser,
+  verifyValidUser
 }

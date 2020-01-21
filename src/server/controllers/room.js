@@ -10,7 +10,7 @@ module.exports = function room (req, res) {
 
     const current = new Date()
 
-    return req.db('confs')
+    req.db('confs')
       .select()
       .where({
         room
