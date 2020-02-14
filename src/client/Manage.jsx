@@ -12,6 +12,10 @@ import plusIcon from '../assets/plus.png'
 import './styles/Manage.css'
 import moment from 'moment'
 
+const {
+  REACT_APP_API_URL
+} = process.env
+
 const momentDateFormat = 'MMM DD YYYY,'
 const momentTimeFormat = 'h:mm a'
 
@@ -22,7 +26,8 @@ class Manage extends React.Component {
     this.state = {
       adding: null,
       error: null,
-      saving: false
+      saving: false,
+      id: null
     }
 
     this.addConf = this.addConf.bind(this)
@@ -34,6 +39,23 @@ class Manage extends React.Component {
     this._refs = {
       confs: React.createRef()
     }
+  }
+
+  componentDidMount () {
+    fetch(REACT_APP_API_URL + '/user/current/id', {
+      headers: {
+        Authorization: localStorage.getItem('auth'),
+        Accept: 'text/plain'
+      }
+    }).then((data) => {
+      if (data.ok) {
+        data.text().then((id) => {
+          this.setState({
+            id
+          })
+        })
+      }
+    })
   }
 
   addConf () {
@@ -98,7 +120,9 @@ class Manage extends React.Component {
   render () {
     return localStorage.getItem('auth') ? (
       <div className='ownedConfContainer'>
-        <ConferenceManager ref={this._refs.confs}/>
+        {this.state.id ? (
+          <ConferenceManager user={this.state.id} ref={this._refs.confs}/>
+        ) : null}
 
         <div className='addContainer' onClick={this.addConf}>
           <div className='plus'>

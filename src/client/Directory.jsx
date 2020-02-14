@@ -61,7 +61,6 @@ class Directory extends React.Component {
   }
 
   render () {
-    if (this.state.confs.length) console.log(this.state.confs[0].creator)
     if (this.state.confs.length > 12) {
       this.setState({
         confs: this.state.confs.reduce((a, c, i, arr) => {

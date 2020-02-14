@@ -18,17 +18,21 @@ const {
 } = process.env
 
 const filenameRegex = /(.+?)\.js$/
+const pathRegex = /.+\\(.+?)$/
 const emailRegex = /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/ // eslint-disable-line
 
 const dbError = Error('database unavailable')
 dbError.code = 503
 
-function requireDirToObject (path) {
+function requireDirToObject (path, notRoot) {
   const content = {}
   const files = readdirSync(path)
 
-  for (let i = 0; i < files.length; i++) {
-    if (files[i] !== 'index.js') content[files[i].match(filenameRegex)[1]] = require(join(path, files[i]))
+  for (const file of files) {
+    if (file !== 'index.js' || notRoot) {
+      if (file.includes('.')) content[file === 'index.js' ? path.match(pathRegex)[1] : file.match(filenameRegex)[1]] = require(join(path, file))
+      else content[file] = requireDirToObject(join(path, file), true)
+    }
   }
 
   return content
@@ -45,7 +49,7 @@ function updateUser (db, salt, user, data) {
       .catch(() => {
         throw dbError
       })
-      .then((existing) => {
+      .then(([existing]) => {
         if (existing) {
           if (data.pass) {
             try {
@@ -285,17 +289,18 @@ async function verifyValidConf (db, data) {
     })
 }
 
-function createUser (db, mailer, inviter, { name, email }) {
+function createUser (db, mailer, executor, { name, email }) {
   return verifyValidUser(db, { name, email })
     .then(({ name, email }) => {
       const id = String(Date.now())
 
-      return readFile('src/server/templates/email.ejs', { encoding: 'utf8' })
-        .then((temp) => emailUser(mailer, email, inviter, {
+      return readFile('src/server/templates/invite.ejs', { encoding: 'utf8' })
+        .then((temp) => emailUser(mailer, email, {
+          subject: `You've been invited by ${executor} to create an account for the 525 Chestnut office building`,
           temp,
           tempData: {
             name,
-            inviter,
+            executor,
             link: `${REACT_DOMAIN}/register/${id}?name=${name}&email=${email}`
           }
         }))
@@ -312,12 +317,12 @@ function createUser (db, mailer, inviter, { name, email }) {
     })
 }
 
-async function emailUser (mailer, email, inviter, { temp, tempData }) {
+async function emailUser (mailer, email, { subject, temp, tempData }) {
   let html
 
   try {
     html = ejs.render(temp, tempData)
-  } catch {
+  } catch (e) {
     const err = Error('email template compilation')
     err.code = 503
 
@@ -327,7 +332,7 @@ async function emailUser (mailer, email, inviter, { temp, tempData }) {
   return mailer.sendMail({
     from: 'Study Logic',
     to: email,
-    subject: `You've been invited by ${inviter} to create an account for the 525 Chestnut office building`,
+    subject,
     html
   })
     .catch(() => {
@@ -383,6 +388,50 @@ async function verifyValidUser (db, user, exclude) {
   }
 }
 
+function deleteUser (db, mailer, id, executor) {
+  return db('users')
+    .select('name', 'email', 'token')
+    .where({
+      id
+    })
+    .limit(1)
+    .catch(() => {
+      throw dbError
+    })
+    .then(([user]) => {
+      if (user) {
+        return db('users')
+          .delete()
+          .where({
+            id
+          })
+          .catch(() => {
+            throw dbError
+          })
+          .then(() => readFile(`src/server/templates/${user.token ? 'deleted' : 'canceled'}.ejs`, { encoding: 'utf8' }))
+          .then((temp) => emailUser(mailer, user.email, {
+            subject: user.token ? 'Account deleted by ' + executor : 'Account registration expired',
+            temp,
+            tempData: {
+              executor
+            }
+          }))
+          .catch(() => {
+            const err = Error('user deleted but email failed to send')
+            err.code = 503
+
+            throw err
+          })
+          .then(() => user.token ? 'deleted' : 'canceled')
+      } else {
+        const err = Error('invalid user')
+        err.code = 400
+
+        throw err
+      }
+    })
+}
+
 module.exports = {
   requireDirToObject,
   updateUser,
@@ -393,5 +442,6 @@ module.exports = {
   verifyValidConf,
   createUser,
   emailUser,
-  verifyValidUser
+  verifyValidUser,
+  deleteUser
 }

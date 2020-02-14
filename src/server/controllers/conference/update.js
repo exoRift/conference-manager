@@ -1,13 +1,12 @@
 const {
-  createConf: create,
-  checkValidUsers
-} = require('../util/')
+  updateConf: update
+} = require('../../util/')
 
 const {
   ROOM_COUNT
 } = process.env
 
-module.exports = async function createConf (req, res) {
+module.exports = async function updateConf (req, res) {
   if (req.body.room !== undefined) {
     const parsed = parseInt(req.body.room)
 
@@ -16,9 +15,7 @@ module.exports = async function createConf (req, res) {
     req.body.room = parsed
   }
 
-  if (req.body.attendees) await checkValidUsers(req.db, req.body.attendees).catch((err) => res.send(err.code, err.message))
-
-  create(req.db, req.authUser, {
+  update(req.db, req.authUser, req.params.id, {
     title: req.body.title,
     room: req.body.room,
     desc: req.body.desc,
@@ -26,6 +23,6 @@ module.exports = async function createConf (req, res) {
     starttime: req.body.starttime,
     endtime: req.body.endtime
   })
-    .then((conf) => res.send(200, conf.id))
+    .then(() => res.send(200))
     .catch((err) => res.send(err.code, err.message))
 }

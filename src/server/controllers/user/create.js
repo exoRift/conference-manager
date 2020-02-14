@@ -1,6 +1,7 @@
 const {
-  createUser: create
-} = require('../util/')
+  createUser: create,
+  deleteUser
+} = require('../../util/')
 
 module.exports = function createUser (req, res) {
   if (req.authUser.admin) {
@@ -8,9 +9,7 @@ module.exports = function createUser (req, res) {
       .then((id) => {
         res.send(200, id)
 
-        setTimeout(() => {
-          // DELETE USER WHEN FRAMEWORK ESTABLISHED
-        }, 604800000 /* 7 days */)
+        setTimeout(() => deleteUser(req.db, req.mailer, id, req.authUser.name), 604800000)
       })
       .catch((err) => res.send(err.code, err.message))
   } else res.send(401)

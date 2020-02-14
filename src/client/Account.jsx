@@ -202,7 +202,8 @@ class Account extends React.Component {
           value={this.state.user[props.id]}
           placeholder={props.placeholder}
           disabled={!this.state.editing[props.id]}
-          onChange={this.onChange} id={props.id}
+          onChange={this.onChange}
+          id={props.id}
           type={props.id === 'pass' ? 'password' : props.id === 'email' ? 'email' : 'text'}
         />
 

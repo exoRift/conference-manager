@@ -11,12 +11,16 @@ module.exports = function getUser (req, res, next) {
   }
 
   query
+    .catch((e) => res.send(503, 'database unavailable'))
     .then((rows) => {
       if (rows.length) {
+        rows = rows.map((u) => u.token ? {
+          ...u,
+          registered: true
+        } : u)
         req.user = req.params.id === 'all' ? rows : rows[0]
 
         next()
       } else res.send(400, 'invalid id')
     })
-    .catch(() => res.send(503, 'database unavailable'))
 }

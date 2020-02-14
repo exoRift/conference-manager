@@ -1,12 +1,15 @@
 const jwt = require('jsonwebtoken')
 
-module.exports = function parseIdParam (req, res, next) {
+module.exports = function parseIDParam (req, res, next) {
   if (req.params.id) {
     if (req.params.id === 'current') {
-      try {
-        req.params.id = jwt.decode(req.headers.authorization).id
-      } catch {
-        return res.send(400, 'invalid token')
+      if (req.authUser) req.params.id = req.authUser.id
+      else {
+        try {
+          req.params.id = jwt.decode(req.headers.authorization).id
+        } catch {
+          return res.send(400, 'invalid token')
+        }
       }
     } else req.params.id = String(req.params.id)
 

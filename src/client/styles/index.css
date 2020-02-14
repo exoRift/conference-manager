@@ -163,6 +163,11 @@ button#saving {
   clip-path: polygon(100% 0, 100% 0, 100% 100%, 0 100%, 0 0, 0 0);
 }
 
+/* Management containers */
+.confs, .users .headers {
+  text-align: center;
+}
+
 /* Attendees Input */
 .attendeesInputContainer {
   transition: 1s;
@@ -253,13 +258,18 @@ button#saving {
 }
 
 .objectContainer {
-  display: flex;
   background: var(--secondary);
   border-radius: 5px;
   padding: 1%;
   margin-bottom: 1%;
 }
-.objectContainer > input {
+.objectContainer .data {
+  display: flex;
+}
+.objectContainer.unregistered {
+  background: var(--card-head-background);
+}
+.objectContainer .data > input {
   transition: 1s;
   flex-grow: 1;
   width: 100%;
@@ -270,30 +280,33 @@ button#saving {
   padding: 1%;
   margin-right: 1%;
 }
-.objectContainer > input {
+.objectContainer .data > input:disabled {
   background: gray;
 }
-.objectContainer > input#room {
+.objectContainer.unregistered .data > input {
+  background: var(--card-body-background) !important;
+}
+.objectContainer .data > input#room {
   width: 6%;
   flex-grow: 0;
 }
-.objectContainer > input[type='checkbox'] {
+.objectContainer .data > input[type='checkbox'] {
   flex-grow: 0.1;
   width: 6.3%;
   margin: auto 1% auto 0;
   height: 2em;
 }
-.objectContainer > input[type='checkbox']#admin:enabled:checked {
+.objectContainer .data > input[type='checkbox']#admin:enabled:checked {
   box-shadow: 0 0 0 2px red;
 }
-.objectContainer button {
+.objectContainer .data button {
   margin: 0.5% 0 0.5% 0;
   outline: none !important;
   font-size: 180%;
   border-radius: 5px;
 }
 
-.objectContainer .trashContainer {
+.objectContainer .data .trashContainer {
   transition: 1s;
   margin: auto 1% auto 0;
   padding: 0.5%;
@@ -303,15 +316,33 @@ button#saving {
   border-radius: 15px;
   cursor: pointer;
 }
-.objectContainer .trashContainer#enabled {
+.objectContainer .data .trashContainer#enabled {
   opacity: 1;
 }
-.objectContainer .trashContainer .imgContainer {
+.objectContainer .data .trashContainer .imgContainer {
   width: 100%;
   margin: 0 auto 0 auto;
 }
-.objectContainer .trashContainer .imgContainer img {
+.objectContainer .data .trashContainer .imgContainer img {
   width: 100%;
+}
+.objectContainer .creatorContainer {
+  display: flex;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+  margin-top: 0.5%;
+  padding: 0 0.5%;
+  width: fit-content;
+  white-space: nowrap;
+}
+.objectContainer .creatorContainer h5 {
+  margin-bottom: 0.1%;
+}
+.objectContainer .creatorContainer .creator {
+  margin-left: 10px;
+}
+.userContainer .objectContainer .data .trashContainer {
+  width: 11%;
 }
 
 .submitContainer {

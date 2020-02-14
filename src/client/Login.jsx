@@ -13,7 +13,7 @@ class Login extends React.Component {
 
     this.state = {
       data: {
-        name: '',
+        iden: '',
         pass: ''
       },
       authState: 'waiting',
@@ -35,7 +35,7 @@ class Login extends React.Component {
 
   formatStatusMessage (msg) {
     switch (msg) {
-      case 'invalid user': return 'Could not find a user with the name: ' + this.state.name
+      case 'invalid user': return 'Could not find a user with the name: ' + this.state.iden
       case 'invalid pass': return 'Invalid password provided'
       default: return msg
     }
@@ -46,7 +46,7 @@ class Login extends React.Component {
 
     if (this.state.authState === 'success') return
 
-    fetch(REACT_APP_API_URL + '/login', {
+    fetch(REACT_APP_API_URL + '/user/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -109,10 +109,10 @@ class Login extends React.Component {
 
           <div className='inputSpace'>
             <form onSubmit={this.sendLogin}>
-              <div className='nameSpace'>
+              <div className='idenSpace'>
                 <label>
                   <h2>Name or email:</h2>
-                  <input name='name' type='text' onChange={this.handleChange}/>
+                  <input name='iden' type='text' onChange={this.handleChange}/>
                 </label>
               </div>
 

@@ -103,6 +103,7 @@ class AttendeesInput extends React.Component {
         onFocus={this.onFocus}
         onBlur={this.onBlur}
         disabled={this.props.disabled}
+        placeholder={this.state.attendees.length ? null : 'Separated by commas'}
       />
     )
 
@@ -123,7 +124,7 @@ class AttendeesInput extends React.Component {
 }
 
 AttendeesInput.propTypes = {
-  attendees: () => null,
+  attendees: () => [],
   users: () => null,
   disabled: () => null,
   onChange: () => null

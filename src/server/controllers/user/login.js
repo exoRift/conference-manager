@@ -3,8 +3,8 @@ const bcrypt = require('bcryptjs')
 module.exports = function login (req, res) {
   req.db('users')
     .select('pass', 'token')
-    .where(req.db.raw('LOWER("name") = ?', req.body.name.toLowerCase()))
-    .orWhere(req.db.raw('LOWER("email") = ?', req.body.name.toLowerCase()))
+    .where(req.db.raw('LOWER("name") = ?', req.body.iden.toLowerCase()))
+    .orWhere(req.db.raw('LOWER("email") = ?', req.body.iden.toLowerCase()))
     .limit(1)
     .then(([row]) => {
       if (row) {

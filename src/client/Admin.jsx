@@ -101,6 +101,7 @@ class Admin extends React.Component {
       })
       .catch((err) => {
         this.setState({
+          saving: false,
           error: err.message
         })
       })

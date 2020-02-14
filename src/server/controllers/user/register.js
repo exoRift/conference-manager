@@ -1,6 +1,6 @@
 const {
   updateUser
-} = require('../util/')
+} = require('../../util/')
 
 module.exports = function registerUser (req, res) {
   req.db('users')

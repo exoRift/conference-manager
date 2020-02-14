@@ -1,5 +1,9 @@
 import React from 'react'
 
+import Popup from './Popup.jsx'
+
+import trashIcon from '../../assets/trash.svg'
+
 const {
   REACT_APP_API_URL
 } = process.env
@@ -9,20 +13,38 @@ class UserManager extends React.Component {
     super(props)
 
     this.state = {
+      current: null,
       users: [],
       final: [],
       editing: [],
       saved: false,
-      error: null
+      error: null,
+      readyDelete: null
     }
 
     this.onChange = this.onChange.bind(this)
     this.onToggle = this.onToggle.bind(this)
     this.onSubmit = this.onSubmit.bind(this)
     this.create = this.create.bind(this)
+    this.readyDelete = this.readyDelete.bind(this)
+    this.unreadyDelete = this.unreadyDelete.bind(this)
+    this.onDelete = this.onDelete.bind(this)
   }
 
   componentDidMount () {
+    fetch(REACT_APP_API_URL + '/user/current/id', {
+      headers: {
+        Authorization: localStorage.getItem('auth'),
+        Accept: 'text/plain'
+      }
+    }).then((data) => {
+      if (data.ok) {
+        data.text().then((current) => this.setState({
+          current
+        }))
+      }
+    })
+
     return fetch(REACT_APP_API_URL + '/user/all/defining', {
       headers: {
         Authorization: localStorage.getItem('auth'),
@@ -30,7 +52,7 @@ class UserManager extends React.Component {
       }
     }).then((data) => {
       if (data.ok) {
-        data.json().then((users) => this.setState({
+        return data.json().then((users) => this.setState({
           users
         }))
       }
@@ -77,6 +99,57 @@ class UserManager extends React.Component {
     })
   }
 
+  readyDelete (user) {
+    return () => {
+      if (user.id === this.state.current) {
+        this.setState({
+          error: 'Cannot delete yourself'
+        })
+
+        setTimeout(() => this.setState({
+          error: null
+        }), 2000)
+      } else {
+        this.setState({
+          readyDelete: {
+            id: user.id,
+            user: user.name
+          }
+        })
+      }
+    }
+  }
+
+  unreadyDelete () {
+    this.setState({
+      readyDelete: undefined
+    })
+  }
+
+  onDelete (user) {
+    return () => {
+      fetch(REACT_APP_API_URL + `/user/${user}/delete`, {
+        method: 'POST',
+        headers: {
+          Authorization: localStorage.getItem('auth')
+        }
+      }).then((data) => {
+        if (data.ok) {
+          const changes = [
+            ...this.state.users
+          ]
+
+          changes.splice(changes.findIndex((c) => c.id === user), 1)
+
+          this.setState({
+            users: changes,
+            readyDelete: undefined
+          })
+        }
+      })
+    }
+  }
+
   async create (user) {
     return fetch(REACT_APP_API_URL + '/user/create', {
       method: 'POST',
@@ -113,7 +186,6 @@ class UserManager extends React.Component {
       for (const param in user) {
         if (param !== 'pass' && typeof user[param] === 'string' && !user[param].length) {
           return this.setState({
-            saved: true,
             error: 'Parameter cannot be empty: ' + param.substring(0, 1).toUpperCase() + param.substring(1)
           })
         }
@@ -141,7 +213,8 @@ class UserManager extends React.Component {
       for (const data of responses) {
         if (!data.ok) {
           data.text().then((error) => this.setState({
-            error
+            error,
+            saved: false
           }))
 
           break
@@ -149,49 +222,66 @@ class UserManager extends React.Component {
       }
 
       setTimeout(() => this.setState({
-        saved: false
+        saved: false,
+        error: null
       }), 2000)
     })
   }
 
   render () {
     return (
-      <div className='users'>
-        <div className='headers'>
-          <h3>Name</h3>
-          <h3>Email</h3>
-          <h3>Password</h3>
-        </div>
+      <>
+        {
+          this.state.readyDelete ? (
+            <Popup message={`Are you sure you want to delete ${this.state.readyDelete.user}?`} noChoice={this.unreadyDelete} yesChoice={this.onDelete(this.state.readyDelete.id)}/>
+          ) : null
+        }
+        <div className='users'>
+          <div className='headers'>
+            <h3>Name</h3>
+            <h3>Email</h3>
+            <h3>Password</h3>
+          </div>
 
-        <div className='userContainer'>
-          {this.state.users.map((u) => {
-            const onChange = this.onChange(u.id)
+          <div className='userContainer'>
+            {this.state.users.map((u) => {
+              const onChange = this.onChange(u.id)
+              const disabled = !this.state.editing.includes(u.id) || !u.registered
 
-            return (
-              <div className='objectContainer' key={u.id}>
-                <input value={u.name} onChange={onChange} id='name' disabled={!this.state.editing.includes(u.id)}/>
-                <input type='email' value={u.email} onChange={onChange} id='email' disabled={!this.state.editing.includes(u.id)}/>
-                <input placeholder='SET A NEW PASSWORD' value={u.pass || ''} onChange={onChange} id='pass' disabled={!this.state.editing.includes(u.id)}/>
-                <input type='checkbox' checked={JSON.parse(u.admin)} onChange={onChange} id='admin' disabled={!this.state.editing.includes(u.id)} data-toggle='tooltip' title='Give user admin status'/>
+              return (
+                <div className={'objectContainer' + (u.registered ? '' : ' unregistered')} data-toggle={u.registered ? 'tooltip' : null} title='Unregistered user' key={u.id}>
+                  <div className='data'>
+                    <input value={u.name} onChange={onChange} id='name' disabled={disabled}/>
+                    <input type='email' value={u.email} onChange={onChange} id='email' disabled={disabled}/>
+                    <input placeholder='SET A NEW PASSWORD' value={u.pass || ''} onChange={onChange} id='pass' disabled={disabled}/>
+                    <input type='checkbox' checked={JSON.parse(u.admin)} onChange={onChange} id='admin' disabled={disabled} data-toggle='tooltip' title='Give user admin status'/>
+                    <div className='trashContainer' id={!this.state.editing.includes(u.id) ? 'disabled' : 'enabled'} onClick={!this.state.editing.includes(u.id) ? null : this.readyDelete(u)}>
+                      <div className='imgContainer'>
+                        <img src={trashIcon} alt='delete'/>
+                      </div>
+                    </div>
 
-                <button type='button' onClick={this.onToggle} id={u.id}>{this.state.editing.includes(u.id) ? '\u2714' : '\u270E'}</button>
-              </div>
+                    <button type='button' onClick={this.onToggle} id={u.id}>{this.state.editing.includes(u.id) ? '\u2714' : '\u270E'}</button>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+
+          {this.state.saved
+            ? (
+              <h4 className='adminSavedNotif'>Changes saved!</h4>
             )
-          })}
-        </div>
-
-        {this.state.saved
-          ? this.state.error
+            : null}
+          {this.state.error
             ? (
               <div className='adminErrorContainer'>
                 <h6 className='error'>{this.state.error}</h6>
               </div>
             )
-            : (
-              <h4 className='adminSavedNotif'>Changes saved!</h4>
-            )
-          : null}
-      </div>
+            : null}
+        </div>
+      </>
     )
   }
 }

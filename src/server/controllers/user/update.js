@@ -1,6 +1,6 @@
 const {
   updateUser: update
-} = require('../util/')
+} = require('../../util/')
 
 module.exports = function updateUser (req, res) {
   if (req.body.admin && !req.authUser.admin) return res.send(400, 'cannot promote user')

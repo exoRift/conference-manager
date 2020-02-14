@@ -41,16 +41,16 @@ class ConferenceManager extends React.Component {
     return fetch(REACT_APP_API_URL + '/conference/all').then((data) => {
       if (data.ok) {
         data.json().then((confs) => {
-          fetch(REACT_APP_API_URL + '/user/all/defining', {
+          if (this.props.user) confs = confs.filter((c) => c.creator === this.props.user)
+
+          return fetch(REACT_APP_API_URL + '/user/all/defining', {
             headers: {
               Authorization: localStorage.getItem('auth')
             }
           }).then((data) => {
             if (data.ok) {
-              data.json().then((users) => {
+              return data.json().then((users) => {
                 for (const conf of confs) {
-                  conf.attendees = conf.attendees.map((a) => users.find((u) => u.id === a).name)
-
                   conf.starttime = new Date(conf.starttime)
                   conf.endtime = new Date(conf.endtime)
                 }
@@ -71,27 +71,7 @@ class ConferenceManager extends React.Component {
     if (!conf.attendees) conf.attendees = []
 
     for (const param in conf) {
-      if (typeof conf[param] === 'string' && !conf[param].length) {
-        throw Error('Parameter cannot be empty: ' + param.substring(0, 1).toUpperCase() + param.substring(1))
-      }
-
-      if (param === 'attendees') {
-        const newAttendees = []
-
-        for (const attendee of conf.attendees) {
-          const user = this.state.users.find((u) => u.name.toLowerCase() === attendee.toLowerCase())
-
-          if (user) newAttendees.push(user.id)
-          else {
-            throw Error('Invalid user: ' + attendee)
-          }
-        }
-
-        return {
-          ...conf,
-          attendees: newAttendees
-        }
-      }
+      if (typeof conf[param] === 'string' && !conf[param].length) throw Error('Parameter cannot be empty: ' + param.substring(0, 1).toUpperCase() + param.substring(1))
     }
 
     return conf
@@ -208,7 +188,6 @@ class ConferenceManager extends React.Component {
         })
         .catch((err) => {
           this.setState({
-            saved: true,
             error: err.message
           })
         })
@@ -223,7 +202,8 @@ class ConferenceManager extends React.Component {
       for (const data of responses) {
         if (!data.ok) {
           data.text().then((error) => this.setState({
-            error
+            error,
+            saved: false
           }))
 
           break
@@ -231,6 +211,7 @@ class ConferenceManager extends React.Component {
       }
 
       setTimeout(() => this.setState({
+        error: null,
         saved: false
       }), 2000)
     })
@@ -284,54 +265,67 @@ class ConferenceManager extends React.Component {
 
               return (
                 <div className='objectContainer' key={c.id}>
-                  <input value={c.title} onChange={onChange} id='title' disabled={disabled}/>
-                  <input value={c.room} onChange={onChange} id='room' disabled={disabled}/>
-                  <input value={c.desc} onChange={onChange} id='desc' disabled={disabled}/>
-                  {attendeesBox}
-                  <DatePicker
-                    value={c.starttime}
-                    local='en-US'
-                    dateFormat={momentDateFormat}
-                    timeFormat={momentTimeFormat}
-                    className={disabled ? 'disabled' : 'enabled'}
-                    onChange={this.onChange(c.id, 'starttime')}
-                  />
-                  <DatePicker
-                    value={c.endtime}
-                    local='en-US'
-                    dateFormat={momentDateFormat}
-                    timeFormat={momentTimeFormat}
-                    className={disabled ? 'disabled' : 'enabled'}
-                    onChange={this.onChange(c.id, 'endtime')}
-                  />
+                  <div className='data'>
+                    <input value={c.title} onChange={onChange} id='title' disabled={disabled}/>
+                    <input value={c.room} onChange={onChange} id='room' disabled={disabled}/>
+                    <input value={c.desc} onChange={onChange} id='desc' disabled={disabled}/>
+                    {attendeesBox}
+                    <DatePicker
+                      value={c.starttime}
+                      local='en-US'
+                      dateFormat={momentDateFormat}
+                      timeFormat={momentTimeFormat}
+                      className={disabled ? 'disabled' : 'enabled'}
+                      onChange={this.onChange(c.id, 'starttime')}
+                    />
+                    <DatePicker
+                      value={c.endtime}
+                      local='en-US'
+                      dateFormat={momentDateFormat}
+                      timeFormat={momentTimeFormat}
+                      className={disabled ? 'disabled' : 'enabled'}
+                      onChange={this.onChange(c.id, 'endtime')}
+                    />
 
-                  <div className='trashContainer' id={disabled ? 'disabled' : 'enabled'} onClick={disabled ? null : this.readyDelete(c)}>
-                    <div className='imgContainer'>
-                      <img src={trashIcon} alt='delete'/>
+                    <div className='trashContainer' id={disabled ? 'disabled' : 'enabled'} onClick={disabled ? null : this.readyDelete(c)}>
+                      <div className='imgContainer'>
+                        <img src={trashIcon} alt='delete'/>
+                      </div>
                     </div>
+
+                    <button type='button' onClick={this.onToggle} id={c.id}>{this.state.editing.includes(c.id) ? '\u2714' : '\u270E'}</button>
                   </div>
 
-                  <button type='button' onClick={this.onToggle} id={c.id}>{this.state.editing.includes(c.id) ? '\u2714' : '\u270E'}</button>
+                  {this.props.user ? null : (
+                    <div className='creatorContainer'>
+                      <h5>Creator:</h5>
+                      <h5 className='creator'>{this.state.users.find((u) => u.id === c.creator).name}</h5>
+                    </div>
+                  )}
                 </div>
               )
             })}
           </div>
 
           {this.state.saved
-            ? this.state.error
-              ? (
-                <div className='adminErrorContainer'>
-                  <h6 className='error'>{this.state.error}</h6>
-                </div>
-              )
-              : (
-                <h4 className='adminSavedNotif'>Changes saved!</h4>
-              )
-            : null}
+            ? (
+              <h4 className='adminSavedNotif'>Changes saved!</h4>
+            ) : null}
+
+          {this.state.error
+            ? (
+              <div className='adminErrorContainer'>
+                <h6 className='error'>{this.state.error}</h6>
+              </div>
+            ) : null}
         </div>
       </>
     )
   }
+}
+
+ConferenceManager.propTypes = {
+  user: () => null
 }
 
 export default ConferenceManager

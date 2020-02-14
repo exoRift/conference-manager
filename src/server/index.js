@@ -14,7 +14,7 @@ const {
   authCheck,
   getUser,
   saltGen,
-  parseIdParam,
+  parseIDParam,
   typeDef,
   getConf
 } = require('./modules/')
@@ -23,17 +23,8 @@ const tables = require('./config/tables.js')
 
 const {
   conference,
-  conferencesOf,
   room,
-  roomCount,
-  login,
-  user,
-  createUser,
-  registerUser,
-  updateUser,
-  updateConf,
-  deleteConf,
-  createConf
+  user
 } = require('./controllers/')
 
 const {
@@ -49,7 +40,7 @@ const {
 
 const types = {
   login: {
-    name: 'string',
+    iden: 'string',
     pass: 'string'
   },
   updateUser: {
@@ -114,20 +105,21 @@ app
 const salter = saltGen(parseInt(SALT_ROUNDS))
 
 // Routes
-app.get('/conference/:id', getConf, conference)
-app.get('/conferencesOf/:id', conferencesOf)
-app.get('/room/:room', room)
-app.get('/roomCount', roomCount)
-app.get('/user/:id/name', parseIdParam, getUser, user)
-app.get('/user/:id/:prop', parseIdParam, authCheck, getUser, user)
+app.get('/conference/:id', getConf, conference.conference)
+app.get('/conference/list/:id', conference.list)
+app.get('/room/count', room.count)
+app.get('/room/:room', room.room)
+app.get('/user/:id/name', parseIDParam, getUser, user.user)
+app.get('/user/:id/:prop', authCheck, parseIDParam, getUser, user.user)
 
-app.post('/login', typeDef(types.login), login)
-app.post('/user/create', authCheck, typeDef(types.createUser), createUser)
-app.post('/user/register/:id', parseIdParam, typeDef(types.registerUser), salter, registerUser)
-app.post('/user/:id/update', parseIdParam, authCheck, getUser, salter, typeDef(types.updateUser), updateUser)
-app.post('/conference/:id/update', authCheck, getConf, typeDef(types.updateConf), updateConf)
-app.post('/conference/delete/:id', authCheck, getConf, deleteConf)
-app.post('/conference/create', authCheck, typeDef(types.createConf), createConf)
+app.post('/conference/create', authCheck, typeDef(types.createConf), conference.create)
+app.post('/conference/delete/:id', authCheck, getConf, conference.delete)
+app.post('/conference/:id/update', authCheck, getConf, typeDef(types.updateConf), conference.update)
+app.post('/user/create', authCheck, typeDef(types.createUser), user.create)
+app.post('/user/:id/delete', authCheck, parseIDParam, getUser, user.delete)
+app.post('/user/login', typeDef(types.login), user.login)
+app.post('/user/register/:id', parseIDParam, typeDef(types.registerUser), salter, user.register)
+app.post('/user/:id/update', authCheck, parseIDParam, getUser, salter, typeDef(types.updateUser), user.update)
 
 const {
   server
