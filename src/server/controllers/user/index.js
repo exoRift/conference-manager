@@ -16,7 +16,7 @@ module.exports = function user (req, res) {
     })
     .then((has) => {
       if (has || req.params.prop === 'registered' || req.params.prop === 'defining' || !req.params.prop) {
-        if (req.authUser) res.send(200, Array.isArray(req.user) ? req.user.map(getUserProp(req.params.prop)) : getUserProp(req.params.prop)(req.user))
+        if (req.auth) res.send(200, Array.isArray(req.user) ? req.user.map(getUserProp(req.params.prop)) : getUserProp(req.params.prop)(req.user))
         else if (!req.params.prop || publicProps.includes(req.params.prop)) res.send(200, Array.isArray(req.user) ? req.user.map(getUserProp(req.params.prop || 'name')) : getUserProp(req.params.prop || 'name')(req.user))
       } else res.send(400, 'invalid prop')
     })

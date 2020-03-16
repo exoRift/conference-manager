@@ -124,7 +124,7 @@ class AttendeesInput extends React.Component {
 }
 
 AttendeesInput.propTypes = {
-  attendees: () => [],
+  attendees: () => null,
   users: () => null,
   disabled: () => null,
   onChange: () => null

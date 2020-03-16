@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken')
 module.exports = function parseIDParam (req, res, next) {
   if (req.params.id) {
     if (req.params.id === 'current') {
-      if (req.authUser) req.params.id = req.authUser.id
+      if (req.auth) req.params.id = req.auth.id
       else {
         try {
           req.params.id = jwt.decode(req.headers.authorization).id

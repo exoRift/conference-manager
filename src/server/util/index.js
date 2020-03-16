@@ -41,7 +41,7 @@ function requireDirToObject (path, notRoot) {
 function updateUser (db, salt, user, data) {
   return verifyValidUser(db, data, user)
     .then((data) => db('users')
-      .select('id')
+      .select('name', 'email', 'admin')
       .where({
         id: user
       })
@@ -68,7 +68,7 @@ function updateUser (db, salt, user, data) {
               id: user,
               name: data.name || existing.name,
               email: data.email || existing.email,
-              admin: data.admin || existing.admin
+              admin: data.admin === undefined ? existing.admin : data.admin
             }, TOKEN_SECRET)
           } catch {
             const err = Error('token encryption')
@@ -322,7 +322,7 @@ async function emailUser (mailer, email, { subject, temp, tempData }) {
 
   try {
     html = ejs.render(temp, tempData)
-  } catch (e) {
+  } catch {
     const err = Error('email template compilation')
     err.code = 503
 
@@ -348,7 +348,6 @@ async function verifyValidUser (db, user, exclude) {
     name,
     email
   } = user
-  email = email.toLowerCase()
 
   if (name && name.match(emailRegex)) {
     const err = Error('name cannot be email format')
@@ -357,35 +356,41 @@ async function verifyValidUser (db, user, exclude) {
     throw err
   }
 
-  if (email.match(emailRegex)) {
-    return db('users')
-      .select('id')
-      .where(
-        db.raw('id != ? AND (LOWER("name") = ? OR email = ?)', [exclude || '', name.toLowerCase(), email])
-      )
-      .limit(1)
-      .catch(() => {
-        throw dbError
-      })
-      .then(([res]) => {
-        if (res) {
-          const err = Error('user with name or email already exists')
-          err.code = 400
+  if (email) {
+    email = email.toLowerCase()
 
-          throw err
-        }
+    if (email.match(emailRegex)) {
+      return db('users')
+        .select('id')
+        .where(
+          db.raw('id != ? AND (LOWER("name") = ? OR email = ?)', [exclude || '', name ? name.toLowerCase() : '', email])
+        )
+        .limit(1)
+        .catch(() => {
+          throw dbError
+        })
+        .then(([res]) => {
+          if (res) {
+            const err = Error('user with name or email already exists')
+            err.code = 400
 
-        return {
-          ...user,
-          email
-        }
-      })
-  } else {
-    const err = Error('invalid email provided')
-    err.code = 400
+            throw err
+          }
 
-    throw err
+          return {
+            ...user,
+            email
+          }
+        })
+    } else {
+      const err = Error('invalid email provided')
+      err.code = 400
+
+      throw err
+    }
   }
+
+  return user
 }
 
 function deleteUser (db, mailer, id, executor) {
@@ -413,12 +418,13 @@ function deleteUser (db, mailer, id, executor) {
             subject: user.token ? 'Account deleted by ' + executor : 'Account registration expired',
             temp,
             tempData: {
+              name: user.name,
               executor
             }
           }))
-          .catch(() => {
+          .catch((test) => {
             const err = Error('user deleted but email failed to send')
-            err.code = 503
+            err.code = 202
 
             throw err
           })

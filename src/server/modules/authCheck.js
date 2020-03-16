@@ -10,8 +10,7 @@ module.exports = function authCheck (req, res, next) {
       if (err && err.message !== 'jwt malformed') return res.send(503, 'token decoding')
 
       if (match) {
-        req.authUser = match
-        req.auth = match.admin || match.id === req.params.id
+        req.auth = match
 
         next()
       } else res.send(400, 'invalid token')

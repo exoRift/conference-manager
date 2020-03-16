@@ -148,7 +148,7 @@ class ConferenceManager extends React.Component {
 
   onDelete (conf) {
     return () => {
-      fetch(REACT_APP_API_URL + '/conference/delete/' + conf, {
+      fetch(`${REACT_APP_API_URL}/conference/${conf}/delete`, {
         method: 'POST',
         headers: {
           Authorization: localStorage.getItem('auth')

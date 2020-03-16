@@ -15,9 +15,7 @@ module.exports = async function createConf (req, res) {
     req.body.room = parsed
   }
 
-  return res.send(400, 'hello')
-
-  create(req.db, req.authUser, {
+  create(req.db, req.auth, {
     title: req.body.title,
     room: req.body.room,
     desc: req.body.desc,
