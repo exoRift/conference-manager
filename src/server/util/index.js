@@ -14,12 +14,14 @@ const ejs = require('ejs')
 const {
   TOKEN_SECRET,
   MAX_TITLE_LENGTH,
-  REACT_DOMAIN
+  REACT_DOMAIN,
+  ROOM_COUNT
 } = process.env
 
 const filenameRegex = /(.+?)\.js$/
 const pathRegex = /.+\\(.+?)$/
 const emailRegex = /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/ // eslint-disable-line
+const announcementNewlineRegex = /(?<! {2})\n/g
 
 const dbError = Error('database unavailable')
 dbError.code = 503
@@ -98,8 +100,27 @@ function updateUser (db, salt, user, data) {
       }))
 }
 
+async function verifyRoom (data) {
+  if (data.room !== undefined) {
+    const parsed = parseInt(data.room)
+
+    if (!parsed || parsed < 1 || parsed > ROOM_COUNT) {
+      const err = Error('invalid room provided')
+      err.code = 400
+
+      throw err
+    }
+
+    return {
+      ...data,
+      room: parsed
+    }
+  }
+}
+
 function updateConf (db, user, conference, data) {
-  return verifyValidConf(db, data)
+  return verifyRoom(data)
+    .then((data) => verifyValidConf(db, data))
     .then((data) => {
       if (Object.keys(data).length) {
         return db('confs')
@@ -145,22 +166,23 @@ function updateConf (db, user, conference, data) {
 }
 
 function createConf (db, user, data) {
-  return verifyValidConf(db, data)
+  return verifyRoom(data)
+    .then((data) => verifyValidConf(db, data))
     .then((data) => {
       if (Object.keys(data).length) {
-        const confData = {
-          attendees: [],
-          ...data,
-          id: String(Date.now()),
-          creator: user.id
-        }
+        const id = String(Date.now())
 
         return db('confs')
-          .insert(confData)
-          .then(() => confData)
+          .insert({
+            id,
+            attendees: [],
+            creator: user.id,
+            ...data
+          })
           .catch(() => {
             throw dbError
           })
+          .then(() => id)
       } else {
         const err = Error('empty object')
         err.code = 400
@@ -202,24 +224,34 @@ async function checkValidUsers (db, ids) {
         id
       })
       .limit(1)
+      .catch(() => {
+        throw dbError
+      })
       .then(([row]) => {
         if (!row) {
           const err = Error('invalid user: ' + id)
           err.code = 400
 
-          return err
+          throw err
         }
-      })
-      .catch(() => {
-        throw dbError
       })
   }
 }
 
-async function verifyValidConf (db, data) {
-  for (const param in data) {
-    if ((typeof data[param] === 'string' && !data[param].length) || data[param] === undefined) delete data[param]
+function stripParams (data) {
+  const newData = {
+    ...data
   }
+
+  for (const param in newData) {
+    if ((typeof newData[param] === 'string' && !newData[param].length) || newData[param] === undefined) delete newData[param]
+  }
+
+  return newData
+}
+
+async function verifyValidConf (db, data) {
+  data = stripParams(data)
 
   if (data.name) data.name = data.name.trim()
   if (data.attendees) data.attendees = JSON.stringify(data.attendees)
@@ -438,9 +470,68 @@ function deleteUser (db, mailer, id, executor) {
     })
 }
 
+function createAnnouncement (db, user, data) {
+  return db('announcements')
+    .select('id')
+    .where({
+      title: data.title
+    })
+    .limit(1)
+    .catch(() => {
+      throw dbError
+    })
+    .then(([existing]) => {
+      if (existing) {
+        const err = new Error('title already taken')
+        err.code = 400
+
+        throw err
+      }
+
+      const id = String(Date.now())
+
+      return db('announcements')
+        .insert({
+          id,
+          creator: user.id,
+          timestamp: new Date(),
+          ...data,
+          content: data.content.replace(announcementNewlineRegex, '  \n')
+        })
+        .catch(() => {
+          throw dbError
+        })
+        .then(() => id)
+    })
+}
+
+function updateAnnouncement (db, announcement, data) {
+  data = stripParams(data)
+
+  if (Object.keys(data).length) {
+    return db('announcements')
+      .update({
+        title: data.title,
+        content: data.content
+      })
+      .where({
+        id: announcement
+      })
+      .catch(() => {
+        throw dbError
+      })
+  } else {
+    const err = Error('empty object')
+    err.code = 400
+
+    throw err
+  }
+}
+
 module.exports = {
   requireDirToObject,
   updateUser,
+  checkRoom: verifyRoom,
   updateConf,
   createConf,
   getUserProp,
@@ -449,5 +540,7 @@ module.exports = {
   createUser,
   emailUser,
   verifyValidUser,
-  deleteUser
+  deleteUser,
+  createAnnouncement,
+  updateAnnouncement
 }

@@ -22,5 +22,15 @@ module.exports = [
       builder.datetime('starttime')
       builder.datetime('endtime')
     }
+  },
+  {
+    name: 'announcements',
+    schema: (builder) => {
+      builder.string('id').primary()
+      builder.string('title')
+      builder.string('content')
+      builder.datetime('timestamp')
+      builder.string('creator')
+    }
   }
 ]

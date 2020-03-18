@@ -1,0 +1,26 @@
+.homePage {
+  height: 100vh;
+  padding: 3%;
+}
+
+.homeContainer {
+  background: var(--home-container-background);
+  border-radius: 10px 10px 5px 5px;
+  padding: 0.5%;
+}
+
+.announcementCard {
+  background: var(--card-head-background);
+  margin-bottom: 1%;
+  padding: 1%;
+  border-radius: 0 20px;
+}
+.announcementCard .header {
+  display: flex;
+  justify-content: space-between;
+}
+
+.announcementCard .timestamp {
+  margin: 1% 0 0 auto;
+  width: fit-content;
+}

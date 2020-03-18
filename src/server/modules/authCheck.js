@@ -12,7 +12,18 @@ module.exports = function authCheck (req, res, next) {
       if (match) {
         req.auth = match
 
-        next()
+        req.db('users')
+          .select('admin')
+          .where({
+            id: match.id
+          })
+          .limit(1)
+          .catch(() => res.send(503, 'database unavailable'))
+          .then(([{ admin }]) => {
+            req.auth.admin = admin
+
+            next()
+          })
       } else res.send(400, 'invalid token')
     })
   } else res.send(400, 'no token provided')
