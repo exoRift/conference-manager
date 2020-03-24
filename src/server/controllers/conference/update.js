@@ -1,10 +1,10 @@
 const {
-  updateConf: update
+  updateConf
 } = require('../../util/')
 
-module.exports = async function updateConf (req, res) {
+module.exports = async function update (req, res) {
   if (req.auth.admin || req.auth.id === req.conf.creator) {
-    update(req.db, req.auth, req.conf.id, {
+    updateConf(req.db, req.auth, req.conf.id, {
       title: req.body.title,
       room: req.body.room,
       desc: req.body.desc,

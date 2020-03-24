@@ -9,7 +9,6 @@ module.exports = function registerUser (req, res) {
       id: req.params.id
     })
     .limit(1)
-    .catch(() => res.send(503, 'database unavailable'))
     .then(([existing]) => {
       if (existing) {
         if (existing.token) res.send(400, 'user already registered')
@@ -20,4 +19,5 @@ module.exports = function registerUser (req, res) {
         }
       } else res.send(400, 'invalid user')
     })
+    .catch(() => res.send(503, 'database unavailable'))
 }

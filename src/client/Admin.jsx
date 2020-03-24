@@ -11,6 +11,10 @@ import plusIcon from '../assets/plus.png'
 
 import './styles/Admin.css'
 
+import {
+  formatError
+} from './util/'
+
 const {
   REACT_APP_API_URL
 } = process.env
@@ -130,7 +134,7 @@ class Admin extends React.Component {
       .catch((err) => {
         this.setState({
           saving: false,
-          error: err.message
+          error: formatError(err.message)
         })
       })
   }

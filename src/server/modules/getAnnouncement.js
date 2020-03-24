@@ -13,6 +13,7 @@ module.exports = function getAnnouncement (req, res, next) {
     }
 
     query
+      .catch((e) => res.send(503, 'database unavailable'))
       .then((rows) => {
         if (rows.length) {
           req.announcement = req.params.id === 'all' ? rows : rows[0]
@@ -21,6 +22,5 @@ module.exports = function getAnnouncement (req, res, next) {
           next()
         } else res.send(400, 'invalid id')
       })
-      .catch((e) => res.send(503, 'database unavailable'))
   } else res.send(400, 'no id provided')
 }

@@ -4,6 +4,10 @@ import Popup from './Popup.jsx'
 
 import trashIcon from '../../assets/trash.svg'
 
+import {
+  formatError
+} from './'
+
 const {
   REACT_APP_API_URL
 } = process.env
@@ -212,8 +216,8 @@ class UserManager extends React.Component {
 
       for (const data of responses) {
         if (!data.ok) {
-          data.text().then((error) => this.setState({
-            error,
+          data.text().then((err) => this.setState({
+            error: formatError(err),
             saved: false
           }))
 

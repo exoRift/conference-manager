@@ -8,11 +8,11 @@ module.exports = function parseIDParam (req, res, next) {
         try {
           req.params.id = jwt.decode(req.headers.authorization).id
         } catch {
-          return res.send(400, 'invalid token')
+          return res.send(400, { message: 'invalid token' })
         }
       }
     } else req.params.id = String(req.params.id)
 
     next()
-  } else res.send(400, 'no id provided')
+  } else res.send(400, { message: 'no id provided' })
 }

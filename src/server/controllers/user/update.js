@@ -14,5 +14,5 @@ module.exports = function updateUser (req, res) {
     })
       .then((token) => res.send(200, token))
       .catch((err) => res.send(err.code, err.message))
-  } else res.send(401)
+  } else res.send(401, 'cannot update other user. must be admin')
 }

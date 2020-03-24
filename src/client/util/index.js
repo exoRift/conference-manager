@@ -3,6 +3,9 @@ import {
   BrowserRouter as Router,
   Route
 } from 'react-router-dom'
+import errorMsgs from '../../assets/errors.json'
+
+const errMsgRegex = /{(.+?)}/g
 
 function router (routes) {
   return (
@@ -31,7 +34,22 @@ function getConfStatus (conf) {
   else return 'upcoming'
 }
 
+function formatError (err) {
+  if (err instanceof Error) err = err.message
+
+  // CHECK FOR TYPE ERRORS
+
+  const data = [
+    ...err.matchAll(errMsgRegex)
+  ].map((m) => m[1])
+
+  return errorMsgs
+    .find((e) => err.startsWith(e[0]))[1]
+    .replace(errMsgRegex, (match, param) => data[param])
+}
+
 export {
   getConfStatus,
-  router
+  router,
+  formatError
 }

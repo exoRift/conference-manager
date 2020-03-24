@@ -8,6 +8,10 @@ import {
 
 import './styles/Register.css'
 
+import {
+  formatError
+} from './util/'
+
 const {
   REACT_APP_API_URL
 } = process.env
@@ -67,7 +71,7 @@ class Register extends React.Component {
           }, 1200)
         } else {
           this.setState({
-            error: res,
+            error: formatError(res),
             authState: 'failure'
           })
 

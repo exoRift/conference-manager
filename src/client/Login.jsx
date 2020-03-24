@@ -2,6 +2,9 @@ import React from 'react'
 import {
   Redirect
 } from 'react-router-dom'
+import {
+  formatError
+} from './util/'
 
 const {
   REACT_APP_API_URL
@@ -33,14 +36,6 @@ class Login extends React.Component {
     })
   }
 
-  formatStatusMessage (msg) {
-    switch (msg) {
-      case 'invalid user': return 'Could not find a user with the name: ' + this.state.iden
-      case 'invalid pass': return 'Invalid password provided'
-      default: return msg
-    }
-  }
-
   sendLogin (event) {
     event.preventDefault()
 
@@ -67,11 +62,11 @@ class Login extends React.Component {
           }, 1200)
         })
       } else {
-        data.text().then((msg) => {
+        data.text().then((err) => {
           const error = (
             <div className='errorContainer'>
               <h1 className='header'>Login Error</h1>
-              <h4 className='error'>{this.formatStatusMessage(msg)}</h4>
+              <h4 className='error'>{formatError(err)}</h4>
             </div>
           )
 

@@ -10,6 +10,10 @@ import logoutIcon from '../assets/logout.svg'
 import googleIcon from '../assets/google_icon.png'
 
 const {
+  formatError
+} = require('./util/')
+
+const {
   REACT_APP_API_URL,
   REACT_APP_GOOGLE_CAL_ID
 } = process.env
@@ -112,7 +116,7 @@ class Account extends React.Component {
         data.text().then((err) => {
           if (err !== 'empty object') {
             this.setState({
-              error: err
+              error: formatError(err)
             })
           }
         })

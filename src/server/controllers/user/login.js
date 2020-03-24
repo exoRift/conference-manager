@@ -9,7 +9,7 @@ module.exports = function login (req, res) {
     .then(([row]) => {
       if (row) {
         bcrypt.compare(req.body.pass, row.pass, (err, match) => {
-          if (err) return res.send(503, 'encryption comparison')
+          if (err) return res.send(503, 'hashing error')
 
           if (match) res.send(200, row.token)
           else res.send(400, 'invalid pass')

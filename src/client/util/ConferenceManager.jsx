@@ -8,6 +8,10 @@ import trashIcon from '../../assets/trash.svg'
 
 import 'react-datetime/css/react-datetime.css'
 
+import {
+  formatError
+} from './'
+
 const {
   REACT_APP_API_URL
 } = process.env
@@ -65,16 +69,6 @@ class ConferenceManager extends React.Component {
         })
       }
     })
-  }
-
-  async checkConf (conf) {
-    if (!conf.attendees) conf.attendees = []
-
-    for (const param in conf) {
-      if (typeof conf[param] === 'string' && !conf[param].length) throw Error('Parameter cannot be empty: ' + param.substring(0, 1).toUpperCase() + param.substring(1))
-    }
-
-    return conf
   }
 
   onChange (conf, prop) {
@@ -173,24 +167,16 @@ class ConferenceManager extends React.Component {
   onSubmit () {
     const promises = []
 
-    for (const { ...conf } of this.state.final) {
-      this.checkConf(conf)
-        .then((data) => {
-          promises.push(fetch(`${REACT_APP_API_URL}/conference/${data.id}/update`, {
-            method: 'POST',
-            headers: {
-              Authorization: localStorage.getItem('auth'),
-              Accept: 'text/plain',
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-          }))
-        })
-        .catch((err) => {
-          this.setState({
-            error: err.message
-          })
-        })
+    for (const conf of this.state.final) {
+      promises.push(fetch(`${REACT_APP_API_URL}/conference/${conf.id}/update`, {
+        method: 'POST',
+        headers: {
+          Authorization: localStorage.getItem('auth'),
+          Accept: 'text/plain',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(conf)
+      }))
     }
 
     Promise.all(promises).then((responses) => {
@@ -201,8 +187,8 @@ class ConferenceManager extends React.Component {
 
       for (const data of responses) {
         if (!data.ok) {
-          data.text().then((error) => this.setState({
-            error,
+          data.text().then((err) => this.setState({
+            error: formatError(err),
             saved: false
           }))
 
@@ -218,22 +204,20 @@ class ConferenceManager extends React.Component {
   }
 
   create (conf) {
-    return this.checkConf(conf)
-      .then((data) => fetch(REACT_APP_API_URL + '/conference/create', {
-        method: 'POST',
-        headers: {
-          Authorization: localStorage.getItem('auth'),
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-      }))
-      .then(async (data) => {
-        if (data.ok) {
-          return data.text()
-            .then(() => this.componentDidMount())
-            .then(() => data)
-        } else throw Error(await data.text())
-      })
+    return fetch(REACT_APP_API_URL + '/conference/create', {
+      method: 'POST',
+      headers: {
+        Authorization: localStorage.getItem('auth'),
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(conf)
+    }).then(async (data) => {
+      if (data.ok) {
+        return data.text()
+          .then(() => this.componentDidMount())
+          .then(() => data)
+      } else throw Error(await data.text())
+    })
   }
 
   render () {

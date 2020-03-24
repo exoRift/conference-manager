@@ -57,7 +57,7 @@ function updateUser (db, salt, user, data) {
             try {
               data.pass = bcrypt.hashSync(data.pass, salt)
             } catch {
-              const err = Error('password hash')
+              const err = Error('hashing error')
               err.code = 503
 
               throw err
@@ -73,7 +73,7 @@ function updateUser (db, salt, user, data) {
               admin: data.admin === undefined ? existing.admin : data.admin
             }, TOKEN_SECRET)
           } catch {
-            const err = Error('token encryption')
+            const err = Error('token decoding error')
             err.code = 503
 
             throw err
@@ -120,48 +120,41 @@ async function verifyRoom (data) {
 
 function updateConf (db, user, conference, data) {
   return verifyRoom(data)
-    .then((data) => verifyValidConf(db, data))
+    .then((data) => verifyValidConf(db, data, conference))
     .then((data) => {
-      if (Object.keys(data).length) {
-        return db('confs')
-          .select('id', 'creator')
-          .where({
-            id: conference
-          })
-          .limit(1)
-          .catch(() => {
-            throw dbError
-          })
-          .then(([row]) => {
-            if (row) {
-              if (user.id === row.creator || user.admin) {
-                return db('confs')
-                  .update(data)
-                  .where({
-                    id: conference
-                  })
-                  .catch(() => {
-                    throw dbError
-                  })
-              } else {
-                const err = Error('not conference owner')
-                err.code = 401
-
-                throw err
-              }
+      return db('confs')
+        .select('id', 'creator')
+        .where({
+          id: conference
+        })
+        .limit(1)
+        .catch(() => {
+          throw dbError
+        })
+        .then(([row]) => {
+          if (row) {
+            if (user.id === row.creator || user.admin) {
+              return db('confs')
+                .update(data)
+                .where({
+                  id: conference
+                })
+                .catch(() => {
+                  throw dbError
+                })
             } else {
-              const err = Error('invalid conference')
-              err.code = 400
+              const err = Error('not conference owner')
+              err.code = 401
 
               throw err
             }
-          })
-      } else {
-        const err = Error('empty object')
-        err.code = 400
+          } else {
+            const err = Error('invalid conference')
+            err.code = 400
 
-        throw err
-      }
+            throw err
+          }
+        })
     })
 }
 
@@ -169,26 +162,19 @@ function createConf (db, user, data) {
   return verifyRoom(data)
     .then((data) => verifyValidConf(db, data))
     .then((data) => {
-      if (Object.keys(data).length) {
-        const id = String(Date.now())
+      const id = String(Date.now())
 
-        return db('confs')
-          .insert({
-            id,
-            attendees: [],
-            creator: user.id,
-            ...data
-          })
-          .catch(() => {
-            throw dbError
-          })
-          .then(() => id)
-      } else {
-        const err = Error('empty object')
-        err.code = 400
-
-        throw err
-      }
+      return db('confs')
+        .insert({
+          id,
+          attendees: [],
+          creator: user.id,
+          ...data
+        })
+        .catch(() => {
+          throw dbError
+        })
+        .then(() => id)
     })
 }
 
@@ -229,7 +215,7 @@ async function checkValidUsers (db, ids) {
       })
       .then(([row]) => {
         if (!row) {
-          const err = Error('invalid user: ' + id)
+          const err = Error(`invalid user: {${id}}`)
           err.code = 400
 
           throw err
@@ -238,86 +224,93 @@ async function checkValidUsers (db, ids) {
   }
 }
 
-function stripParams (data) {
-  const newData = {
-    ...data
-  }
-
-  for (const param in newData) {
-    if ((typeof newData[param] === 'string' && !newData[param].length) || newData[param] === undefined) delete newData[param]
-  }
-
-  return newData
-}
-
-async function verifyValidConf (db, data) {
-  data = stripParams(data)
-
-  if (data.name) data.name = data.name.trim()
-  if (data.attendees) data.attendees = JSON.stringify(data.attendees)
-  else data.attendees = '[]'
-  if (data.tile && data.title.length > MAX_TITLE_LENGTH) {
-    const err = Error('title too long')
-    err.code = 400
-
-    throw err
-  }
-
-  const start = new Date(data.starttime).getTime()
-  const startString = new Date(data.starttime).toLocaleString('en-US', {
-    dateStyle: 'short',
-    timeStyle: 'short'
-  })
-  const end = new Date(data.endtime).getTime()
-  const endString = new Date(data.endtime).toLocaleString('en-US', {
-    dateStyle: 'short',
-    timeStyle: 'short'
-  })
-
-  if (start < Date.now()) {
-    const err = Error('start date cannot be earlier than current date')
-    err.code = 400
-
-    throw err
-  }
-
-  if (end <= start) {
-    const err = Error('end date cannot be earlier than or equal to the start date')
-    err.code = 400
-
-    throw err
-  }
-
-  if (end - start > 7200000) {
-    const err = Error('conference can not be longer than 2 hours')
-    err.code = 400
-
-    throw err
-  }
-
-  if (end - start < 900000) {
-    const err = Error('conference must be at least 15 minutes')
-    err.code = 400
-
-    throw err
-  }
-
+async function verifyValidConf (db, data, exclude) {
   return db('confs')
-    .select('title', 'starttime', 'endtime')
-    .where(
-      db.raw(`(room = ${data.room}) AND (('${startString}'::date > starttime AND '${startString}'::date < endtime) OR ('${endString}'::date > starttime AND '${endString}'::date < endtime))`)
-    )
+    .select('id')
+    .where({
+      title: data.title || ''
+    })
+    .whereNot({
+      id: exclude || ''
+    })
     .limit(1)
     .catch(() => {
       throw dbError
     })
-    .then(([overlap]) => {
-      if (overlap) {
-        const err = Error(`conference overlaps existing conference: ${overlap.title} which is in session from ${startString} to ${endString}`)
+    .then(([existing]) => {
+      if (existing) {
+        const err = Error('title already taken')
         err.code = 400
 
         throw err
-      } else return data
+      }
+
+      if (data.name) data.name = data.name.trim()
+      if (data.attendees) data.attendees = JSON.stringify(data.attendees)
+      else data.attendees = '[]'
+      if (data.title && data.title.length > MAX_TITLE_LENGTH) {
+        const err = Error(`title too long. limit: {${MAX_TITLE_LENGTH}}`)
+        err.code = 400
+
+        throw err
+      }
+
+      const start = new Date(data.starttime).getTime()
+      const startString = new Date(data.starttime).toLocaleString('en-US', {
+        dateStyle: 'short',
+        timeStyle: 'short'
+      })
+      const end = new Date(data.endtime).getTime()
+      const endString = new Date(data.endtime).toLocaleString('en-US', {
+        dateStyle: 'short',
+        timeStyle: 'short'
+      })
+
+      if (start < Date.now()) {
+        const err = Error('start date cannot be earlier than current date')
+        err.code = 400
+
+        throw err
+      }
+
+      if (end <= start) {
+        const err = Error('end date cannot be earlier than or equal to the start date')
+        err.code = 400
+
+        throw err
+      }
+
+      if (end - start > 7200000) {
+        const err = Error('conference cannot be longer than 2 hours')
+        err.code = 400
+
+        throw err
+      }
+
+      if (end - start < 900000) {
+        const err = Error('conference must be at least 15 minutes')
+        err.code = 400
+
+        throw err
+      }
+
+      return db('confs')
+        .select('title', 'starttime', 'endtime')
+        .where(
+          db.raw(`(room = ${data.room}) AND (('${startString}'::date > starttime AND '${startString}'::date < endtime) OR ('${endString}'::date > starttime AND '${endString}'::date < endtime))`)
+        )
+        .limit(1)
+        .catch(() => {
+          throw dbError
+        })
+        .then(([overlap]) => {
+          if (overlap) {
+            const err = Error(`conference overlaps existing conference: {${overlap.title}} which is in session from {${startString}} to {${endString}}`)
+            err.code = 400
+
+            throw err
+          } else return data
+        })
     })
 }
 
@@ -454,7 +447,7 @@ function deleteUser (db, mailer, id, executor) {
               executor
             }
           }))
-          .catch((test) => {
+          .catch(() => {
             const err = Error('user deleted but email failed to send')
             err.code = 202
 
@@ -482,7 +475,7 @@ function createAnnouncement (db, user, data) {
     })
     .then(([existing]) => {
       if (existing) {
-        const err = new Error('title already taken')
+        const err = Error('title already taken')
         err.code = 400
 
         throw err
@@ -506,32 +499,23 @@ function createAnnouncement (db, user, data) {
 }
 
 function updateAnnouncement (db, announcement, data) {
-  data = stripParams(data)
-
-  if (Object.keys(data).length) {
-    return db('announcements')
-      .update({
-        title: data.title,
-        content: data.content
-      })
-      .where({
-        id: announcement
-      })
-      .catch(() => {
-        throw dbError
-      })
-  } else {
-    const err = Error('empty object')
-    err.code = 400
-
-    throw err
-  }
+  return db('announcements')
+    .update({
+      title: data.title,
+      content: data.content
+    })
+    .where({
+      id: announcement
+    })
+    .catch(() => {
+      throw dbError
+    })
 }
 
 module.exports = {
   requireDirToObject,
   updateUser,
-  checkRoom: verifyRoom,
+  verifyRoom,
   updateConf,
   createConf,
   getUserProp,

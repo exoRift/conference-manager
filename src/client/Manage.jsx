@@ -12,6 +12,10 @@ import plusIcon from '../assets/plus.png'
 import './styles/Manage.css'
 import moment from 'moment'
 
+import {
+  formatError
+} from './util/'
+
 const {
   REACT_APP_API_URL
 } = process.env
@@ -111,7 +115,7 @@ class Manage extends React.Component {
       })
       .catch((err) => {
         this.setState({
-          error: err.message[0].toUpperCase() + err.message.substring(1),
+          error: formatError(err),
           saving: false
         })
       })

@@ -149,18 +149,6 @@ class AnnouncementManager extends React.Component {
               </div>
             ))}
           </div>
-
-          {this.state.saved
-            ? (
-              <h4 className='adminSavedNotif'>Changes saved!</h4>
-            ) : null}
-
-          {this.state.error
-            ? (
-              <div className='adminErrorContainer'>
-                <h6 className='error'>{this.state.error}</h6>
-              </div>
-            ) : null}
         </div>
       </>
     )

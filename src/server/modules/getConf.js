@@ -13,6 +13,7 @@ module.exports = function getConf (req, res, next) {
     }
 
     query
+      .catch(() => res.send(503, 'database unavailable'))
       .then((rows) => {
         if (rows.length) {
           req.conf = req.params.id === 'all' ? rows : rows[0]
@@ -20,6 +21,5 @@ module.exports = function getConf (req, res, next) {
           next()
         } else res.send(400, 'invalid id')
       })
-      .catch(() => res.send(503, 'database unavailable'))
   } else res.send(400, 'no id provided')
 }
