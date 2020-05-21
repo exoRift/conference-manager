@@ -12,14 +12,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mets11rap/conference-manager.git"
+    "url": "git+https://github.com/exoRift/conference-manager.git"
   },
-  "author": "mets11rap",
+  "author": "exoRift",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/mets11rap/conference-manager/issues"
+    "url": "https://github.com/exoRift/conference-manager/issues"
   },
-  "homepage": "https://github.com/mets11rap/conference-manager#readme",
+  "homepage": "https://github.com/exoRift/conference-manager#readme",
   "browserslist": {
     "production": [
       ">0.2%",
