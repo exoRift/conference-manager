@@ -1,5 +1,9 @@
 const {
-  requireDirToObject
-} = require('../util/')
+  toArray
+} = require('mass-require')
 
-module.exports = requireDirToObject(__dirname)
+module.exports = toArray(__dirname, {
+  recursive: true,
+  flatten: true,
+  exclude: /^index\.js$/
+})
