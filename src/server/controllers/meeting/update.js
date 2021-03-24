@@ -17,7 +17,7 @@ module.exports = {
       .catch((err) => {
         console.error('db', err)
 
-        res.send(500, 'internal', 'database unavailable')
+        res.sendError(500, 'internal', 'database unavailable')
       })
       .then(([found]) => {
         if (found) {
@@ -27,21 +27,21 @@ module.exports = {
           }
 
           return req.util.meeting.validate(req, req.params.id)
-            .catch((err) => res.send(err.code, err.type, err.message))
+            .catch((err) => res.sendError(err.code, err.type, err.message))
             .then(() => req.db
               .update(req.body.args)
               .where('id', req.params.id))
             .catch((err) => {
               console.error('db', err)
 
-              res.send(500, 'internal', 'database unavailable')
+              res.sendError(500, 'internal', 'database unavailable')
             })
             .then(() => {
               console.log('MEETING UPDATED: ', req.auth.id, req.params.id)
 
               res.send(200)
             })
-        } else res.send(404, 'target', 'meeting does not exist')
+        } else res.sendError(404, 'target', 'meeting does not exist')
       })
   }
 }

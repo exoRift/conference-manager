@@ -54,7 +54,6 @@ app
 
 // Routes
 for (const controller of controllers) {
-  console.log(controller)
   const layers = controller.requisites.reduce((a, r) => a.concat(modules[r.name](r.params)), [])
 
   app[controller.method](controller.route, ...layers, controller.action)
