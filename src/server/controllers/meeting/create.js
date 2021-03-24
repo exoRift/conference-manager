@@ -15,7 +15,7 @@ module.exports = {
   method: 'post',
   route: '/meeting/create',
   action: function (req, res) {
-    if (req.args.room > parseInt(ROOM_COUNT) || req.args.room < 1) {
+    if (req.args.room <= parseInt(ROOM_COUNT) && req.args.room > 0) {
       return req.util.meeting.validate()
         .then(() => {
           const id = String(Date.now())
@@ -35,9 +35,9 @@ module.exports = {
             .then(() => {
               console.log('MEETING CREATED: ', req.auth.id, id)
 
-              res.send(200, id)
+              return res.send(200, id)
             })
         })
-    } else res.sendError(400, 'argument', `invalid room provided (1-${ROOM_COUNT})`)
+    } else return res.sendError(400, 'argument', `invalid room provided (1-${ROOM_COUNT})`)
   }
 }

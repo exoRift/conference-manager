@@ -68,8 +68,9 @@ module.exports = function (req, res, next) {
 
               return req.db('meetings')
                 .select('title', 'starttime', 'endtime')
-                .where(
-                  req.db.raw(`(room = ${req.args.room}) AND (('${startString}'::date > starttime AND '${startString}'::date < endtime) OR ('${endString}'::date > starttime AND '${endString}'::date < endtime))`)
+                .where('room', req.args.room)
+                .andWhere(
+                  req.db.raw(`('${startString}'::date > starttime AND '${startString}'::date < endtime) OR ('${endString}'::date > starttime AND '${endString}'::date < endtime)`)
                 )
                 .limit(1)
                 .catch((err) => {
