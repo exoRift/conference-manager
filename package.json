@@ -1,7 +1,7 @@
 {
   "name": "conference-manager",
   "version": "1.0.0",
-  "description": "A website to manage conferences for the Studylogic Wordwide HQ",
+  "description": "A website to schedule, view, and manage conference room bookings for the Studylogic Wordwide HQ",
   "main": "src/index.js",
   "scripts": {
     "start": "concurrently 'npm:api-dev' 'npm:static'",
@@ -48,14 +48,15 @@
     "cors": "^2.8.5",
     "ejs": "^3.0.1",
     "jsonwebtoken": "^8.5.1",
-    "knex": "^0.20.8",
+    "knex": "^0.95.2",
+    "mass-require": "^1.0.0",
     "moment": "^2.24.0",
-    "nodemailer": "^6.4.2",
-    "pg": "^7.17.1",
+    "nodemailer": "^6.5.0",
+    "pg": "^8.5.1",
     "polka": "^0.5.2",
-    "query-string": "^6.10.1",
+    "query-string": "^6.14.1",
     "react": "^16.12.0",
-    "react-autocomplete-input": "^1.0.12",
+    "react-autocomplete-input": "^1.0.17",
     "react-datetime": "^2.16.3",
     "react-dom": "^16.12.0",
     "react-markdown": "^4.3.1",
@@ -71,7 +72,7 @@
     "eslint-plugin-import": "^2.20.0",
     "eslint-plugin-node": "^11.0.0",
     "eslint-plugin-promise": "^4.2.1",
-    "eslint-plugin-react": "^7.18.0",
+    "eslint-plugin-react": "^7.23.1",
     "eslint-plugin-standard": "^4.0.1",
     "nodemon": "^2.0.2"
   }
