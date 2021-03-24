@@ -1,14 +1,14 @@
-const nodeMailer = require('nodemailer')
+const mailer = require('nodemailer')
 
-module.exports = function mailer (options) {
-  const transporter = nodeMailer.createTransport(options)
+module.exports = function (options) {
+  const transporter = mailer.createTransport(options)
 
   transporter.verify((err, success) => {
-    if (success) console.log('Mail engine online')
-    else console.error('MAIL ENGINE FAILURE: ' + err)
+    if (success) console.info('Mail engine online')
+    else console.error('MAIL ENGINE FAILURE:', err)
   })
 
-  return async (req, res, next) => {
+  return (req, res, next) => {
     req.mailer = transporter
 
     next()

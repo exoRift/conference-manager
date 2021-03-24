@@ -1,6 +1,6 @@
 const bcrypt = require('bcryptjs')
 
-module.exports = function saltGen (rounds) {
+module.exports = function (rounds) {
   const salt = bcrypt.genSaltSync(rounds)
 
   return (req, res, next) => {
