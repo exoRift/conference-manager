@@ -9,10 +9,8 @@ module.exports = {
       .catch((err) => {
         console.error('db', err)
 
-        res.sendError(500, 'internal', 'database unavailable')
+        return res.sendError(500, 'internal', 'database unavailable')
       })
-      .then((meetings) => {
-        res.send(200, meetings)
-      })
+      .then((meetings) => res.send(200, meetings))
   }
 }

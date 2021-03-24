@@ -1,39 +1,7 @@
-const {
-  ROOM_COUNT
-} = process.env
-
 module.exports = function (req, res, next) {
   req.util = {
     meeting: {
-      create: (req) => {
-        if (req.args.room > parseInt(ROOM_COUNT) || req.args.room < 1) {
-          return req.util.meeting.validate(req)
-            .then(() => {
-              const id = String(Date.now())
-
-              return req.db('meetings')
-                .insert({
-                  id,
-                  attendees: [],
-                  creator: req.auth.id,
-                  ...req.args
-                })
-                .catch((err) => {
-                  console.error('db', err)
-
-                  throw req.errors.database
-                })
-                .then(() => id)
-            })
-        } else {
-          const err = Error(`invalid room provided (1-${ROOM_COUNT})`)
-          err.code = 400
-          err.type = 'argument'
-
-          throw err
-        }
-      },
-      validate: (req, exclude) => {
+      validate: (exclude) => {
         // Title validation
         return req.db('meetings')
           .select('id')

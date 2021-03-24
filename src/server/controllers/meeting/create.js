@@ -1,3 +1,7 @@
+const {
+  ROOM_COUNT
+} = process.env
+
 module.exports = {
   requisites: ['authorize', 'argtypes'],
   args: {
@@ -11,12 +15,29 @@ module.exports = {
   method: 'post',
   route: '/meeting/create',
   action: function (req, res) {
-    return req.util.meeting.create(req)
-      .catch((err) => res.sendError(err.code, err.type, err.message))
-      .then((id) => {
-        console.log('MEETING CREATED: ', req.auth.id, id)
+    if (req.args.room > parseInt(ROOM_COUNT) || req.args.room < 1) {
+      return req.util.meeting.validate()
+        .then(() => {
+          const id = String(Date.now())
 
-        res.send(200, id)
-      })
+          return req.db('meetings')
+            .insert({
+              id,
+              attendees: [],
+              creator: req.auth.id,
+              ...req.args
+            })
+            .catch((err) => {
+              console.error('db', err)
+
+              return res.sendError(500, 'internal', 'database unavailable')
+            })
+            .then(() => {
+              console.log('MEETING CREATED: ', req.auth.id, id)
+
+              res.send(200, id)
+            })
+        })
+    } else res.sendError(400, 'argument', `invalid room provided (1-${ROOM_COUNT})`)
   }
 }

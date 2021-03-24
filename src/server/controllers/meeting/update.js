@@ -11,13 +11,13 @@ module.exports = {
   method: 'patch',
   route: '/meeting/:id/update',
   action: function (req, res) {
-    req.db('meetings')
+    return req.db('meetings')
       .select()
       .where('id', req.params.id)
       .catch((err) => {
         console.error('db', err)
 
-        res.sendError(500, 'internal', 'database unavailable')
+        return res.sendError(500, 'internal', 'database unavailable')
       })
       .then(([found]) => {
         if (found) {
@@ -26,7 +26,7 @@ module.exports = {
             ...req.body.args
           }
 
-          return req.util.meeting.validate(req, req.params.id)
+          return req.util.meeting.validate(req.params.id)
             .catch((err) => res.sendError(err.code, err.type, err.message))
             .then(() => req.db
               .update(req.body.args)
@@ -34,14 +34,14 @@ module.exports = {
             .catch((err) => {
               console.error('db', err)
 
-              res.sendError(500, 'internal', 'database unavailable')
+              return res.sendError(500, 'internal', 'database unavailable')
             })
             .then(() => {
               console.log('MEETING UPDATED: ', req.auth.id, req.params.id)
 
-              res.send(200)
+              return res.send(200)
             })
-        } else res.sendError(404, 'target', 'meeting does not exist')
+        } else return res.sendError(404, 'target', 'meeting does not exist')
       })
   }
 }
