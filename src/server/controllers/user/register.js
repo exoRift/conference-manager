@@ -1,23 +1,20 @@
-const {
-  updateUser
-} = require('../../util/')
+module.exports = {
+  requisites: ['argtypes'],
+  args: {
+    firstname: 'opt:string',
+    lastname: 'opt:string',
+    pass: 'string',
+    email: 'opt:string'
+  },
+  method: 'patch',
+  route: '/user/register/:id',
+  action: function (req, res) {
+    return req.util.user.update()
+      .catch((err) => {
+        if (err.code === 404) err.message = 'prototype not found'
 
-module.exports = function registerUser (req, res) {
-  req.db('users')
-    .select('id', 'token')
-    .where({
-      id: req.params.id
-    })
-    .limit(1)
-    .then(([existing]) => {
-      if (existing) {
-        if (existing.token) res.send(400, 'user already registered')
-        else {
-          updateUser(req.db, req.salt, req.params.id, req.body)
-            .then((token) => res.send(200, token))
-            .catch((err) => res.send(err.code, err.message))
-        }
-      } else res.send(400, 'invalid user')
-    })
-    .catch(() => res.send(503, 'database unavailable'))
+        return res.sendError(err.code, err.type, err.message)
+      })
+      .then((token) => res.send(200, token))
+  }
 }

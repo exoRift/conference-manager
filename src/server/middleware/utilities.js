@@ -1,4 +1,11 @@
+const bcrypt = require('bcrypt')
+const jwt = require('jsonwebtoken')
+
 const emailRegex = /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/ // eslint-disable-line
+
+const {
+  TOKEN_SECRET
+} = process.env
 
 module.exports = function (req, res, next) {
   req.util = {
@@ -125,6 +132,64 @@ module.exports = function (req, res, next) {
 
           throw err
         }
+      },
+      update: () => {
+        return req.db('users')
+          .select()
+          .where('id', req.params.id)
+          .catch((err) => {
+            console.error('db', err)
+
+            throw req.errors.database
+          })
+          .then(([found]) => {
+            if (found) {
+              if (req.args.pass) {
+                try {
+                  req.args.pass = bcrypt.hashSync(req.args.pass, req.salt)
+                } catch {
+                  const err = Error('hashing error')
+                  err.code = 500
+                  err.type = 'internal'
+
+                  throw err
+                }
+
+                try {
+                  req.args.token = jwt.sign({
+                    id: req.params.id,
+                    firstname: req.args.firstname || found.firstname,
+                    email: req.args.email || found.email,
+                    admin: req.args.admin === undefined ? found.admin : req.args.admin
+                  }, TOKEN_SECRET)
+                } catch {
+                  const err = Error('token encoding error')
+                  err.code = 500
+                  err.type = 'internal'
+
+                  throw err
+                }
+
+                return req.db('users')
+                  .update({
+                    ...found,
+                    ...req.args
+                  })
+                  .catch((err) => {
+                    console.err('db', err)
+
+                    throw req.errors.database
+                  })
+                  .then(() => req.args.token)
+              }
+            } else {
+              const err = Error('user not found')
+              err.code = 404
+              err.type = 'target'
+
+              throw err
+            }
+          })
       }
     }
   }
