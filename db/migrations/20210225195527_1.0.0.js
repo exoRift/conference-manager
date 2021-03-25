@@ -7,7 +7,7 @@ exports.up = function (knex) {
       table.string('pass').notNullable()
       table.string('email').unique().notNullable()
       table.string('token').notNullable()
-      table.boolean('admin').notNullable()
+      table.boolean('admin').default(false).notNullable()
     })
     .createTable('meetings', (table) => {
       table.string('id').primary()
@@ -29,7 +29,7 @@ exports.up = function (knex) {
       table.string('id').primary()
       table.string('title').notNullable()
       table.string('content').notNullable()
-      table.datetime('timestamp').notNullable()
+      table.timestamp('timestamp').notNullable()
 
       table.string('creator').nullable()
       table.foreign('creator')

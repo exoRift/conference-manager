@@ -26,15 +26,15 @@ module.exports = {
         })
         .then(([found]) => {
           if (found) {
-            req.body.args = {
+            req.args = {
               ...found,
-              ...req.body.args
+              ...req.args
             }
 
             return req.util.meeting.validate(req.params.id)
               .catch((err) => res.sendError(err.code, err.type, err.message))
               .then(() => req.db
-                .update(req.body.args)
+                .update(req.args)
                 .where('id', req.params.id))
               .catch((err) => {
                 console.error('db', err)
