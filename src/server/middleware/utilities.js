@@ -148,12 +148,14 @@ module.exports = function (req, res, next) {
               if (req.args.pass) {
                 try {
                   req.args.pass = bcrypt.hashSync(req.args.pass, req.salt)
-                } catch {
-                  const err = Error('hashing error')
-                  err.code = 500
-                  err.type = 'internal'
+                } catch (err) {
+                  console.error('bcrypt', err)
 
-                  throw err
+                  const perr = Error('hashing error')
+                  perr.code = 500
+                  perr.type = 'internal'
+
+                  throw perr
                 }
 
                 try {
