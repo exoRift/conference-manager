@@ -3,10 +3,14 @@ exports.up = function (knex) {
   return knex.schema
     .createTable('users', (table) => {
       table.string('id').primary()
-      table.string('name').unique().notNullable()
+
+      table.string('firstname').notNullable()
+      table.string('lastname').notNullable()
+      table.unique(['firstname', 'lastname'])
+
       table.string('pass').notNullable()
       table.string('email').unique().notNullable()
-      table.string('token').notNullable()
+      table.string('token').unique().notNullable()
       table.boolean('admin').default(false).notNullable()
     })
     .createTable('meetings', (table) => {

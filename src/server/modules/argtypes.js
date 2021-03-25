@@ -23,8 +23,9 @@ function transform (input, name, type, receivedType) {
     case 'string':
       if (receivedType === 'string') {
         if (!input.length) throw Error(`invalid param type for: {${name}}. expected {string} but received string is empty`)
+
+        return input.trim()
       } else throw Error(buildErrorString(name, 'string', receivedType))
-      break
     case 'boolean':
       try {
         return Boolean(JSON.parse(input) || false)

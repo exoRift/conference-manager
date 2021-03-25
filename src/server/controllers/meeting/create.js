@@ -17,6 +17,7 @@ module.exports = {
   action: function (req, res) {
     if (req.args.room <= parseInt(ROOM_COUNT) && req.args.room > 0) {
       return req.util.meeting.validate()
+        .catch((err) => res.sendError(err.code, err.type, err.message))
         .then(() => {
           const id = String(Date.now())
 

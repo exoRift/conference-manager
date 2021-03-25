@@ -1,3 +1,5 @@
+const emailRegex = /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/ // eslint-disable-line
+
 module.exports = function (req, res, next) {
   req.util = {
     meeting: {
@@ -40,6 +42,7 @@ module.exports = function (req, res, next) {
                 throw err
               }
 
+              // 2 hours
               if (end - start > 7200000) {
                 const err = Error('conference longer than 2 hours')
                 err.code = 400
@@ -48,6 +51,7 @@ module.exports = function (req, res, next) {
                 throw err
               }
 
+              // 15 minutes
               if (end - start < 900000) {
                 const err = Error('conference must be at least 15 minutes')
                 err.code = 400
@@ -67,7 +71,7 @@ module.exports = function (req, res, next) {
               })
 
               return req.db('meetings')
-                .select('title', 'starttime', 'endtime')
+                .select(['title', 'starttime', 'endtime'])
                 .where('room', req.args.room)
                 .andWhere(
                   req.db.raw(`('${startString}'::date > starttime AND '${startString}'::date < endtime) OR ('${endString}'::date > starttime AND '${endString}'::date < endtime)`)
@@ -89,6 +93,38 @@ module.exports = function (req, res, next) {
                 })
             }
           })
+      }
+    },
+    user: {
+      validate: async (exclude) => {
+        if (req.args.email.match(emailRegex)) {
+          return req.db('users')
+            .select(['firstname', 'lastname'])
+            .where(
+              req.db.raw('id != ? AND ((LOWER("firstname") = ? AND LOWER("lastname") = ?) OR email = ?)', [exclude, req.args.firstname.toLowerCase(), req.args.lastname.toLowerCase(), req.args.email.toLowerCase()])
+            )
+            .limit(1)
+            .catch((err) => {
+              console.error('db', err)
+
+              throw req.errors.database
+            })
+            .then(([overlap]) => {
+              if (overlap) {
+                const err = Error(`name or email taken by {${overlap.firstname} ${overlap.lastname}}`)
+                err.code = 409
+                err.type = 'argument'
+
+                throw err
+              }
+            })
+        } else {
+          const err = Error('invalid email')
+          err.code = 400
+          err.type = 'argument'
+
+          throw err
+        }
       }
     }
   }
