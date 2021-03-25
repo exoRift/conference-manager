@@ -13,7 +13,7 @@ module.exports = {
       })
       .then(([found]) => {
         if (found) {
-          if (req.auth.id === found.creator) {
+          if (req.auth.id === found.creator || req.auth.admin) {
             return req.db('meetings')
               .delete()
               .where('id', req.params.id)
@@ -27,7 +27,7 @@ module.exports = {
 
                 return res.send(200)
               })
-          } else return res.sendError(401, 'authorization', 'you do not own this meeting')
+          } else return res.sendError(401, 'authorization', 'not authorized to delete this meeting')
         } else return res.sendError(404, 'target', 'meeting not found')
       })
   }

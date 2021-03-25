@@ -25,7 +25,7 @@ module.exports = {
       })
       .then(([found]) => {
         if (found) {
-          if (req.auth.id === found.creator) {
+          if (req.auth.id === found.creator || req.auth.admin) {
             if (req.args.room <= parseInt(ROOM_COUNT) && req.args.room > 0) {
               req.args = {
                 ...found,
@@ -48,7 +48,7 @@ module.exports = {
                   return res.send(200)
                 })
             } else return res.sendError(400, 'argument', `invalid room provided (1-${ROOM_COUNT})`)
-          } else return res.sendError(401, 'authorization', 'you do not own this meeting')
+          } else return res.sendError(401, 'authorization', 'not authorized to update this meeting')
         } else return res.sendError(404, 'target', 'meeting does not exist')
       })
   }
