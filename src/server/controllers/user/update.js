@@ -15,7 +15,11 @@ module.exports = {
     if (req.auth.id === req.params.id || req.auth.admin) {
       return req.util.user.update()
         .catch((err) => res.sendError(err.code, err.type, err.message))
-        .then((token) => res.send(200, token))
+        .then((token) => {
+          console.log('USER UPDATED: ', req.auth.id, req.params.id)
+
+          return res.send(200, token)
+        })
     } else return res.sendError(401, 'authorization', 'unauthorized to edit this user')
   }
 }

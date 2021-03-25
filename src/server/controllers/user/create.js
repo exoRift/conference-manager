@@ -41,7 +41,7 @@ module.exports = {
             .then(() => {
               console.log('USER CREATED: ', req.auth.id, id)
 
-              return readFile('src/server/templates/invite.ejs', { encoding: 'utf8' })
+              return readFile('src/server/templates/invited.ejs', { encoding: 'utf8' })
                 .then((temp) => req.util.user.email({
                   subject: `You've been invited by ${req.auth.firstname} ${req.auth.lastname} to create an account for the 525 Chestnut office building`,
                   temp,
