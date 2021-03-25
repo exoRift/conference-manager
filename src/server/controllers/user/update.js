@@ -1,18 +1,21 @@
-const {
-  updateUser: update
-} = require('../../util/')
+module.exports = {
+  requisites: ['authorize', 'argtypes'],
+  args: {
+    firstname: 'opt:string',
+    lastname: 'opt:string',
+    pass: 'opt:string',
+    email: 'opt:string',
+    admin: 'opt:boolean'
+  },
+  method: 'patch',
+  route: '/user/:id/update',
+  action: function (req, res) {
+    if (req.args.admin !== undefined && !req.auth.admin) return res.sendError(401, 'authorization', 'must be admin to alter admin status')
 
-module.exports = function updateUser (req, res) {
-  if (req.auth.admin || req.auth.id === req.params.id) {
-    if (req.body.admin && !req.auth.admin) return res.send(400, 'cannot promote user')
-
-    update(req.db, req.salt, req.user.id, {
-      name: req.body.name,
-      email: req.body.email,
-      pass: req.body.pass,
-      admin: req.body.admin
-    })
-      .then((token) => res.send(200, token))
-      .catch((err) => res.send(err.code, err.message))
-  } else res.send(401, 'cannot update other user. must be admin')
+    if (req.auth.id === req.params.id || req.auth.admin) {
+      return req.util.user.update()
+        .catch((err) => res.sendError(err.code, err.type, err.message))
+        .then((token) => res.send(200, token))
+    } else return res.sendError(401, 'authorization', 'unauthorized to edit this user')
+  }
 }
