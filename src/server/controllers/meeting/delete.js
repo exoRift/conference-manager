@@ -4,19 +4,31 @@ module.exports = {
   route: '/meeting/:id/delete',
   action: function (req, res) {
     return req.db('meetings')
-      .delete()
+      .select('creator')
       .where('id', req.params.id)
       .catch((err) => {
         console.error('db', err)
 
         return res.sendError(500, 'internal', 'database unavailable')
       })
-      .then((amount) => {
-        if (amount) {
-          console.log('MEETING DELETED: ', req.auth.id, req.params.id)
+      .then(([meeting]) => {
+        if (req.auth.id === meeting.creator) {
+          return req.db('meetings')
+            .delete()
+            .where('id', req.params.id)
+            .catch((err) => {
+              console.error('db', err)
 
-          return res.send(200)
-        }
+              return res.sendError(500, 'internal', 'database unavailable')
+            })
+            .then((amount) => {
+              if (amount) {
+                console.log('MEETING DELETED: ', req.auth.id, req.params.id)
+
+                return res.send(200)
+              }
+            })
+        } else return res.sendError(401, 'authorization', 'you do not own this meeting')
       })
   }
 }
