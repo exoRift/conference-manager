@@ -3,8 +3,13 @@ import {
   Redirect
 } from 'react-router-dom'
 import {
-  formatError
-} from './util/'
+  parse as parseQuery
+} from 'query-string'
+
+import postFetch from './util/postFetch.js'
+import entrance from '../assets/images/entrance.jpg'
+
+import './styles/Login.css'
 
 const {
   REACT_APP_API_URL
@@ -14,118 +19,143 @@ class Login extends React.Component {
   constructor (props) {
     super(props)
 
+    this.query = parseQuery(window.location.search)
+
     this.state = {
-      data: {
-        iden: '',
-        pass: ''
+      email: '',
+      pass: '',
+      invalid: {
+        email: null,
+        pass: null
       },
-      authState: 'waiting',
-      error: null
+      success: null,
+      redirect: null
     }
 
-    this.handleChange = this.handleChange.bind(this)
-    this.sendLogin = this.sendLogin.bind(this)
+    this.submit = this.submit.bind(this)
   }
 
-  handleChange (event) {
-    this.setState({
-      data: {
-        ...this.state.data,
-        [event.target.name]: event.target.value
-      }
-    })
-  }
-
-  sendLogin (event) {
-    event.preventDefault()
-
-    if (this.state.authState === 'success') return
-
-    fetch(REACT_APP_API_URL + '/user/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'text/plain'
-      },
-      body: JSON.stringify(this.state.data)
-    }).then((data) => {
-      if (data.ok) {
-        data.text().then((token) => {
-          this.setState({
-            authState: 'success'
-          })
-
-          setTimeout(() => {
-            localStorage.setItem('auth', token)
-
-            window.location.reload()
-          }, 1200)
-        })
-      } else {
-        data.text().then((err) => {
-          const error = (
-            <div className='errorContainer'>
-              <h1 className='header'>Login Error</h1>
-              <h4 className='error'>{formatError(err)}</h4>
-            </div>
-          )
-
-          this.setState({
-            authState: 'failure',
-            error
-          })
-
-          clearTimeout(this.timer)
-          this.timer = setTimeout(() => {
-            this.setState({
-              authState: 'waiting',
-              error: null
-            })
-          }, 2000)
-        })
-      }
-    })
+  componentWillUnmount () {
+    clearTimeout(this.timeout)
   }
 
   render () {
-    if (localStorage.getItem('auth')) {
+    if (this.state.redirect) return <Redirect to={this.state.redirect}/>
+    else if ('auth' in localStorage) return <Redirect to='/'/>
+    else {
       return (
-        <Redirect to='/'/>
+        <div className='app-container login interior-bg' style={{ backgroundImage: `url(${entrance})` }}>
+          <form className='login-box' onSubmit={this.submit}>
+            {this.query.error === 'logged_out'
+              ? (
+                <span className='header issue'>You have been logged out. Please log back in</span>
+                )
+              : null}
+            <span className='header'>Log In</span>
+            <div className='form-group'>
+              <label htmlFor='emailInput'>Email address</label>
+              <input
+                type='email'
+                className={`form-control ${this.state.success ? 'is-valid' : ''} ${this.state.invalid.email ? 'is-invalid' : ''}`}
+                id='emailInput'
+                aria-describedby='emailHelp'
+                placeholder='Enter email'
+                value={this.state.email}
+                onChange={this.onChange.bind(this, 'email')}/>
+              {this.state.invalid.email
+                ? <div className='invalid-feedback'>{this.state.invalid.email}</div>
+                : null
+              }
+              <small id='emailHelp' className='form-text text-muted sub-message'>This email is visibile to only those with an account.</small>
+            </div>
+
+            <div className='form-group'>
+              <label htmlFor='passwordInput'>Password</label>
+              <input
+                type='password'
+                className={`form-control ${this.state.success ? 'is-valid' : ''} ${this.state.invalid.pass ? 'is-invalid' : ''}`}
+                id='passwordInput'
+                placeholder='Enter password'
+                value={this.state.pass}
+                onChange={this.onChange.bind(this, 'pass')}/>
+              {this.state.invalid.pass
+                ? <div className='invalid-feedback'>{this.state.invalid.pass}</div>
+                : null
+              }
+            </div>
+
+            <button type='submit' className='btn btn-primary' disabled={this.state.success}>Log In</button>
+          </form>
+        </div>
       )
     }
+  }
 
-    return (
-      <div className='loginPage'>
-        <div className='loginBox' id={this.state.authState}>
-          <div className='headerSpace'>
-            <h1 className='loginHeader'>Log into your account to schedule meetings</h1>
-            <h4 className='loginSubheader'>Don&apos;t have an account? Ask the building manager to open one for you</h4>
-          </div>
+  onChange (field, event) {
+    this.setState({
+      [field]: event.target.value
+    })
+  }
 
-          <div className='inputSpace'>
-            <form onSubmit={this.sendLogin}>
-              <div className='idenSpace'>
-                <label>
-                  <h2>Name or email:</h2>
-                  <input name='iden' type='text' onChange={this.handleChange}/>
-                </label>
-              </div>
+  submit (event) {
+    event.preventDefault() // Don't refresh page
 
-              <div className='passwordSpace'>
-                <label>
-                  <h2>Password:</h2>
-                  <input name='pass' type='password' onChange={this.handleChange}/>
-                </label>
-              </div>
+    if (!this.state.success && document.getElementById('emailInput').checkValidity() && this.state.email.length && this.state.pass.length) {
+      fetch(REACT_APP_API_URL + '/user/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(this.state)
+      })
+        .then(postFetch)
+        .then((token) => token.text())
+        .then((token) => {
+          this.setState({
+            success: true,
+            invalid: {}
+          })
 
-              <input type='submit' value='Login'/>
-            </form>
+          localStorage.setItem('auth', token)
 
-            {this.state.error}
-          </div>
-        </div>
-      </div>
-    )
+          clearTimeout(this.timeout)
+          this.timeout = setTimeout(() => {
+            this.setState({
+              redirect: '/account'
+            })
+
+            this.props.refreshNav()
+          }, 1000)
+        })
+        .catch((res) => {
+          if (res instanceof TypeError) this.props.onError(res) // Network errors
+          else {
+            res.json()
+              .then(({ error }) => {
+                if (res.status === 404) {
+                  this.setState({
+                    invalid: {
+                      email: 'This email is not linked to an account'
+                    }
+                  })
+                } else if (error.message === 'incorrect password') {
+                  this.setState({
+                    invalid: {
+                      pass: 'Password incorrect'
+                    }
+                  })
+                } else this.props.onError(error)
+              })
+          }
+        })
+    } else {
+      this.setState({
+        invalid: {
+          email: this.state.email.length ? null : 'Required field',
+          pass: this.state.pass.length ? null : 'Required field'
+        }
+      })
+    }
   }
 }
 

@@ -4,8 +4,5 @@ node_modules
 # IDE options
 .vscode
 
-# Lint options
-.eslintrc
-
 # Env file
 .env

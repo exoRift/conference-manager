@@ -1,138 +1,59 @@
-/* Account */
-.accountPage {
+.app-container.account {
   display: flex;
   align-items: center;
-  height: 100vh;
-}
-.accountContainer {
-  transition: 0.4s;
-  height: 90%;
-  width: 90%;
-  margin: 0 auto;
-  padding: 4% 5%;
-  border-radius: 25px;
-  background: var(--secondary);
-}
-.accountContainer:hover {
-  height: 95%;
-  width: 95%;
-}
-.accountContainer .header {
-  text-align: center;
-}
-.accountContainer .inputHeader {
-  padding-left: 1%;
-}
-.accountContainer input {
-  transition: 0.3s;
-  resize: none;
-  border: none;
-  width: 18%;
-  border-radius: 10px 0 0 10px;
-  background: var(--light);
-  font-size: 1vw;
-  padding: 1%;
-  outline: none !important;
-  flex-grow: 0;
-  margin-right: 0;
-}
-.accountContainer input[type='submit'] {
-  margin-left: 1%;
-  width: 14%;
-  border-radius: 15px;
-  background: var(--info);
-}
-.accountContainer input[type='submit']:hover {
-  opacity: 0.8;
-}
-.accountContainer button {
-  font-size: 180%;
-  border-radius: 0 10px 10px 0;
-  outline: none !important;
+  min-height: 100%;
+  padding: 0 10%;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
 }
 
-.inputArea {
-  display: flex;
-  padding-bottom: 4%;
-}
-
-.googleAuthContainer {
-  transition: 0.5s;
-  display: flex;
-  width: fit-content;
-  margin-left: auto;
-  margin-top: -8%;
-  margin-bottom: 5%;
-  white-space: nowrap;
-  padding: 0.8%;
-  background: var(--cyan);
-  color: white !important;
-  border-radius: 25px;
-}
-.googleAuthContainer:hover {
-  background: darkcyan;
-}
-.googleAuthContainer img {
-  width: 4.2em;
-  border-radius: 15px;
-  margin-right: 2%;
-}
-.googleAuthContainer .authText {
-  transition: 0.8s;
-  overflow: hidden;
-  width: 0em;
-  margin: auto 0;
-}
-.googleAuthContainer:hover .authText {
-  width: 23em;
-}
-.submitButtonContainer {
-  display: flex;
-}
-
-.accountContainer .errorContainer {
-  margin: auto 2%;
-  width: 25%;
-  border-radius: 10px;
-  background: var(--red);
-}
-
-.savedNotif {
-  margin: auto 2%;
-  animation: savedFade 0.8s ease 0s 1 normal forwards;
-}
-
-.logoutContainer {
-  transition: 1s;
-  display: flex;
-  margin: auto 0 0 auto;
-  padding: 0.5%;
+.app-container.account .userbox {
+  flex: 1;
+  padding: 5%;
+  background-color: rgba(255, 255, 255, 0.4);
   border-radius: 5px;
-  color: white !important;
-  background: lightcoral;
-}
-.logoutContainer img {
-  width: 3vw;
-}
-.logoutContainer .logoutTextContainer {
-  transition: 1s;
-  width: 0em;
-  margin: auto 0;
-  overflow: hidden;
-  font-size: 1.5vw;
-}
-.logoutContainer:hover {
-  background: var(--red);
-}
-.logoutContainer:hover .logoutTextContainer {
-  width: 4em;
-  padding-left: 8%;
+  clip-path: polygon(0 0, 90% 0%, 100% 10%, 100% 100%, 10% 100%, 0 90%);
+  backdrop-filter: blur(10px);
 }
 
-@keyframes savedFade {
-  from {
-    color: white;
-  } to {
-    color: lime;
-  }
+.app-container.account .userbox .form-group {
+  padding: 0 6vw;
+}
+
+.nav-container {
+  display: flex;
+  justify-content: space-between;
+}
+
+.nav-container > div {
+  display: flex;
+  height: fit-content;
+  align-items: center;
+  transition: 0.3s;
+  cursor: pointer;
+  padding: 0.5%;
+  background-color: var(--secondary);
+  border-radius: 10px;
+  font-size: x-large;
+}
+.nav-container > div:hover {
+  transform: scale(1.1);
+}
+.nav-container > .logout-container:hover {
+  background-color: var(--danger);
+}
+.nav-container > .admin-container:hover {
+  background-color: var(--warning);
+}
+.nav-container > div svg {
+  width: 2rem;
+  height: 2rem;
+}
+.nav-container > .logout-container svg path {
+  stroke: #212529;
+}
+.nav-container .admin-container svg path {
+  fill: #212529;
 }

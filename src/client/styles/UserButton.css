@@ -1,0 +1,62 @@
+#userContainer {
+  transition: 0.3s;
+  animation: tease 4s ease 0s 1 normal forwards;
+  cursor: pointer;
+  display: flex;
+  width: fit-content;
+  position: fixed;
+  right: 0;
+  bottom: 10vh;
+  background-color: white;
+  border-radius: 5vw;
+  padding: 0.6%;
+}
+#userContainer:hover {
+  transform: scale(1.1) translateX(-0.3vw);
+}
+#userContainer .name {
+  animation: reveal 4s ease 0s 1 normal forwards;
+  font-size: x-large;
+  overflow: hidden;
+  color: #212529;
+  white-space: nowrap;
+}
+#userContainer img {
+  width: 2.4rem;
+}
+
+@keyframes tease {
+  0% {
+    margin-right: 0vw;
+    max-width: 0rem;
+  }
+  30% {
+    margin-right: 2vw;
+  }
+  70% {
+    margin-right: 2vw;
+    max-width: 16rem;
+  }
+  100% {
+    margin-right: -0.5vw;
+  }
+}
+
+@keyframes reveal {
+  0% {
+    margin-right: 0vw;
+    max-width: 0rem;
+  }
+  30% {
+    margin-right: 0.5vw;
+    max-width: 11rem;
+  }
+  70% {
+    margin-right: 0.5vw;
+    max-width: 11rem;
+  }
+  100% {
+    margin-right: 0vw;
+    max-width: 0rem;
+  }
+}

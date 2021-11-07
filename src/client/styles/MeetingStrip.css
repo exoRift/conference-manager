@@ -1,0 +1,157 @@
+.meeting-strip {
+  transition: 0.3s;
+  margin: 1% 1%;
+  background: rgba(200, 200, 200, 0.6);
+  backdrop-filter: blur(4px);
+  border-radius: 15px;
+}
+.meeting-strip.saved {
+  background: rgba(24, 188, 156, 0.6);
+}
+
+.meeting-strip .btn:not(.submit) {
+  transition: 0.2s;
+  width: 2vw;
+  height: 2vw;
+  margin: 0.5vw;
+  padding: 0.2vw;
+  border-radius: 10px;
+}
+.meeting-strip .btn:not(.submit):hover {
+  width: 2.5vw;
+  height: 2.5vw;
+}
+
+.meeting-strip .share-button {
+  transition: 0.2s;
+  display: inline;
+  margin-right: 0%;
+  cursor: pointer;
+}
+.meeting-strip .share-button svg {
+  transition: 0.2s;
+  width: 0em;
+  height: 2.5em;
+}
+.meeting-strip:hover .share-button {
+  margin-right: 0.5%;
+}
+.meeting-strip:hover .share-button svg {
+  width: 2.5em;
+  height: 2.5em;
+}
+.meeting-strip .share-button:hover svg path {
+  stroke: #212529;
+}
+.meeting-strip .share-button:hover svg path:last-child {
+  fill: #212529;
+}
+.meeting-strip .share-button.active svg path {
+  stroke: #1bb467;
+}
+.meeting-strip .share-button.active svg path:last-child {
+  fill: #1bb467;
+}
+.meeting-strip .share-button.active::before {
+  content: 'Link copied to clipboard!';
+  position: absolute;
+  font-weight: bolder;
+  animation: float 0.3s ease-out 0s 1 normal forwards;
+}
+
+.meeting-strip .info-container::after {
+  font-size: larger;
+  font-weight: bold;
+  vertical-align: middle;
+}
+.meeting-strip.soon:not(.in-session, .editing) .info-container::after {
+  content: 'STARTING SOON';
+  color: var(--info);
+}
+.meeting-strip.in-session:not(.editing) .info-container::after {
+  content: 'IN SESSION';
+  color: var(--danger);
+}
+
+.meeting-strip .info-container .btn.edit {
+  background: rgba(243, 156, 18, 0.5);
+}
+.meeting-strip .info-container .btn.edit:hover {
+  background: rgb(243, 156, 18);
+}
+.meeting-strip .info-container .btn.edit.editing {
+  background: rgba(231, 76, 60, 0.5);
+}
+.meeting-strip .info-container .btn.edit.editing:hover {
+  background: rgb(231, 76, 60);
+}
+
+.meeting-strip .info-container > span {
+  margin-right: 2%;
+  font-size: xx-large;
+  vertical-align: middle;
+}
+
+.meeting-strip .info-container.title {
+  font-weight: bold;
+}
+
+.meeting-strip .info-container .times {
+  padding: 0.2%;
+  font-size: x-large;
+  background: rgba(100, 100, 100, 0.4);
+  border-radius: 10px;
+}
+
+.meeting-strip .info-container > .room {
+  font-size: x-large;
+  font-style: italic;
+}
+
+.meeting-strip .info-container .times .time-container {
+  display: inline-flex;
+  justify-content: space-evenly;
+  width: 18%;
+}
+
+.meeting-strip .meeting-card.editing {
+  width: 45%;
+  margin-left: 4%;
+}
+
+.meeting-strip .hover-info-container {
+  transition: 0.5s;
+  overflow: hidden;
+  max-height: 0em;
+  margin-left: 0%;
+}
+.meeting-strip:not(.editing):hover .hover-info-container {
+  max-height: 5em;
+  margin-left: 2%;
+}
+
+.meeting-strip .hover-info-container .btn.delete,
+.meeting-strip .hover-info-container .delete-confirm-container .btn.confirm {
+  background: rgba(231, 76, 60, 0.5);
+}
+.meeting-strip .hover-info-container .btn.delete:hover,
+.meeting-strip .hover-info-container .delete-confirm-container .btn.confirm:hover {
+  background: rgb(231, 76, 60);
+}
+
+.meeting-strip .hover-info-container .btn.cancel {
+  background: rgba(44, 62, 80, 0.5);
+}
+.meeting-strip .hover-info-container .btn.cancel:hover {
+  background: rgb(44, 62, 80);
+}
+
+@keyframes float {
+  from {
+    margin-top: 0%;
+    opacity: 1;
+  } to {
+    margin-top: -2%;
+    opacity: 0;
+  }
+}

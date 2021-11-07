@@ -4,18 +4,18 @@ exports.up = function (knex) {
     .createTable('users', (table) => {
       table.string('id').primary()
 
-      table.string('firstname').notNullable()
-      table.string('lastname').notNullable()
-      table.unique(['firstname', 'lastname'])
-
-      table.string('pass').notNullable()
-      table.string('email').unique().notNullable()
-      table.string('token').unique().notNullable()
+      table.string('firstname', 20).notNullable()
+      table.string('lastname', 20).notNullable()
+      table.string('suite', 3).nullable()
+      table.string('pass').nullable()
+      table.string('email', 40).unique().notNullable()
+      table.string('token').unique().nullable()
       table.boolean('admin').default(false).notNullable()
+      table.boolean('limited').default(false).notNullable()
     })
     .createTable('meetings', (table) => {
       table.string('id').primary()
-      table.string('title').unique().notNullable()
+      table.string('title', 45).unique().notNullable()
 
       table.string('creator').notNullable()
       table.foreign('creator')
@@ -24,10 +24,10 @@ exports.up = function (knex) {
         .onDelete('cascade')
 
       table.integer('room').notNullable()
-      table.string('desc').notNullable()
-      table.json('attendees').notNullable()
-      table.datetime('starttime').notNullable()
-      table.datetime('endtime').notNullable()
+      table.string('desc', 150).nullable()
+      table.jsonb('attendees').default('[]').notNullable()
+      table.datetime('startdate').notNullable()
+      table.specificType('length', 'interval').default('1 hour').notNullable()
     })
     .createTable('posts', (table) => {
       table.string('id').primary()
@@ -39,7 +39,8 @@ exports.up = function (knex) {
       table.foreign('creator')
         .references('id')
         .inTable('users')
-        .onDelete('SET null')
+        .onDelete('cascade')
+        // .onDelete('SET null')
     })
 }
 

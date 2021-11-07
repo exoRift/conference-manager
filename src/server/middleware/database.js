@@ -1,11 +1,18 @@
 const Knex = require('knex')
 
-module.exports = function (dbInfo) {
+module.exports = function (dbInfo, meetingCore) {
   const db = new Knex(dbInfo)
 
   db.raw('SELECT 1 + 1 AS result')
-    .catch((err) => console.error('Unable to establish connection to database', err))
     .then(() => console.info('Successfully established connection to database'))
+    .catch((err) => console.error('Unable to establish connection to database', err))
+
+  db('meetings')
+    .select('id', 'startdate', db.raw('EXTRACT(EPOCH from length) * 1000 as length'), 'room')
+    .then((meetings) => {
+      for (const meeting of meetings) meetingCore.upload(db, meeting)
+    })
+    .catch((err) => console.error('db', err))
 
   return (req, res, next) => {
     req.db = db

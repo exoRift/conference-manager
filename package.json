@@ -1,13 +1,13 @@
 {
   "name": "conference-manager",
   "version": "1.0.0",
-  "description": "A website to schedule, view, and manage conference room bookings for the Studylogic Wordwide HQ",
-  "main": "src/index.js",
+  "description": "A website and server to schedule, view, and manage conference room bookings for the 525 Chestnut St. office building",
   "scripts": {
     "start": "concurrently 'npm:api-dev' 'npm:static'",
-    "api": "node src/server",
-    "api-dev": "nodemon src/server",
+    "api": "dotenv -e .env node src/server",
+    "api-dev": "dotenv -e .env nodemon src/server",
     "static": "react-scripts start",
+    "genusers": "dotenv -e .env node src/server/util/genUsers.js",
     "build": "react-scripts build"
   },
   "repository": {
@@ -19,7 +19,6 @@
   "bugs": {
     "url": "https://github.com/exoRift/conference-manager/issues"
   },
-  "homepage": "https://github.com/exoRift/conference-manager#readme",
   "browserslist": {
     "production": [
       ">0.2%",
@@ -43,37 +42,32 @@
   ],
   "dependencies": {
     "@polka/send-type": "^0.5.2",
+    "@uiw/react-md-editor": "^3.4.14",
     "bcrypt": "^5.0.1",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
-    "ejs": "^3.0.1",
+    "ejs": "^3.1.6",
     "jsonwebtoken": "^8.5.1",
-    "knex": "^0.95.2",
+    "knex": "^0.95.3",
     "mass-require": "^1.0.0",
-    "moment": "^2.24.0",
     "nodemailer": "^6.5.0",
     "pg": "^8.5.1",
     "polka": "^0.5.2",
-    "query-string": "^6.14.1",
-    "react": "^16.12.0",
+    "query-string": "^7.0.0",
+    "react": "^17.0.2",
     "react-autocomplete-input": "^1.0.17",
-    "react-datetime": "^2.16.3",
-    "react-dom": "^16.12.0",
-    "react-markdown": "^4.3.1",
-    "react-router-dom": "^5.1.2",
-    "react-scripts": "^3.3.0"
+    "react-dom": "^17.0.2",
+    "react-markdown": "^5.0.3",
+    "react-moment": "^1.1.1",
+    "react-router-dom": "^5.2.0",
+    "react-scripts": "^4.0.3"
   },
   "devDependencies": {
-    "concurrently": "^5.0.2",
-    "dotenv": "^8.2.0",
-    "eslint": "^6.8.0",
-    "eslint-config-react-app": "^5.1.0",
-    "eslint-config-standard": "^14.1.0",
-    "eslint-plugin-import": "^2.20.0",
-    "eslint-plugin-node": "^11.0.0",
-    "eslint-plugin-promise": "^4.2.1",
-    "eslint-plugin-react": "^7.23.1",
-    "eslint-plugin-standard": "^4.0.1",
-    "nodemon": "^2.0.2"
+    "concurrently": "^6.0.0",
+    "dotenv-cli": "^4.0.0",
+    "eslint": "^7.22.0",
+    "eslint-config-react-app": "^6.0.0",
+    "eslint-config-standard": "^16.0.2",
+    "nodemon": "^2.0.7"
   }
 }

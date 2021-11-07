@@ -1,66 +1,60 @@
 import Home from '../Home.jsx'
-import Directory from '../Directory.jsx'
-import Rooms from '../Rooms.jsx'
-import Room from '../Room.jsx'
-import Login from '../Login.jsx'
 import Account from '../Account.jsx'
-import Logout from '../Logout.jsx'
-import Admin from '../Admin.jsx'
-import Manage from '../Manage.jsx'
+import Login from '../Login.jsx'
 import Register from '../Register.jsx'
+import Directory from '../Directory.jsx'
+import RoomPanel from '../RoomPanel.jsx'
+import Admin from '../Admin.jsx'
+import Manager from '../Manager.jsx'
 
 const routes = [
   {
     path: '/',
     exact: true,
     name: 'Home',
-    component: Home
-  },
-  {
-    path: '/directory',
-    name: 'Directory',
-    component: Directory
-  },
-  {
-    path: '/rooms',
-    name: 'Specific Conference Room',
-    component: Rooms
-  },
-  {
-    path: '/room',
-    component: Room,
-    hidden: true
-  },
-  {
-    path: '/login',
-    component: Login,
-    hidden: true
+    Component: Home
   },
   {
     path: '/account',
-    component: Account,
-    hidden: true
+    name: 'My Account',
+    hidden: true,
+    Component: Account
   },
   {
-    path: '/logout',
-    component: Logout,
-    hidden: true
-  },
-  {
-    path: '/admin',
-    component: Admin,
-    hidden: true
-  },
-  {
-    path: '/manage',
-    name: 'Manage Conferences',
-    component: Manage
+    path: '/login',
+    name: 'Login',
+    hidden: true,
+    Component: Login
   },
   {
     path: '/register/:id',
-    name: 'Complete Registration',
-    component: Register,
-    hidden: true
+    name: 'Register Account',
+    hidden: true,
+    Component: Register
+  },
+  {
+    path: '/manager',
+    name: 'My Meetings',
+    accountOnly: true,
+    Component: Manager
+  },
+  {
+    path: '/meetings',
+    name: 'Directory',
+    exact: true,
+    Component: Directory
+  },
+  {
+    path: '/meetings/:room',
+    name: 'Room Panel',
+    hidden: true,
+    Component: RoomPanel
+  },
+  {
+    path: '/admin',
+    name: 'Admin Panel',
+    hidden: true,
+    Component: Admin
   }
 ]
 

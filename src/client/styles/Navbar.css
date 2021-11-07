@@ -1,69 +1,17 @@
-/* Put components side by side */
-#root {
-  display: flex;
-}
-#app {
-  width: 100%;
-}
-
-/* Navbar */
 #navbar {
-  transition: 0.5s;
-  background: var(--card-head-background);
-  display: block;
-  position: absolute;
-  height: 100%;
-  width: 2%;
-  overflow: hidden;
-  border-top-right-radius: 20%;
-  border-bottom-right-radius: 20%;
-  padding: 1% 0;
-  opacity: 0.4;
-  z-index: 1;
+  background-color: rgb(50, 50, 50);
 }
 #navbar .routes {
-  transition: 0.5s;
-}
-
-#navbar:hover {
-  transition: 0.8s;
-  width: 10%;
-  opacity: 1;
-}
-#navbar:hover .routes {
-  transition: 0.8s;
-  padding-left: 6%;
-}
-
-/* User section */
-#navbar .userContainer {
   display: flex;
-  bottom: 3%;
-  position: absolute;
-  width: 100%;
-  padding-left: 2.5%;
-  background: var(--card-body-background);
-  border-radius: 20px 0 0 10px;
+  justify-content: center;
+  font-size: x-large;
 }
-#navbar .userContainer .iconContainer {
-  width: 30%;
-  margin: auto 5% auto 0;
-}
-#navbar .userContainer .iconContainer img {
-  width: 100%;
-}
-#navbar .userContainer .nameContainer {
-  width: 100%;
-  font-size: 1vw;
-  color: white;
-  margin: auto;
+#navbar .routes .route {
+  margin: 0 1vw;
 }
 
-#navbar .userContainer#unlogged .nameContainer {
-  word-spacing: inherit;
-  white-space: nowrap;
-}
-
-#navbar .userContainer#logged .nameContainer {
-  word-spacing: 100vw;
+@media only screen and (max-width: 600px) {
+  #navbar .routes {
+    justify-content: space-evenly;
+  }
 }

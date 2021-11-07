@@ -1,12 +1,11 @@
 import React from 'react'
 
-import Clock from './util/Clock.jsx'
+import postFetch from './util/postFetch.js'
+import MeetingCard from './modules/MeetingCard.jsx'
+import Clock from './modules/Clock.jsx'
+import room from '../assets/images/conference-horiz.jpg'
 
 import './styles/Directory.css'
-
-import Banner from '../assets/banner.png'
-
-import ConferenceCard from './util/ConferenceCard.jsx'
 
 const {
   REACT_APP_API_URL
@@ -17,85 +16,98 @@ class Directory extends React.Component {
     super(props)
 
     this.state = {
-      confs: []
+      rooms: [],
+      touchscreen: false
     }
+
+    this.rails = [
+      React.createRef(),
+      React.createRef()
+    ]
+
+    this.autoScroll = this.autoScroll.bind(this)
+
+    window.addEventListener('touchstart', this.setTouch.bind(this, true))
+    window.addEventListener('touchend', this.setTouch.bind(this, false))
   }
 
   componentDidMount () {
-    this.tick()
+    const rooms = new Array(2).fill(undefined)
 
-    this.dbTimer = setInterval(() => this.tick(), 60000)
+    this.update(rooms)
+
+    this.updateInterval = setInterval(this.update.bind(this, rooms), 300000 /* 5 minutes */)
   }
 
   componentWillUnmount () {
-    clearInterval(this.dbTimer)
-  }
+    this.scrollInterval = clearInterval(this.scrollInterval)
 
-  tick () {
-    fetch(REACT_APP_API_URL + '/conference/all', {
-      headers: {
-        Accept: 'application/json'
-      }
-    })
-      .then((data) => data.json())
-      .then((confs) => Promise.all(confs.map(async (c) => {
-        c.creator = await fetch(`${REACT_APP_API_URL}/user/${c.creator}/name`, {
-          headers: {
-            Accept: 'text/plain'
-          }
-        }).then((data) => data.text())
-
-        return c
-      })))
-      .then((confs) => this.setState({
-        confs
-      }))
+    window.removeEventListener('touchstart', this.setTouch)
+    window.removeEventListener('touchend', this.setTouch)
   }
 
   render () {
-    if (this.state.confs.length > 12) {
-      this.setState({
-        confs: this.state.confs.reduce((a, c, i, arr) => {
-          const dup = arr.findIndex((e) => e.room === c.room)
-
-          if (dup !== -1) {
-            if (arr[dup].starttime > c.starttime) arr[dup] = c
-          } else a.push(c)
-
-          return a
-        }, [])
-      })
-    }
+    if (this.state.touchscreen || this.rails.reduce((a, r) => a ||
+      (r.current?.clientWidth < r.current?.scrollWidth), false)) this.scrollInterval = clearInterval(this.scrollInterval)
+    else if (!('scrollInterval' in this)) this.scrollInterval = setInterval(this.autoScroll, 3000)
 
     return (
-      <>
-        <div id='head'>
-          <div className='bannerContainer'>
-            <img src={Banner} alt='Banner' className='banner'/>
-          </div>
+      <div className='app-container directory' style={{ backgroundImage: `url(${room})` }}>
+        {this.state.rooms.map((r, i) => (
+          <div className='meeting-list-container' key={i}>
+            <div className='room-id-label'>
+              <span>{i + 1}</span>
+            </div>
 
-          <div className='clockContainer'>
-            <Clock className='clock'/>
-          </div>
-        </div>
-
-        {this.state.confs.length
-          ? (
-            <div className='conferenceCardList'>
-              {this.state.confs.map((c, i) => (
-                <div className='conferenceCardContainer' key={i}>
-                  <ConferenceCard conference={c}/>
+            {r.length
+              ? (
+                <div className='meeting-list' ref={this.rails[i]}>
+                  {r.map((m, i) => <MeetingCard onError={this.props.onError} data={m} key={i}/>)}
                 </div>
-              ))}
-            </div>
-          )
-          : (
-            <div className='emptyMessageContainer'>
-              <strong className='emptyMessage'>No scheduled conferences</strong>
-            </div>
-          )}
-      </>
+                )
+              : <span className='floating-text'>No meetings scheduled</span>}
+          </div>
+        ))}
+
+        <div className='clock-container'>
+          <Clock className='clock' format='h:mma' interval={30000} ticking={true}/>
+        </div>
+      </div>
     )
+  }
+
+  update (rooms) {
+    Promise.all(rooms.map((r, i) => fetch(REACT_APP_API_URL + '/room/list/' + (i + 1), {
+      method: 'GET'
+    })
+      .then(postFetch)
+      .then((meetings) => meetings.json())))
+
+      .then((rooms) => this.setState({ rooms }))
+      .catch(this.props.onError)
+  }
+
+  autoScroll () {
+    for (const rail of this.rails) {
+      if (rail.current?.clientWidth < rail.current?.scrollWidth && rail.current?.children.length > 1) {
+        rail.current.scroll({
+          left: rail.current.scrollLeft + rail.current.clientWidth >= rail.current.scrollWidth
+            ? 0
+            : rail.current.scrollLeft + rail.current.children[0].clientWidth + parseInt(window.getComputedStyle(rail.current.children[1]).marginLeft, 10),
+          behavior: 'smooth'
+        })
+      }
+    }
+  }
+
+  setTouch (status) {
+    for (const rail of this.rails) {
+      if (rail.current) rail.current.style.overflow = status ? 'auto' : 'hidden'
+    }
+
+    this.setState({
+      touchscreen: status
+    })
   }
 }
 

@@ -1,10 +1,17 @@
 const typeRegex = /^(?:(.+):)?(.+)$/
 
 function buildErrorString (name, expected, received) {
-  return `invalid param type for: {${name}}. expected {${expected}} instead got {${received}}`
+  return `invalid arg type for: {${name}}. expected {${expected}} instead got {${received}}`
 }
 
-function transform (input, name, type, receivedType) {
+function transform (input, name, type, receivedType, options = {}) {
+  const {
+    maxStringLen = 255,
+    allowNewlines = false,
+    forceInt = true,
+    absolute = false
+  } = options
+
   switch (type) {
     case 'date': {
       const date = new Date(input)
@@ -16,15 +23,22 @@ function transform (input, name, type, receivedType) {
       if (!Array.isArray(input)) throw Error(buildErrorString(name, 'array of strings', receivedType))
 
       break
-    case 'number':
-      if (isNaN(Number(input))) throw Error(buildErrorString(name, 'number', receivedType))
+    case 'number': {
+      const number = forceInt ? parseInt(input) : Number(input)
 
-      break
+      if (isNaN(number)) throw Error(buildErrorString(name, 'number', receivedType))
+
+      return absolute ? Math.abs(number) : number
+    }
     case 'string':
       if (receivedType === 'string') {
-        if (!input.length) throw Error(`invalid param type for: {${name}}. expected {string} but received string is empty`)
+        const trimmed = allowNewlines ? input.trim() : input.replace(/\r|\n/g, '').trim()
 
-        return input.trim()
+        if (!trimmed.length) throw Error(`invalid arg type for: {${name}}. expected {string} but received string is empty`)
+        if (trimmed.length > maxStringLen) throw Error(`arg {${name}} too long. limit: {${maxStringLen}}`)
+        if (trimmed.includes('*')) throw Error('cannot use wildcards in args')
+
+        return trimmed
       } else throw Error(buildErrorString(name, 'string', receivedType))
     case 'boolean':
       try {
@@ -38,16 +52,16 @@ function transform (input, name, type, receivedType) {
   }
 }
 
-module.exports = function (args) {
+module.exports = function (controller) {
   return function (req, res, next) {
     req.args = {}
 
-    for (const arg in args) {
+    for (const arg in controller.args) {
       const [
         ,
         preface,
         type
-      ] = typeRegex.exec(args[arg])
+      ] = typeRegex.exec(controller.args[arg])
 
       const receivedType = typeof req.body[arg]
 
@@ -61,7 +75,7 @@ module.exports = function (args) {
       }
 
       try {
-        req.args[arg] = transform(req.body[arg], arg, type, receivedType)
+        req.args[arg] = transform(req.body[arg], arg, type, receivedType, controller.options?.argtypes[arg]) || req.body[arg]
       } catch (err) {
         res.sendError(400, 'argument', err.message)
 

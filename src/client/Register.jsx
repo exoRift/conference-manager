@@ -6,11 +6,11 @@ import {
   parse as parseQuery
 } from 'query-string'
 
-import './styles/Register.css'
+import postFetch from './util/postFetch.js'
+import UserBox from './modules/UserBox.jsx'
+import entrance from '../assets/images/entrance.jpg'
 
-import {
-  formatError
-} from './util/'
+import './styles/Register.css'
 
 const {
   REACT_APP_API_URL
@@ -23,126 +23,125 @@ class Register extends React.Component {
     this.query = parseQuery(window.location.search)
     this.params = props.match.params
 
+    this.initial = {
+      firstname: this.query.firstname || '',
+      lastname: this.query.lastname || '',
+      email: this.query.email || '',
+      pass: ''
+    }
+
     this.state = {
-      data: {
-        name: this.query.name || '',
-        email: this.query.email || '',
-        pass: ''
-      },
-      authState: 'waiting',
+      data: this.initial,
+      redirect: null,
+      success: false,
+      invalid: {},
       error: null
     }
 
-    this.handleChange = this.handleChange.bind(this)
-    this.sendRegister = this.sendRegister.bind(this)
+    this.submit = this.submit.bind(this)
   }
 
-  handleChange (event) {
-    this.setState({
-      data: {
-        ...this.state.data,
-        [event.target.name]: event.target.value
-      }
-    })
-  }
-
-  sendRegister (event) {
-    event.preventDefault()
-
-    fetch(`${REACT_APP_API_URL}/user/register/${this.params.id}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'text/plain'
-      },
-      body: JSON.stringify(this.state.data)
-    }).then((data) => {
-      data.text().then((res) => {
-        if (data.ok) {
-          this.setState({
-            error: null,
-            authState: 'success'
-          })
-
-          setTimeout(() => {
-            localStorage.setItem('auth', res)
-
-            window.location.reload()
-          }, 1200)
-        } else {
-          this.setState({
-            error: formatError(res),
-            authState: 'failure'
-          })
-
-          clearTimeout(this.timer)
-          this.timer = setTimeout(() => {
-            this.setState({
-              authState: 'waiting',
-              error: null
-            })
-          }, 2000)
-        }
-      })
-    })
+  componentWillUnmount () {
+    clearTimeout(this.timeout)
   }
 
   render () {
-    if (!this.params.id || localStorage.getItem('auth')) {
+    console.log(this.state)
+    if (this.state.redirect) return <Redirect to={this.state.redirect}/>
+    else if ('auth' in localStorage) return <Redirect to='/'/>
+    else {
       return (
-        <Redirect to='/'/>
-      )
-    } else {
-      return (
-        <div className='loginPage'>
-          <div className='loginBox' id={this.state.authState}>
-            <div className='headerSpace'>
-              <h1 className='loginHeader'>Register an account to schedule meetings</h1>
-              <h4 className='loginSubheader'>Some details may be autofilled from existing information</h4>
-            </div>
-
-            <div className='inputSpace'>
-              <form onSubmit={this.state.authState === 'success' ? null : this.sendRegister}>
-                <div className='nameSpace'>
-                  <label>
-                    <h2>Name:</h2>
-                    <input name='name' type='text' onChange={this.handleChange} value={this.state.data.name}/>
-                  </label>
-                </div>
-
-                <div className='emailSpace'>
-                  <label>
-                    <h2>Email:</h2>
-                    <input name='email' type='text' onChange={this.handleChange} value={this.state.data.email}/>
-                  </label>
-                </div>
-
-                <div className='passwordSpace'>
-                  <label>
-                    <h2>Password:</h2>
-                    <input name='pass' type='password' onChange={this.handleChange} value={this.state.data.pass}/>
-                  </label>
-                </div>
-
-                <input type='submit' value='Register'/>
-              </form>
-
-              {this.state.error ? (
-                <div className='errorContainer'>
-                  <h1 className='header'>Registration Error</h1>
-                  <h4 className='error'>{this.state.error}</h4>
-                </div>
-              ) : null}
-            </div>
-          </div>
+        <div className='app-container register interior-bg' style={{ backgroundImage: `url(${entrance})` }}>
+          <UserBox
+            data={this.initial}
+            header='Register Your Account'
+            display={['name', 'email', 'suite', 'pass']}
+            locked={['suite']}
+            blank={true}
+            invalid={this.state.invalid}
+            success={this.state.success}
+            onChange={this.onChange.bind(this)}
+            onError={this.props.onError}>
+              <button className='btn btn-success' onClick={this.submit}>Finish</button>
+          </UserBox>
         </div>
       )
     }
   }
-}
 
-Register.propTypes = {
-  match: () => {}
+  onChange (data) {
+    this.setState({
+      data: {
+        ...this.initial,
+        ...data
+      }
+    })
+  }
+
+  submit (event) {
+    event.preventDefault() // Don't refresh page
+
+    const filled = Object.values(this.state.data).reduce((a, v) => a && v && v.length, true)
+
+    if (!this.state.success && document.getElementById('emailUBInput').checkValidity() && filled) {
+      fetch(`${REACT_APP_API_URL}/user/${this.params.id}/register`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(this.state.data)
+      })
+        .then(postFetch)
+        .then((token) => token.text())
+        .then((token) => {
+          this.setState({
+            success: true,
+            invalid: {}
+          })
+
+          localStorage.setItem('auth', token)
+
+          clearTimeout(this.timeout)
+          this.timeout = setTimeout(() => {
+            this.setState({
+              redirect: '/account'
+            })
+
+            this.props.refreshNav()
+          }, 1000)
+        })
+        .catch((res) => {
+          if (res instanceof TypeError) this.props.onError(res) // Network errors
+          else {
+            res.json()
+              .then(({ error }) => {
+                if (res.status === 404) {
+                  this.setState({
+                    invalid: {
+                      email: 'This email is not linked to an account'
+                    }
+                  })
+                } else if (error.message === 'incorrect password') {
+                  this.setState({
+                    invalid: {
+                      pass: 'Password incorrect'
+                    }
+                  })
+                } else this.props.onError(error)
+              })
+          }
+        })
+    } else {
+      const invalid = {}
+
+      for (const entry of Object.entries(this.state.data)) {
+        invalid[entry[0]] = entry[1].length ? null : 'Required field'
+      }
+      this.setState({
+        invalid
+      })
+    }
+  }
 }
 
 export default Register

@@ -4,41 +4,54 @@ const {
   TOKEN_SECRET
 } = process.env
 
-module.exports = function (req, res, next) {
-  if (req.headers.authorization) {
-    jwt.verify(req.headers.authorization, TOKEN_SECRET, (err, match) => {
-      if (err && err.message !== 'jwt malformed') {
-        console.error('jwt', err)
+module.exports = function (controller) {
+  return function (req, res, next) {
+    if ('authorization' in req.headers) {
+      jwt.verify(req.headers.authorization, TOKEN_SECRET, (err, match) => {
+        if (err && err.message !== 'jwt malformed') {
+          console.error('jwt', err)
 
-        return res.sendError(500, 'internal', 'token decoding error')
-      }
+          res.sendError(500, 'internal', 'token decoding error')
 
-      if (match) {
-        req.db('users')
-          .select()
-          .where('id', match.id)
-          .catch((err) => {
-            console.error('db', err)
+          next()
+        } else if (match) {
+          req.db('users')
+            .select()
+            .where('id', match.id)
+            .then(([user]) => {
+              if (user) {
+                if (user.limited &&
+                  !controller?.options?.authorize?.allowLimited) return res.sendError(401, 'authorization', 'endpoint not delegated to limited users')
 
-            res.sendError(500, 'internal', 'database unavailable')
-          })
-          .then(([user]) => {
-            req.auth = user
+                req.auth = user
 
-            if (req.params.id === 'current') {
-              req.params.id = user.id
-            }
-          })
-          .finally(() => next())
-      } else {
-        res.sendError(401, 'authorization', 'invalid token')
+                if (req.params.id === 'current') {
+                  req.params.id = user.id
+                }
+              } else {
+                res.sendError(401, 'authorization', 'invalid token')
 
-        next()
-      }
-    })
-  } else {
-    res.sendError(400, 'authorization', 'no token provided')
+                next()
+              }
+            })
+            .catch((err) => {
+              console.error('db', err)
 
-    next()
+              res.sendError(500, 'internal', 'database unavailable')
+
+              next()
+            })
+            .finally(() => next())
+        } else {
+          res.sendError(401, 'authorization', 'invalid token')
+
+          next()
+        }
+      })
+    } else if (!controller?.options?.authorize?.optional) {
+      res.sendError(400, 'authorization', 'no token provided')
+
+      next()
+    } else next()
   }
 }

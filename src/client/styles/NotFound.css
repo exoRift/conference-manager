@@ -1,0 +1,33 @@
+.app-container.notfound {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  justify-content: center;
+  align-content: center;
+  text-align: center;
+  background: yellow;
+  background-image: radial-gradient(black 1px, transparent 0);
+  background-size: 40px 40px;
+  background-position: 0 -1%;
+}
+
+.app-container.notfound .backdrop {
+  position: absolute;
+  width: 40rem;
+  align-self: center;
+  margin-left: 4rem;
+  fill: var(--primary);
+  opacity: 0.3;
+  z-index: 1;
+}
+
+.app-container.notfound .header {
+  font-size: 20rem;
+  z-index: 2;
+}
+
+.app-container.notfound .subheader {
+  font-size: 10rem;
+  z-index: 2;
+}

@@ -1,7 +1,5 @@
 const path = require('path')
 
-if (!process.env.NODE_ENV) require('dotenv').config()
-
 const {
   DATABASE_CLIENT,
   DATABASE_URL

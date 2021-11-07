@@ -3,280 +3,398 @@ import {
   Redirect
 } from 'react-router-dom'
 
-import ConferenceManager from './util/ConferenceManager.jsx'
-import UserManager from './util/UserManager.jsx'
-import AnnouncementManager from './util/AnnouncementManager.jsx'
-
-import plusIcon from '../assets/plus.png'
+import postFetch from './util/postFetch.js'
+import UserBox from './modules/UserBox.jsx'
+import MeetingStrip from './modules/MeetingStrip.jsx'
+import PostEditor from './modules/PostEditor.jsx'
+import {
+  ReactComponent as RefreshSVG
+} from '../assets/svg/refresh.svg'
 
 import './styles/Admin.css'
-
-import {
-  formatError
-} from './util/'
 
 const {
   REACT_APP_API_URL
 } = process.env
+
+const roomBounds = [1, 2]
 
 class Admin extends React.Component {
   constructor (props) {
     super(props)
 
     this.state = {
-      waiting: true,
-      verified: false,
       page: 'users',
+      users: [],
+      meetings: [],
+      posts: [],
+      userIndex: null,
+      postIndex: null,
+      deletingUser: null,
+      deletingPost: null,
       addingUser: null,
-      addingAnnouncement: null,
-      saving: false,
-      error: null
+      addingPost: null,
+      deflect: false,
+      refreshed: false
     }
 
-    this._refs = {
-      users: React.createRef(),
-      confs: React.createRef(),
-      anns: React.createRef()
-    }
-
-    this.onTabClick = this.onTabClick.bind(this)
-    this.addUser = this.addUser.bind(this)
-    this.addAnnouncement = this.addAnnouncement.bind(this)
-    this.addChange = this.addChange.bind(this)
-    this.cancelAdd = this.cancelAdd.bind(this)
-    this.onAdd = this.onAdd.bind(this)
+    this.updateUsers = this.updateUsers.bind(this)
+    this.updateMeetings = this.updateMeetings.bind(this)
+    this.updatePosts = this.updatePosts.bind(this)
+    this.onChange = this.onChange.bind(this)
   }
 
   componentDidMount () {
     fetch(REACT_APP_API_URL + '/user/current/admin', {
+      method: 'GET',
       headers: {
-        Authorization: localStorage.getItem('auth'),
-        Accept: 'text/plain'
-      }
-    }).then((data) => {
-      if (data.ok) {
-        data.text().then((admin) => this.setState({
-          waiting: false,
-          verified: JSON.parse(admin)
-        }))
-      } else {
-        this.setState({
-          waiting: false
-        })
+        Authorization: localStorage.auth
       }
     })
-  }
-
-  onTabClick (event) {
-    this.setState({
-      page: event.target.id
-    })
-  }
-
-  addUser () {
-    this.setState({
-      addingUser: {}
-    })
-  }
-
-  addAnnouncement (data) {
-    this.setState({
-      addingAnnouncement: {
-        ...data
-      }
-    })
-  }
-
-  addChange (type) {
-    return (event) => {
-      if (type === 'user') {
-        this.setState({
-          addingUser: {
-            ...this.state.addingUser,
-            [event.target.id]: event.target.value
-          }
-        })
-      } else {
-        this.setState({
-          addingAnnouncement: {
-            ...this.state.addingAnnouncement,
-            [event.target.id]: event.target.value
-          }
-        })
-      }
-    }
-  }
-
-  cancelAdd () {
-    this.setState({
-      addingUser: null,
-      addingAnnouncement: null,
-      error: null
-    })
-  }
-
-  onAdd () {
-    this.setState({
-      saving: true
-    })
-
-    const creation = this.state.addingUser ? this._refs.users.current.create(this.state.addingUser) : this._refs.anns.current.create(this.state.addingAnnouncement)
-
-    creation
-      .then((res) => {
-        this.setState({
-          saving: false,
-          addingUser: null,
-          addingAnnouncement: null,
-          error: null
-        })
+      .then(postFetch)
+      .then((user) => user.json())
+      .then(({ admin }) => {
+        if (admin) {
+          this.refresh()
+        } else this.setState({ deflect: true })
       })
-      .catch((err) => {
-        this.setState({
-          saving: false,
-          error: formatError(err.message)
-        })
-      })
+      .catch(this.props.onError)
+  }
+
+  componentWillUnmount () {
+    clearTimeout(this.timeout)
   }
 
   render () {
-    this.pages = {
-      users: (
-        <UserManager ref={this._refs.users}/>
-      ),
-      confs: (
-        <ConferenceManager ref={this._refs.confs}/>
-      ),
-      anns: (
-        <AnnouncementManager ref={this._refs.anns} edit={this.addAnnouncement}/>
-      )
-    }
+    const pages = {
+      users: {
+        name: 'Users',
+        dom: (
+          <div className='management-container user'>
+            <div className='add-container'>
+              <button className='btn btn-success' onClick={() => this.setState({ addingUser: {} })}>+ Add User</button>
+            </div>
 
-    if (this.state.waiting) {
-      return (
-        <div className='loadingContainer'>
-          <font className='loadingText'>Loading...</font>
-        </div>
-      )
-    }
+            <div className='user-list-container'>
+              {this.state.users.map((u, i) => (
+                <div className={`index user${this.state.userIndex === i ? ' expanded' : ''}`} key={i}>
+                  <div className='dropdown' onClick={this.toggleIndex.bind(this, i, 'userIndex')}>
+                    <div className={'arrow ' + (this.state.userIndex === i ? 'down' : 'right')}/>
+                  </div>
 
-    if (this.state.verified) {
-      return (
-        <div className='adminContainer'>
-          <div className='tabContainer'>
-            <input type='button' value='Users' onClick={this.onTabClick} id='users' active={String(this.state.page === 'users')}/>
+                  {this.state.userIndex === i
+                    ? <UserBox
+                      user={u.id}
+                      header={'Edit User: ' + u.id}
+                      display={['name', 'email', 'suite', 'pass', 'admin']}
+                      onError={this.props.onError}/>
+                    : (
+                      <>
+                        <div className={`name${u.partial ? ' partial' : ''}`}>{u.firstname} {u.lastname}</div>
 
-            <input type='button' value='Conferences' onClick={this.onTabClick} id='confs' active={String(this.state.page === 'confs')}/>
-
-            <input type='button' value='Announcements' onClick={this.onTabClick} id='anns' active={String(this.state.page === 'anns')}/>
-          </div>
-
-          <div className='managementContainer'>
-            {this.pages[this.state.page]}
-
-            {this.state.page === 'users' ? (
-              <div className='addContainer' onClick={this.addUser}>
-                <div className='plus'>
-                  <img src={plusIcon} alt='plus'/>
+                        <span className='delete-button user' onClick={() => this.setState({ deletingUser: u })}>Delete</span>
+                      </>
+                      )}
                 </div>
-              </div>
-            ) : null}
-
-            {this.state.page === 'anns' ? (
-              <div className='addContainer' onClick={this.addAnnouncement.bind(this, [])}>
-                <div className='plus'>
-                  <img src={plusIcon} alt='plus'/>
-                </div>
-              </div>
-            ) : null}
-
-            <div className='submitContainer'>
-              <button onClick={() => this.pages[this.state.page].ref.current.onSubmit()}>Save changes</button>
+              ))}
             </div>
           </div>
+        )
+      },
+      meetings: {
+        name: 'Meetings',
+        dom: (
+          <div className='management-container meeting'>
+            {this.state.meetings.map((m) => <MeetingStrip data={m} key={m.id} onError={this.props.onError} onDelete={this.updateMeetings} admin={true}/>)}
+          </div>
+        )
+      },
+      posts: {
+        name: 'Building Announcements',
+        dom: (
+          <div className='management-container post'>
+            <div className='add-container'>
+              <button className='btn btn-success' onClick={() => this.setState({ addingPost: {} })}>+ Create Post</button>
+            </div>
 
-          {this.state.addingUser ? (
-            <div className='addItemContainer' id='popup'>
-              <div className='closeContainer' onClick={this.cancelAdd}>
-                <div className='closeButton'>
-                  <div className='xContainer'>
-                    <span>X</span>
+            <div className='post-list-container'>
+              {this.state.posts.map((p, i) => (
+                <div className={`index post${this.state.postIndex === i ? ' expanded' : ''}`} key={i}>
+                  <div className='dropdown' onClick={this.toggleIndex.bind(this, i, 'postIndex')}>
+                    <div className={'arrow ' + (this.state.postIndex === i ? 'down' : 'right')}/>
+                  </div>
+
+                  {this.state.postIndex === i
+                    ? (
+                        <PostEditor data={p} key={i} onError={this.props.onError}/>
+                      )
+                    : (
+                      <>
+                        <div className={'name'}>{p.title}</div>
+
+                        <span className='delete-button post' onClick={() => this.setState({ deletingPost: p })}>Delete</span>
+                      </>
+                      )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )
+      }
+    }
+
+    if ('auth' in localStorage && !this.state.deflect) {
+      return (
+        <div className='app-container admin'>
+          <h1>Admin Panel</h1>
+          <RefreshSVG className={`refresh-button${this.state.refreshed ? ' refreshed' : ''}`} onClick={this.refresh.bind(this)}/>
+
+          <div className='page-container'>
+            {Object.entries(pages).map((p, i) => (
+              <button
+                className={`btn btn-${this.state.page === p[0] ? 'success' : 'primary'} page-button ${p[0]}`}
+                onClick={() => this.setState({ page: p[0] })}
+                key={i}>
+                  {p[1].name}
+              </button>
+            ))}
+          </div>
+
+          {pages[this.state.page].dom}
+
+          {this.state.addingUser || this.state.addingPost
+            ? (
+              <div className='create modal'>
+                <div className='modal-dialogue'>
+                  <div className='modal-header'>
+                    <h5 className='modal-title'>Create {this.state.addingUser ? 'User' : 'Post'}</h5>
+                  </div>
+
+                  <div className='modal-body'>
+                    {this.state.addingUser
+                      ? <UserBox
+                        header='New User'
+                        display={['name', 'email', 'suite', 'admin']}
+                        blank={true}
+                        onChange={(user) => this.setState({ addingUser: user })}
+                        onError={this.props.onError}/>
+                      : <PostEditor blank={true} onError={this.props.onError} onChange={this.onChange}/>}
+                  </div>
+
+                  <div className='modal-footer'>
+                    <button className='btn btn-success' onClick={this.state.addingUser
+                      ? this.createUser.bind(this)
+                      : this.createPost.bind(this)} disabled={this.state.locked}>Create</button>
+
+                    <button className='btn btn-secondary' onClick={() => this.setState({ addingUser: null, addingPost: null })}>Cancel</button>
                   </div>
                 </div>
               </div>
+              )
+            : null}
 
-              <div className='messageContainer'>
-                <h1>Add a user</h1>
-              </div>
+          {this.state.deletingUser || this.state.deletingPost
+            ? (
+              <div className='delete modal'>
+                <div className='modal-dialogue'>
+                  <div className='modal-header'>
+                    <h5 className='modal-title'>Delete {this.state.deletingUser ? 'User' : 'Post'}</h5>
+                  </div>
 
-              <div className='inputContainer'>
-                <div className='inputBox name'>
-                  <h2>Name</h2>
-                  <input value={this.state.addingUser.name || ''} onChange={this.addChange('user')} id='name'/>
-                </div>
+                  <div className='modal-body'>
+                    <p>Are you sure you want to delete {this.state.deletingUser
+                      ? this.state.deletingUser.firstname + ' ' + this.state.deletingUser.lastname
+                      : this.state.deletingPost.title}?</p>
+                  </div>
 
-                <div className='inputBox email'>
-                  <h2>Email</h2>
-                  <input value={this.state.addingUser.email || ''} onChange={this.addChange('user')} id='email'/>
-                </div>
-              </div>
+                  <div className='modal-footer'>
+                    <button className='btn btn-danger' onClick={this.state.deletingUser
+                      ? this.deleteUser.bind(this, this.state.deletingUser.id)
+                      : this.deletePost.bind(this, this.state.deletingPost.id)}>Yes</button>
 
-              <div className='submitContainer'>
-                <button onClick={this.state.saving ? null : this.onAdd} id={this.state.saving ? 'saving' : 'ready'}>Add</button>
-              </div>
-
-              {this.state.error ? (
-                <div className='errorContainer'>
-                  <h3 className='error'>{this.state.error}</h3>
-                </div>
-              ) : null}
-            </div>
-          ) : null}
-
-          {this.state.addingAnnouncement ? (
-            <div className='addItemContainer' id='popup'>
-              <div className='closeContainer' onClick={this.cancelAdd}>
-                <div className='closeButton'>
-                  <div className='xContainer'>
-                    <span>X</span>
+                    <button className='btn btn-secondary' onClick={() => this.setState({ deletingUser: null, deletingPost: null })}>No</button>
                   </div>
                 </div>
               </div>
-
-              <div className='messageContainer'>
-                <h1>Create an announcement</h1>
-              </div>
-
-              <div className='inputContainer noflex'>
-                <div className='inputBox title'>
-                  <h2>Title</h2>
-                  <input value={this.state.addingAnnouncement.title || ''} onChange={this.addChange('ann')} id='title'/>
-                </div>
-
-                <div className='inputBox content'>
-                  <h2>Content</h2>
-                  <textarea value={this.state.addingAnnouncement.content || ''} onChange={this.addChange('ann')} id='content'/>
-                </div>
-              </div>
-
-              <div className='submitContainer'>
-                <button onClick={this.state.saving ? null : this.onAdd} id={this.state.saving ? 'saving' : 'ready'}>Add</button>
-              </div>
-
-              {this.state.error ? (
-                <div className='errorContainer'>
-                  <h3 className='error'>{this.state.error}</h3>
-                </div>
-              ) : null}
-            </div>
-          ) : null}
+              )
+            : null}
         </div>
       )
+    } else return <Redirect to={this.state.redirect}/>
+  }
+
+  refresh () {
+    const promises = [
+      this.updateUsers(),
+      this.updateMeetings(),
+      this.updatePosts()
+    ]
+
+    return Promise.all(promises)
+      .then(() => {
+        this.setState({
+          refreshed: true
+        })
+
+        clearTimeout(this.timeout)
+        this.timeout = setTimeout(() => this.setState({
+          refreshed: false
+        }), 2000)
+      })
+      .catch(this.props.onError)
+  }
+
+  updateUsers () {
+    return fetch(REACT_APP_API_URL + '/user/list', {
+      method: 'GET',
+      headers: {
+        Authorization: localStorage.auth
+      }
+    })
+      .then(postFetch)
+      .then((users) => users.json())
+      .then((users) => Promise.all(users.map((u) => fetch(`${REACT_APP_API_URL}/user/${u.id}/name`)
+        .then(postFetch)
+        .then((user) => user.json())
+        .then((user) => {
+          return {
+            ...u,
+            ...user
+          }
+        }))))
+      .then((users) => this.setState({ users }))
+      .catch(this.props.onError)
+  }
+
+  updateMeetings () {
+    const promises = []
+
+    for (let r = roomBounds[0]; r <= roomBounds[1]; r++) {
+      promises.push(fetch(REACT_APP_API_URL + '/room/list/' + r, {
+        method: 'GET',
+        headers: {
+          Authorization: localStorage.auth
+        }
+      })
+        .then(postFetch)
+        .then((meetings) => meetings.json()))
     }
 
-    return (
-      <Redirect to='/'/>
-    )
+    return Promise.all(promises)
+      .then((meetings) => this.setState({ meetings: meetings.flat() }))
+      .catch(this.props.onError)
+  }
+
+  updatePosts () {
+    fetch(REACT_APP_API_URL + '/post/list/100', {
+      method: 'GET',
+      headers: {
+        Authorization: localStorage.auth
+      }
+    })
+      .then(postFetch)
+      .then((posts) => posts.json())
+      .then((posts) => this.setState({ posts }))
+      .catch(this.props.onError)
+  }
+
+  toggleIndex (index, state) {
+    if (this.state[state] === index) this.setState({ [state]: null })
+    else this.setState({ [state]: index })
+  }
+
+  onChange (data) {
+    this.setState({ addingPost: data })
+  }
+
+  createUser () {
+    this.setState({
+      locked: true
+    })
+
+    return fetch(REACT_APP_API_URL + '/user', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: localStorage.auth
+      },
+      body: JSON.stringify(this.state.addingUser)
+    })
+      .then(postFetch)
+      .then((id) => id.status === 200 ? id.text() : id.json())
+      .then((res) => {
+        const user = {
+          id: typeof res === 'string' ? res : res.id,
+          ...this.state.addingUser
+        }
+
+        this.setState({
+          addingUser: null,
+          users: [
+            ...this.state.users,
+            user
+          ]
+        })
+      })
+      .catch(this.props.onError)
+      .finally(() => this.setState({ locked: false }))
+  }
+
+  createPost () {
+    this.setState({
+      locked: true
+    })
+
+    return fetch(REACT_APP_API_URL + '/post', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: localStorage.auth
+      },
+      body: JSON.stringify(this.state.addingPost)
+    })
+      .then(postFetch)
+      .then(() => {
+        this.updatePosts()
+
+        this.setState({
+          addingPost: null
+        })
+      })
+      .catch(this.props.onError)
+      .finally(() => this.setState({ locked: false }))
+  }
+
+  deleteUser (id) {
+    this.setState({
+      deletingUser: null
+    })
+
+    return fetch(REACT_APP_API_URL + '/user/' + id, {
+      method: 'DELETE',
+      headers: {
+        Authorization: localStorage.auth
+      }
+    })
+      .then(postFetch)
+      .then(this.updateUsers)
+      .catch(this.props.onError)
+  }
+
+  deletePost (id) {
+    this.setState({
+      deletingPost: null
+    })
+
+    return fetch(REACT_APP_API_URL + '/post/' + id, {
+      method: 'DELETE',
+      headers: {
+        Authorization: localStorage.auth
+      }
+    })
+      .then(postFetch)
+      .then(this.updatePosts)
+      .catch(this.props.onError)
   }
 }
 

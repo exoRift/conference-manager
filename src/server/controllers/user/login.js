@@ -14,14 +14,9 @@ module.exports = {
       .where(
         req.db.raw('LOWER("email") = ?', req.body.email.toLowerCase())
       )
-      .catch((err) => {
-        console.error('db', err)
-
-        return res.sendError(500, 'internal', 'database unavailable')
-      })
       .then(([found]) => {
         if (found) {
-          bcrypt.compare(req.args.pass, found.pass, (err, match) => {
+          return bcrypt.compare(req.args.pass, found.pass, (err, match) => {
             if (err) {
               console.error('bcrypt', err)
 
@@ -29,9 +24,14 @@ module.exports = {
             }
 
             if (match) return res.send(200, found.token)
-            else return res.send(400, 'invalid password')
+            else return res.sendError(400, 'argument', 'incorrect password')
           })
-        } else return res.send(404, 'target', 'user not found')
+        } else return res.sendError(404, 'target', 'user not found')
+      })
+      .catch((err) => {
+        console.error('db', err)
+
+        return res.sendError(500, 'internal', 'database unavailable')
       })
   }
 }
