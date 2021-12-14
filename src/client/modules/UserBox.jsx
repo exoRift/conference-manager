@@ -19,6 +19,9 @@ const gloss = {
   suite: {
     label: 'Suite ID'
   },
+  entity: {
+    label: 'Tenant Name'
+  },
   pass: {
     label: 'Change Password',
     blankLabel: 'Password',
@@ -33,6 +36,7 @@ const gloss = {
 const maxLengths = {
   name: 20,
   suite: 3,
+  entity: 20,
   email: 40,
   pass: 100
 }
@@ -51,7 +55,8 @@ class UserBox extends React.Component {
       alter: {},
       invalid: {},
       editing: props.blank,
-      success: false
+      success: false,
+      lockSave: false
     }
 
     if (this.props.blank) {
@@ -164,7 +169,7 @@ class UserBox extends React.Component {
                         : ''}`}
                     id={p + 'UBInput'}
                     aria-describedby={p === 'email' ? 'emailUBHelp' : null}
-                    placeholder={this.state.user[p]}
+                    placeholder={this.state.user[p] || (p === 'entity' ? 'NONE' : null)}
                     disabled={!this.state.editing || this.props.locked?.includes(p)}
                     value={this.state.alter[p] || ''}
                     maxLength={maxLengths[p]}
@@ -186,8 +191,8 @@ class UserBox extends React.Component {
           : this.state.editing
             ? (
               <div className='editing-button-container'>
-                <button type='submit' className='btn btn-primary btn-success' disabled={this.state.success || this.props.success}>Save Changes</button>
-                <button type='button' className='btn btn-danger btn-cancel' onClick={() => this.setState({ editing: false })}>Cancel</button>
+                <button type='submit' className='btn btn-primary btn-success' disabled={this.state.lockSave || this.props.lockSave}>Save Changes</button>
+                <button type='button' className='btn btn-danger btn-cancel' onClick={() => this.setState({ editing: false, alter: {} })}>Cancel</button>
               </div>
               )
             : <button type='button' className='btn btn-primary' onClick={() => this.setState({ editing: true })}>Edit</button>}
@@ -203,6 +208,8 @@ class UserBox extends React.Component {
       [field]: event.target.type === 'checkbox' ? event.target.checked : event.target.value
     }
 
+    if (event.target.type !== 'checkbox' && !event.target.value.length) delete altered[field]
+
     this.props.onChange?.(altered)
 
     this.setState({
@@ -214,13 +221,20 @@ class UserBox extends React.Component {
     event.preventDefault()
 
     if (Object.keys(this.state.alter).length) {
+      this.setState({
+        lockSave: true
+      })
+
       fetch(REACT_APP_API_URL + '/user/' + this.props.user, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
           Authorization: localStorage.auth
         },
-        body: JSON.stringify(this.state.alter)
+        body: JSON.stringify({
+          ...this.state.alter,
+          entity: this.state.alter.entity === 'NONE' ? '' : this.state.alter.entity
+        })
       })
         .then(postFetch)
         .then((token) => token.text())
@@ -260,6 +274,7 @@ class UserBox extends React.Component {
               })
             } else return this.props.onError(error)
           }))
+        .finally(() => this.setState({ lockSave: false }))
     } else {
       this.setState({
         editing: false

@@ -122,7 +122,7 @@ class RoomPanel extends React.Component {
                         )
                       : new Array(4).fill(undefined).map((e, i) => { // Quick time options
                         const factor = (i + 1) * 0.5
-                        const hours = parseInt(factor)
+                        const hours = Math.floor(factor)
                         const minutes = (factor - hours) * 60
 
                         return (

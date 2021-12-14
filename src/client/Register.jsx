@@ -55,7 +55,7 @@ class Register extends React.Component {
           <UserBox
             data={this.initial}
             header='Register Your Account'
-            display={['name', 'email', 'suite', 'pass']}
+            display={['name', 'email', 'suite', 'entity', 'pass']}
             locked={['suite']}
             blank={true}
             invalid={this.state.invalid}

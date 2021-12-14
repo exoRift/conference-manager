@@ -7,6 +7,7 @@ exports.up = function (knex) {
       table.string('firstname', 20).notNullable()
       table.string('lastname', 20).notNullable()
       table.string('suite', 3).nullable()
+      table.string('entity', 20).nullable()
       table.string('pass').nullable()
       table.string('email', 40).unique().notNullable()
       table.string('token').unique().nullable()
@@ -46,7 +47,7 @@ exports.up = function (knex) {
 
 exports.down = function (knex) {
   return knex.schema
-    .dropTable('users')
-    .dropTable('meetings')
-    .dropTable('posts')
+    .dropTableIfExists('meetings')
+    .dropTableIfExists('posts')
+    .dropTableIfExists('users')
 }

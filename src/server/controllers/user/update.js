@@ -6,6 +6,7 @@ module.exports = {
     email: 'opt:string',
     pass: 'opt:string',
     suite: 'opt:suite',
+    entity: 'opt:string',
     admin: 'opt:boolean'
   },
   options: {
@@ -21,6 +22,10 @@ module.exports = {
       },
       pass: {
         maxStringLen: 40
+      },
+      entity: {
+        maxStringLen: 20,
+        allowEmpty: true
       }
     }
   },

@@ -4,7 +4,8 @@ module.exports = {
     firstname: 'opt:string',
     lastname: 'opt:string',
     email: 'opt:string',
-    pass: 'string'
+    pass: 'string',
+    entity: 'opt:string'
   },
   options: {
     argtypes: {
@@ -19,6 +20,10 @@ module.exports = {
       },
       pass: {
         maxStringLen: 40
+      },
+      entity: {
+        maxStringLen: 20,
+        allowEmpty: true
       }
     }
   },

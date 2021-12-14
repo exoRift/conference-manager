@@ -27,6 +27,8 @@ class Routes extends React.Component {
     this.onError = this.onError.bind(this)
     this.closeError = this.closeError.bind(this)
     this.refreshNav = this.refreshNav.bind(this)
+
+    this.query = parseQuery(window.location.search)
   }
 
   componentWillUnmount () {
@@ -36,7 +38,7 @@ class Routes extends React.Component {
   render () {
     return (
       <Router>
-        {parseQuery(window.location.search).ui === 'false' ? undefined : <Navbar routes={routes} refreshFlag={this.state.navRefreshFlag}/>}
+        {this.query.ui === 'false' ? undefined : <Navbar routes={routes} refreshFlag={this.state.navRefreshFlag}/>}
 
         <div id='app'>
           <Switch>
@@ -45,7 +47,7 @@ class Routes extends React.Component {
                 key={index}
                 path={route.path}
                 exact={route.exact}
-                render={(props) => <route.Component onError={this.onError} refreshNav={this.refreshNav} {...props}/>}
+                render={(props) => <route.Component onError={this.onError} refreshNav={this.refreshNav} query={this.query} {...props}/>}
               />
             ))}
 
@@ -53,7 +55,7 @@ class Routes extends React.Component {
           </Switch>
         </div>
 
-        {parseQuery(window.location.search).ui === 'false' ? undefined : <UserButton onError={this.onError}/>}
+        {this.query.ui === 'false' ? undefined : <UserButton onError={this.onError}/>}
 
         {this.state.error
           ? <Error error={this.state.error} onClose={this.closeError}/>

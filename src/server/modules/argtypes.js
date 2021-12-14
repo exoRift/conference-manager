@@ -1,13 +1,14 @@
 const typeRegex = /^(?:(.+):)?(.+)$/
 
 function buildErrorString (name, expected, received) {
-  return `invalid arg type for: {${name}}. expected {${expected}} instead got {${received}}`
+  return `invalid arg type for: [${name}]. expected {${expected}} instead got {${received}}`
 }
 
 function transform (input, name, type, receivedType, options = {}) {
   const {
     maxStringLen = 255,
     allowNewlines = false,
+    allowEmpty = false,
     forceInt = true,
     absolute = false
   } = options
@@ -17,7 +18,7 @@ function transform (input, name, type, receivedType, options = {}) {
       const date = new Date(input)
 
       if (!isNaN(date)) return date
-      else throw Error(`invalid date string for: {${name}}`)
+      else throw Error(`invalid date string for: [${name}]`)
     }
     case 'array':
       if (!Array.isArray(input)) throw Error(buildErrorString(name, 'array of strings', receivedType))
@@ -34,8 +35,11 @@ function transform (input, name, type, receivedType, options = {}) {
       if (receivedType === 'string') {
         const trimmed = allowNewlines ? input.trim() : input.replace(/\r|\n/g, '').trim()
 
-        if (!trimmed.length) throw Error(`invalid arg type for: {${name}}. expected {string} but received string is empty`)
-        if (trimmed.length > maxStringLen) throw Error(`arg {${name}} too long. limit: {${maxStringLen}}`)
+        if (!trimmed.length) {
+          if (allowEmpty) return null
+          else throw Error(`invalid arg type for: [${name}]. expected {string} but received string is empty`)
+        }
+        if (trimmed.length > maxStringLen) throw Error(`arg [${name}] too long. limit: {${maxStringLen}}`)
         if (trimmed.includes('*')) throw Error('cannot use wildcards in args')
 
         return trimmed
@@ -48,7 +52,8 @@ function transform (input, name, type, receivedType, options = {}) {
       }
     default:
       if (type !== receivedType) throw Error(buildErrorString(name, type, receivedType))
-      break
+
+      return input
   }
 }
 
@@ -65,17 +70,17 @@ module.exports = function (controller) {
 
       const receivedType = typeof req.body[arg]
 
-      if (receivedType === 'undefined' || (receivedType === 'string' && !req.body[arg].length)) {
+      if (receivedType === 'undefined' || req.body[arg] === null) {
         if (preface === 'opt') continue
         else {
-          res.sendError(400, 'argument', `missing required argument: {${arg}}`)
+          res.sendError(400, 'argument', `missing required argument: [${arg}]`)
 
           break
         }
       }
 
       try {
-        req.args[arg] = transform(req.body[arg], arg, type, receivedType, controller.options?.argtypes[arg]) || req.body[arg]
+        req.args[arg] = transform(req.body[arg], arg, type, receivedType, controller.options?.argtypes[arg])
       } catch (err) {
         res.sendError(400, 'argument', err.message)
 
