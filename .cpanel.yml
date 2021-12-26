@@ -1,8 +1,9 @@
 ---
 deployment:
   tasks:
-    - export DEPLOYPATH=/home/dselvx5no1m4/public_html/
-    - rm -rf $DEPLOYPATH
+    - source /home/deployment/environment.rc
+    - npm i
     - npm run build
+    - rm -rf $DEPLOYPATH
     - mkdir $DEPLOYPATH
     - mv build $DEPLOYPATH
