@@ -1,0 +1,72 @@
+.refresh-button {
+  position: absolute;
+  left: 22rem;
+  width: 2.1rem;
+  height: 2.1rem;
+  cursor: pointer;
+}
+.refresh-button.refreshed {
+  fill: #58cc7c;
+}
+
+.management-container {
+  margin-top: 1%;
+  padding: 0 1vw;
+}
+.management-container > * {
+  margin-bottom: 1%;
+}
+
+.index {
+  display: flex;
+}
+
+.index.user .name.partial::after {
+  content: '(unregistered)';
+  margin-left: 0.4rem;
+  color: var(--info);
+}
+
+.index.user .userbox {
+  flex: 1;
+}
+
+.index.post.expanded {
+  display: block;
+  width: 50%;
+}
+
+.index.post.expanded .postbox .footer {
+  padding-top: 1%;
+  padding-left: 2%;
+}
+
+.index label:not(:first-child) {
+  margin-top: 2%;
+}
+
+.dropdown {
+  margin-right: 0.5vw;
+  cursor: pointer;
+}
+.dropdown .arrow {
+  border: solid black;
+  border-width: 0 3px 3px 0;
+  display: inline-block;
+  padding: 3px;
+}
+.dropdown .arrow.right {
+  transform: rotate(-45deg);
+}
+.dropdown .arrow.down {
+  transform: rotate(45deg);
+}
+
+.delete-button {
+  color: var(--danger);
+  margin-left: 0.4rem;
+  cursor: pointer;
+}
+.delete-button:hover {
+  text-decoration: underline;
+}

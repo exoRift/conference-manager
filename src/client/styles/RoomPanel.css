@@ -1,0 +1,322 @@
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css');
+
+:root {
+  --vacant: rgba(129, 255, 111, 0.5);
+  --occupied: rgba(255, 111, 111, 0.5);
+}
+
+.app-container.room-panel {
+  display: flex;
+  flex-flow: column;
+  overflow: hidden;
+  padding: 0;
+}
+
+.app-container.room-panel > div {
+  backdrop-filter: blur(10px);
+}
+
+.app-container.room-panel > .header {
+  background-color: rgba(255, 255, 255, 0.3);
+  font-size: 4rem;
+}
+
+.app-container.room-panel .current {
+  flex: 1;
+  padding: 2%;
+  overflow: hidden;
+  backdrop-filter: blur(5px);
+}
+.app-container.room-panel .current.vacant {
+  background-color: var(--vacant);
+}
+.app-container.room-panel .current::before {
+  content: '';
+  display: block;
+  position: absolute;
+  width: 100rem;
+  height: 100rem;
+  margin-left: 70%;
+  margin-top: -30%;
+  transform: rotate(30deg);
+  opacity: 0.4;
+  z-index: 1;
+}
+.app-container.room-panel .current.vacant::before {
+  background-color: var(--vacant);
+}
+.app-container.room-panel .current.occupied {
+  background-color: var(--occupied);
+}
+.app-container.room-panel .current.occupied::before {
+  background-color: var(--occupied);
+}
+
+.app-container.room-panel .current * {
+  z-index: 2;
+}
+
+.app-container.room-panel .current .subheader {
+  font-size: 4rem;
+}
+.app-container.room-panel .current .subheader-comments {
+  display: inline;
+  font-size: 3rem;
+  margin-left: 1rem;
+}
+.app-container.room-panel .current .subheader-comments .comment:not(.inline) {
+  display: block;
+}
+
+.app-container.room-panel .meeting-card {
+  background: none;
+  border: 2px solid rgba(50, 50, 50, 0.4);
+  border-radius: 10px;
+  clip-path: none;
+}
+
+.app-container.room-panel .current .button-container {
+  display: flex;
+  justify-content: center;
+}
+.app-container.room-panel .current .button-container:not(:empty) {
+  margin-top: 3vh;
+}
+.app-container.room-panel .current.vacant .button-container:not(:empty) {
+  margin-top: 10vh;
+}
+.app-container.room-panel .current.scheduling .button-container {
+  background-color: rgba(50, 50, 50, 0.2);
+  border-radius: 10px;
+  padding-top: 12%;
+  padding-bottom: 2%;
+}
+.app-container.room-panel .current.scheduling .button-container:not(:empty) {
+  margin-top: 2vh;
+}
+.app-container.room-panel .current .button-container button {
+  border-width: 2px;
+  border-radius: 10px;
+  font-size: 5vw;
+}
+.app-container.room-panel .current.vacant .button-container button {
+  font-size: 10vw;
+}
+.app-container.room-panel .current.scheduling .button-container button {
+  font-size: 8vw;
+}
+.app-container.room-panel .current.scheduling.custom .button-container button {
+  font-size: 6vw;
+}
+
+.length-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.length-container::before {
+  content: 'Meeting Length (h:mm)';
+  position: absolute;
+  margin-top: -5rem;
+  font-size: 3rem;
+}
+.length-container > button {
+  margin: 1vh 0;
+}
+
+.app-container.room-panel .meeting-card .header {
+  background: none;
+  font-size: 3rem;
+  text-align: start;
+  padding-left: 5%;
+}
+.app-container.room-panel .meeting-card .header .title::after {
+  content: none;
+}
+
+.app-container.room-panel .meeting-card .subheader {
+  font-size: 2.2rem;
+}
+
+.app-container.room-panel .meeting-card .content {
+  height: auto;
+}
+
+.app-container.room-panel .meeting-card .description {
+  font-size: 3rem;
+  background-color: rgba(50, 50, 50, 0.2);
+}
+.app-container.room-panel .meeting-card .description:is(:last-child) {
+  margin-bottom: 6vh;
+}
+
+.app-container.room-panel .meeting-card .attendees {
+  font-size: 2.3rem;
+  margin-top: 6vh;
+  margin-bottom: 6vh;
+}
+.app-container.room-panel .meeting-card .attendees::before {
+  margin-top: -6vh;
+}
+
+.app-container.room-panel .meeting-card .footer {
+  font-size: 2rem;
+}
+
+.upcoming {
+  transition: 0.5s;
+  background-color: rgba(100, 100, 100, 0.4);
+  font-size: 2.5rem;
+  cursor: pointer;
+  border-top: 0px solid transparent;
+}
+.upcoming:not(.none):not(.expanded) {
+  animation: stretch 8s ease 0s infinite forwards normal;
+}
+.upcoming:not(.none)::before {
+  content: '\f102';
+  transition: 0.4s;
+  animation: bounce 8s ease 0s infinite forwards normal;
+  position: absolute;
+  width: 100%;
+  font: normal normal normal 14px/1 FontAwesome;
+  font-size: 4rem;
+  text-align: center;
+}
+.upcoming.expanded:not(.none)::before {
+  content: '\f103';
+}
+.upcoming.expanded {
+  transition: 1s;
+  flex-grow: 10;
+  border-top: 3px solid rgba(60, 60, 60, 0.8);
+}
+
+.upcoming.expanded .upcoming-list-container {
+  position: absolute;
+  height: -webkit-fill-available;
+  animation: accommodateFlyIn 1s ease 0s 1 forwards normal;
+  padding-left: 1rem;
+}
+
+.upcoming .upcoming-entry {
+  vertical-align: middle;
+  animation: flyIn 1s ease 0s 1 forwards normal;
+}
+.upcoming .upcoming-entry::before {
+  content: '\2022';
+  margin-right: 0.5rem;
+  vertical-align: middle;
+}
+
+.upcoming.expanded .title {
+  font-size: 2rem;
+}
+.upcoming:not(.expanded) .title::before {
+  content: 'Upcoming:';
+  margin-right: 0.5rem;
+  font-size: 2.2rem;
+  font-weight: normal;
+}
+
+.upcoming .date::before {
+  content: '-';
+  margin: 0 1rem;
+}
+.upcoming.expanded .date::before {
+  margin: 0 0.5rem;
+}
+.upcoming.expanded .date::after {
+  content: ','
+}
+
+.upcoming.expanded .time-container {
+  margin-left: 0.5rem;
+}
+
+.upcoming.expanded .time-container > span {
+  margin: 0 0.3rem;
+}
+
+.upcoming .upcoming-entry .date,
+.upcoming .upcoming-entry .time-container {
+  font-size: 1.5rem;
+}
+
+.scheduling .picker.main {
+  width: 70%;
+  margin-right: 2%;
+  margin-left: 0;
+}
+
+.scheduling .picker.column {
+  position: relative;
+}
+.scheduling .picker.column:not(:last-child)::before {
+  content: ':';
+  position: absolute;
+  right: 0;
+  font-size: 10rem;
+  margin-top: 46%;
+  margin-right: -7%;
+}
+
+@keyframes bounce {
+  0% {
+    transform: scale(2, 1) translateY(-3.5rem);
+    opacity: 0.4;
+  }
+
+  60% {
+    transform: scale(2, 1) translateY(-3.5rem);
+    opacity: 0.4;
+  }
+
+  80% {
+    transform: scale(1.9, 1.3) translateY(-4rem);
+    opacity: 0.8;
+  }
+
+  100% {
+    transform: scale(2, 1) translateY(-3.5rem);
+    opacity: 0.4;
+  }
+}
+
+@keyframes stretch {
+  0% {
+    min-height: 3rem;
+  }
+
+  60% {
+    min-height: 3rem;
+  }
+
+  80% {
+    min-height: 4.5rem;
+  }
+
+  100% {
+    min-height: 3rem;
+  }
+}
+
+@keyframes flyIn {
+  from {
+    margin-top: 50vh;
+  } to {
+    margin-top: none;
+  }
+}
+
+@keyframes accommodateFlyIn {
+  0% {
+    overflow-y: hidden;
+  }
+  99% {
+    overflow-y: hidden;
+  }
+  100% {
+    overflow-y: auto;
+  }
+}

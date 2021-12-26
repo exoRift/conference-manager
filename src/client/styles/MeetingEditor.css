@@ -1,0 +1,78 @@
+.meeting-card.editing input {
+  background: none;
+  border: none;
+}
+.meeting-card.editing input:focus {
+  outline: none;
+}
+.meeting-card.editing input::-webkit-calendar-picker-indicator {
+  margin-left: -1.5vw;
+}
+
+.meeting-card.editing .title {
+  width: 100%;
+  font-size: 4rem;
+}
+
+.meeting-card.editing .dash {
+  margin: 0 3%;
+}
+
+
+.meeting-card.editing .content {
+  margin-bottom: 1rem;
+}
+
+.meeting-card.editing .description {
+  resize: none;
+  height: 8rem !important;
+}
+
+.meeting-card.editing .attendees {
+  max-height: 8rem;
+  border: 2px solid gray;
+  border-radius: 10px;
+}
+
+.meeting-card.editing .attendees .attendee {
+  cursor: pointer;
+}
+.meeting-card.editing .attendees .attendee:hover {
+  background: rgba(44, 62, 80, 0.5);
+}
+.meeting-card.editing .attendees .attendee:hover::before {
+  content: 'x';
+  position: absolute;
+  color: white;
+  line-height: 2rem;
+}
+
+.meeting-card.editing .attendees input {
+  width: fit-content;
+  min-width: 20%;
+}
+.meeting-card.editing .attendees input:disabled {
+  background: none !important;
+}
+
+.meeting-card.editing .footer {
+  padding-bottom: 1%;
+}
+
+.meeting-card.editing .room-container {
+  margin-right: auto;
+}
+
+.meeting-card.editing .room-container::before {
+  content: 'Room: ';
+}
+
+.meeting-card.editing input.room {
+  border: 1px solid black;
+  border-radius: 6px;
+}
+
+.meeting-card.editing .btn.submit {
+  width: 8%;
+  height: 5%;
+}

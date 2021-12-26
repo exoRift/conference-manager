@@ -1,0 +1,12 @@
+.postbox {
+  padding: 1%;
+  background: rgba(0, 0, 0, 0.1);
+}
+.postbox.success {
+  background: rgba(24, 188, 156, 0.4);
+}
+
+.postbox .footer {
+  display: flex;
+  justify-content: space-between;
+}

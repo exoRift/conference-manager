@@ -1,0 +1,22 @@
+.app-container.register {
+  display: flex;
+  align-items: center;
+}
+
+.app-container.register .userbox {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  width: 50vw;
+  height: 60vh;
+  margin: auto;
+  padding: 3% 5%;
+  background-color: rgba(255, 255, 255, 0.4);
+  border-radius: 5px;
+  clip-path: polygon(0 0, 90% 0%, 100% 10%, 100% 100%, 10% 100%, 0 90%);
+  backdrop-filter: blur(5px);
+}
+.app-container.register .userbox > button {
+  margin: 0 auto;
+  width: 5rem;
+}

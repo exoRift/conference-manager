@@ -1,0 +1,117 @@
+.meeting-card {
+  position: relative;
+  background-color: rgba(200, 200, 200, 0.8);
+  backdrop-filter: blur(8px);
+  border-radius: 10px;
+  overflow: hidden;
+  clip-path: polygon(0 0, 90% 0%, 100% 10%, 100% 100%, 10% 100%, 0 90%);
+}
+
+.meeting-card .header {
+  background-color: rgba(44, 62, 80, 0.6);
+}
+.meeting-card.soon .header {
+  background-color: rgba(52, 156, 219, 0.6);
+}
+.meeting-card.in-session .header {
+  background-color: rgba(24, 200, 156, 0.6);
+}
+
+.meeting-card .header {
+  max-height: 3em;
+  overflow: hidden;
+}
+
+.meeting-card.in-session .header .title::after {
+  content: ' - IN SESSION';
+}
+
+.meeting-card .header .title::placeholder {
+  color:rgba(44, 62, 80, 0.6);
+}
+
+.meeting-card .subheader {
+  display: flex;
+  justify-content: center;
+  background-color: rgba(44, 62, 80, 0.8);
+  color: white;
+  font-size: x-large;
+}
+
+.meeting-card .subheader .time-container {
+  display: flex;
+  justify-content: space-evenly;
+  width: 60%;
+}
+.meeting-card.soon:not(.in-session) .subheader .time-container .starttime {
+  animation: pulse 1s ease-in-out 0s infinite alternate forwards;
+}
+
+.meeting-card .content {
+  display: flex;
+  flex-flow: column;
+  height: 30vh;
+}
+
+.meeting-card .description {
+  flex-shrink: 1;
+  max-height: 8em;
+  padding: 1% 2%;
+  font-size: xx-large;
+  background-color: rgba(44, 62, 80, 0.2);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.meeting-card .description.empty {
+  font-style: italic;
+}
+
+.meeting-card .attendees {
+  flex-shrink: 1;
+  margin: 4vh 4%;
+  font-size: x-large;
+}
+.meeting-card .attendees::before {
+  content: 'Attendees:';
+  position: absolute;
+  margin-left: -1vw;
+  margin-top: -4vh;
+}
+
+.meeting-card .attendees .attendee {
+  transition: 0.2s;
+  padding: 0.5%;
+  background-color: rgba(44, 62, 80, 0.3);
+  border-radius: 5px;
+}
+.meeting-card .attendees .attendee:not(:last-child) {
+  margin-right: 1rem;
+}
+.meeting-card .attendees .attendee:not(:last-child)::after {
+  content: ',';
+  position: absolute;
+  margin-left: 0.5%;
+}
+
+.meeting-card .footer {
+  position: absolute;
+  left: 0%;
+  bottom: 0%;
+  width: 100%;
+  padding: 0 2% 0.2% 10%;
+  display: flex;
+  justify-content: flex-end;
+  font-size: x-large;
+}
+.meeting-card .footer .creator::before {
+  content: 'Created By:';
+  margin-right: 0.5rem;
+}
+
+@keyframes pulse {
+  from {
+    color: rgb(52, 156, 219);
+  } to {
+    color: rgb(82, 186, 249);
+  }
+}

@@ -1,0 +1,23 @@
+.userbox {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+
+.userbox input {
+  margin-top: .25rem;
+}
+
+.userbox > button {
+  width: 40%;
+  margin: 0 auto;
+}
+
+.userbox .editing-button-container {
+  display: flex;
+  padding: 0 30%;
+}
+
+.userbox .editing-button-container > button {
+  width: 100%;
+}

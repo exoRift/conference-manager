@@ -1,0 +1,59 @@
+.app-container.account {
+  display: flex;
+  align-items: center;
+  min-height: 100%;
+  padding: 0 10%;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+
+.app-container.account .userbox {
+  flex: 1;
+  padding: 5%;
+  background-color: rgba(255, 255, 255, 0.4);
+  border-radius: 5px;
+  clip-path: polygon(0 0, 90% 0%, 100% 10%, 100% 100%, 10% 100%, 0 90%);
+  backdrop-filter: blur(10px);
+}
+
+.app-container.account .userbox .form-group {
+  padding: 0 6vw;
+}
+
+.nav-container {
+  display: flex;
+  justify-content: space-between;
+}
+
+.nav-container > div {
+  display: flex;
+  height: fit-content;
+  align-items: center;
+  transition: 0.3s;
+  cursor: pointer;
+  padding: 0.5%;
+  background-color: var(--secondary);
+  border-radius: 10px;
+  font-size: x-large;
+}
+.nav-container > div:hover {
+  transform: scale(1.1);
+}
+.nav-container > .logout-container:hover {
+  background-color: var(--danger);
+}
+.nav-container > .admin-container:hover {
+  background-color: var(--warning);
+}
+.nav-container > div svg {
+  width: 2rem;
+  height: 2rem;
+}
+.nav-container > .logout-container svg path {
+  stroke: #212529;
+}
+.nav-container .admin-container svg path {
+  fill: #212529;
+}

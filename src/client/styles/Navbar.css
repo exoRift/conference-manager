@@ -1,0 +1,17 @@
+#navbar {
+  background-color: rgb(50, 50, 50);
+}
+#navbar .routes {
+  display: flex;
+  justify-content: center;
+  font-size: x-large;
+}
+#navbar .routes .route {
+  margin: 0 1vw;
+}
+
+@media only screen and (max-width: 600px) {
+  #navbar .routes {
+    justify-content: space-evenly;
+  }
+}

@@ -1,0 +1,47 @@
+.picker.main.container {
+  display: flex;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+.picker.main.container::before {
+  content: '';
+  width: 65%;
+  height: 1px;
+  margin-top: 24%;
+  position: absolute;
+  background: rgb(100, 100, 100);
+}
+.picker.main.container::after {
+  content: '';
+  width: 65%;
+  height: 1px;
+  margin-top: 43%;
+  position: absolute;
+  background: rgb(100, 100, 100);
+}
+
+.picker.header {
+  font-size: 3rem;
+}
+
+.picker.scroller {
+  padding: 50% 0;
+  max-height: 35vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scroll-snap-type: y mandatory;
+}
+.picker.scroller::-webkit-scrollbar {
+  width: 0;
+}
+
+.picker.value {
+  font-size: 10rem;
+  text-align: center;
+  line-height: 9rem;
+  scroll-snap-align: center;
+}
+.picker.value > * {
+  scroll-snap-align: none;
+}

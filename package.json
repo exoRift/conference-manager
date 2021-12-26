@@ -1,0 +1,73 @@
+{
+  "name": "conference-manager",
+  "version": "1.0.0",
+  "description": "A website and server to schedule, view, and manage conference room bookings for the 525 Chestnut St. office building",
+  "scripts": {
+    "start": "concurrently 'npm:api-dev' 'npm:static'",
+    "api": "dotenv -e .env node src/server",
+    "api-dev": "dotenv -e .env nodemon src/server",
+    "static": "react-scripts start",
+    "genusers": "dotenv -e .env node src/server/util/genUsers.js",
+    "build": "react-scripts build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/exoRift/conference-manager.git"
+  },
+  "author": "exoRift",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/exoRift/conference-manager/issues"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "keywords": [
+    "react",
+    "web",
+    "website",
+    "api",
+    "nodejs",
+    "node",
+    "js"
+  ],
+  "dependencies": {
+    "@polka/send-type": "^0.5.2",
+    "@uiw/react-md-editor": "^3.4.14",
+    "bcrypt": "^5.0.1",
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "ejs": "^3.1.6",
+    "jsonwebtoken": "^8.5.1",
+    "knex": "^0.95.3",
+    "mass-require": "^1.0.0",
+    "nodemailer": "^6.5.0",
+    "pg": "^8.5.1",
+    "polka": "^0.5.2",
+    "query-string": "^7.0.0",
+    "react": "^17.0.2",
+    "react-autocomplete-input": "^1.0.17",
+    "react-dom": "^17.0.2",
+    "react-markdown": "^5.0.3",
+    "react-moment": "^1.1.1",
+    "react-router-dom": "^5.2.0",
+    "react-scripts": "^4.0.3"
+  },
+  "devDependencies": {
+    "concurrently": "^6.0.0",
+    "dotenv-cli": "^4.0.0",
+    "eslint": "^7.22.0",
+    "eslint-config-react-app": "^6.0.0",
+    "eslint-config-standard": "^16.0.2",
+    "nodemon": "^2.0.7"
+  }
+}
