@@ -1,8 +1,11 @@
 # Modules
-node_modules
+node_modules/
 
 # IDE options
 .vscode
 
 # Env file
 .env
+
+# Build folder
+build/
