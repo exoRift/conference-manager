@@ -7,3 +7,4 @@ deployment:
     - rm -rf $DEPLOYPATH
     - mkdir $DEPLOYPATH
     - mv build $DEPLOYPATH
+    - cp src/server $APIPATH
