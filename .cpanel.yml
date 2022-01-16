@@ -5,6 +5,6 @@ deployment:
     - npm i
     - npm run build
     - rm -rf $DEPLOYPATH
-    - mkdir $DEPLOYPATH
     - mv build $DEPLOYPATH
+    - rm -rf $APIPATH
     - cp src/server $APIPATH
