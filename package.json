@@ -3,12 +3,13 @@
   "version": "1.0.0",
   "description": "A website and server to schedule, view, and manage conference room bookings for the 525 Chestnut St. office building",
   "scripts": {
-    "start": "concurrently 'npm:api-dev' 'npm:static'",
-    "api": "dotenv -e .env node src/server",
-    "api-dev": "dotenv -e .env nodemon src/server",
+    "dev": "dotenv -e concurrently 'npm:api-dev' 'npm:static'",
+    "api": "node src/server",
+    "api-dev": "nodemon src/server",
     "static": "react-scripts start",
-    "genusers": "dotenv -e .env node src/server/util/genUsers.js",
-    "build": "dotenv -e .env react-scripts build"
+    "genusers": "node src/server/util/genUsers.js",
+    "build": "source ~/deployment/environment.rc && react-scripts build",
+    "postbuild": "source ~/deployment/environment.rc && rm -rf $DEPLOYPATH $APIPATH && mv build $DEPLOYPATH && cp src/server $APIPATH"
   },
   "repository": {
     "type": "git",
@@ -46,7 +47,6 @@
     "bcrypt": "^5.0.1",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
-    "dotenv-cli": "^4.1.1",
     "ejs": "^3.1.6",
     "jsonwebtoken": "^8.5.1",
     "knex": "^0.95.3",
@@ -65,6 +65,7 @@
   },
   "devDependencies": {
     "concurrently": "^6.0.0",
+    "dotenv-cli": "^4.1.1",
     "eslint": "^7.22.0",
     "eslint-config-react-app": "^6.0.0",
     "eslint-config-standard": "^16.0.2",
