@@ -5,7 +5,7 @@ const {
 } = require('fs')
 
 const {
-  REACT_DOMAIN
+  FRONTEND_DOMAIN
 } = process.env
 
 module.exports = {
@@ -58,7 +58,7 @@ module.exports = {
                   material: {
                     name: `${req.args.firstname} ${req.args.lastname}`,
                     executor: `${req.auth.firstname} ${req.auth.lastname}`,
-                    link: `${REACT_DOMAIN}/register/${id}?firstname=${req.args.firstname}&lastname=${req.args.lastname}&email=${req.args.email}`
+                    link: `${FRONTEND_DOMAIN}/register/${id}?firstname=${req.args.firstname}&lastname=${req.args.lastname}&email=${req.args.email}`
                   }
                 }))
                 .then(() => {
