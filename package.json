@@ -8,8 +8,8 @@
     "api-dev": "nodemon src/server",
     "static": "react-scripts start",
     "genusers": "node src/server/util/genUsers.js",
-    "build": "source ~/deployment/environment.rc && react-scripts build",
-    "postbuild": "source ~/deployment/environment.rc && rm -rf $DEPLOYPATH $APIPATH && mv build $DEPLOYPATH && cp src/server $APIPATH"
+    "build": ". ~/deployment/environment.rc && react-scripts build",
+    "postbuild": ". ~/deployment/environment.rc && rm -rf $DEPLOYPATH $APIPATH && mv build $DEPLOYPATH && cp -r src/server $APIPATH"
   },
   "repository": {
     "type": "git",
@@ -48,6 +48,9 @@
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "ejs": "^3.1.6",
+    "eslint": "^7.22.0",
+    "eslint-config-react-app": "^6.0.0",
+    "eslint-config-standard": "^16.0.2",
     "jsonwebtoken": "^8.5.1",
     "knex": "^0.95.3",
     "mass-require": "^1.0.0",
@@ -66,9 +69,6 @@
   "devDependencies": {
     "concurrently": "^6.0.0",
     "dotenv-cli": "^4.1.1",
-    "eslint": "^7.22.0",
-    "eslint-config-react-app": "^6.0.0",
-    "eslint-config-standard": "^16.0.2",
     "nodemon": "^2.0.7"
   }
 }
