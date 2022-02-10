@@ -5,10 +5,6 @@ import postFetch from '../util/postFetch.js'
 import '../styles/MeetingCard.css'
 import '../styles/MeetingEditor.css'
 
-const {
-  REACT_APP_API_URL
-} = process.env
-
 const maxLengths = {
   title: 45,
   desc: 150,
@@ -166,7 +162,7 @@ class MeetingEditor extends React.Component {
     const alter = this.state.alter
     if ('enddate' in alter) alter.length = new Date(alter.enddate).getTime() - new Date(alter.startdate || this.state.data.startdate).getTime()
 
-    fetch(REACT_APP_API_URL + '/meeting/' + this.state.data.id, {
+    fetch('/api/meeting/' + this.state.data.id, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',

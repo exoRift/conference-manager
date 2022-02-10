@@ -10,10 +10,6 @@ import postFetch from './util/postFetch.js'
 
 import './styles/Manager.css'
 
-const {
-  REACT_APP_API_URL
-} = process.env
-
 class Manager extends React.Component {
   constructor (props) {
     super(props)
@@ -80,7 +76,7 @@ class Manager extends React.Component {
   }
 
   updateMeetings () {
-    return fetch(REACT_APP_API_URL + '/meeting/list/current', {
+    return fetch('/api/meeting/list/current', {
       method: 'GET',
       headers: {
         Authorization: localStorage.auth
@@ -112,7 +108,7 @@ class Manager extends React.Component {
     const data = this.state.creating
     if ('enddate' in data) data.length = new Date(data.enddate).getTime() - new Date(data.startdate).getTime()
 
-    return fetch(REACT_APP_API_URL + '/meeting/', {
+    return fetch('/api/meeting/', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

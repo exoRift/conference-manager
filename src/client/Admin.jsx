@@ -13,10 +13,6 @@ import {
 
 import './styles/Admin.css'
 
-const {
-  REACT_APP_API_URL
-} = process.env
-
 const roomBounds = [1, 2]
 
 class Admin extends React.Component {
@@ -45,7 +41,7 @@ class Admin extends React.Component {
   }
 
   componentDidMount () {
-    fetch(REACT_APP_API_URL + '/user/current/admin', {
+    fetch('/api/user/current/admin', {
       method: 'GET',
       headers: {
         Authorization: localStorage.auth
@@ -245,7 +241,7 @@ class Admin extends React.Component {
   }
 
   updateUsers () {
-    return fetch(REACT_APP_API_URL + '/user/list', {
+    return fetch('/api/user/list', {
       method: 'GET',
       headers: {
         Authorization: localStorage.auth
@@ -253,7 +249,7 @@ class Admin extends React.Component {
     })
       .then(postFetch)
       .then((users) => users.json())
-      .then((users) => Promise.all(users.map((u) => fetch(`${REACT_APP_API_URL}/user/${u.id}/name`)
+      .then((users) => Promise.all(users.map((u) => fetch(`/api/user/${u.id}/name`)
         .then(postFetch)
         .then((user) => user.json())
         .then((user) => {
@@ -270,7 +266,7 @@ class Admin extends React.Component {
     const promises = []
 
     for (let r = roomBounds[0]; r <= roomBounds[1]; r++) {
-      promises.push(fetch(REACT_APP_API_URL + '/room/list/' + r, {
+      promises.push(fetch('/api/room/list/' + r, {
         method: 'GET',
         headers: {
           Authorization: localStorage.auth
@@ -286,7 +282,7 @@ class Admin extends React.Component {
   }
 
   updatePosts () {
-    fetch(REACT_APP_API_URL + '/post/list/100', {
+    fetch('/api/post/list/100', {
       method: 'GET',
       headers: {
         Authorization: localStorage.auth
@@ -312,7 +308,7 @@ class Admin extends React.Component {
       locked: true
     })
 
-    return fetch(REACT_APP_API_URL + '/user', {
+    return fetch('/api/user', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -345,7 +341,7 @@ class Admin extends React.Component {
       locked: true
     })
 
-    return fetch(REACT_APP_API_URL + '/post', {
+    return fetch('/api/post', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -370,7 +366,7 @@ class Admin extends React.Component {
       deletingUser: null
     })
 
-    return fetch(REACT_APP_API_URL + '/user/' + id, {
+    return fetch('/api/user/' + id, {
       method: 'DELETE',
       headers: {
         Authorization: localStorage.auth
@@ -386,7 +382,7 @@ class Admin extends React.Component {
       deletingPost: null
     })
 
-    return fetch(REACT_APP_API_URL + '/post/' + id, {
+    return fetch('/api/post/' + id, {
       method: 'DELETE',
       headers: {
         Authorization: localStorage.auth

@@ -4,10 +4,6 @@ import postFetch from '../util/postFetch.js'
 
 import '../styles/UserBox.css'
 
-const {
-  REACT_APP_API_URL
-} = process.env
-
 const gloss = {
   name: {
     label: 'Name'
@@ -88,7 +84,7 @@ class UserBox extends React.Component {
 
   componentDidMount () {
     if ('auth' in localStorage && !this.props.blank) {
-      fetch(`${REACT_APP_API_URL}/user/${this.props.user}/all`, {
+      fetch(`/api/user/${this.props.user}/all`, {
         method: 'GET',
         headers: {
           Authorization: localStorage.auth
@@ -225,7 +221,7 @@ class UserBox extends React.Component {
         lockSave: true
       })
 
-      fetch(REACT_APP_API_URL + '/user/' + this.props.user, {
+      fetch('/api/user/' + this.props.user, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',

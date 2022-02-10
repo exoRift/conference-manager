@@ -7,10 +7,6 @@ import room from '../assets/images/conference-horiz.jpg'
 
 import './styles/Directory.css'
 
-const {
-  REACT_APP_API_URL
-} = process.env
-
 class Directory extends React.Component {
   constructor (props) {
     super(props)
@@ -124,7 +120,7 @@ class Directory extends React.Component {
   }
 
   async update (rooms) {
-    await Promise.all(rooms.map((r, i) => fetch(REACT_APP_API_URL + '/room/list/' + (i + 1), {
+    await Promise.all(rooms.map((r, i) => fetch('/api/room/list/' + (i + 1), {
       method: 'GET'
     })
       .then(postFetch)
@@ -133,7 +129,7 @@ class Directory extends React.Component {
       .then((rooms) => this.setState({ rooms }))
       .catch(this.props.onError)
 
-    await fetch(REACT_APP_API_URL + '/suite/list', {
+    await fetch('/api/suite/list', {
       method: 'GET'
     })
       .then(postFetch)

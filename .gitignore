@@ -6,6 +6,10 @@ node_modules/
 
 # Env file
 .env
+environment.rc
 
 # Build folder
 build/
+
+# SSL
+ssl/

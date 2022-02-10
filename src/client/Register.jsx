@@ -12,10 +12,6 @@ import entrance from '../assets/images/entrance.jpg'
 
 import './styles/Register.css'
 
-const {
-  REACT_APP_API_URL
-} = process.env
-
 class Register extends React.Component {
   constructor (props) {
     super(props)
@@ -84,7 +80,7 @@ class Register extends React.Component {
     const filled = Object.values(this.state.data).reduce((a, v) => a && v && v.length, true)
 
     if (!this.state.success && document.getElementById('emailUBInput').checkValidity() && filled) {
-      fetch(`${REACT_APP_API_URL}/user/${this.params.id}/register`, {
+      fetch(`/api/user/${this.params.id}/register`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json'

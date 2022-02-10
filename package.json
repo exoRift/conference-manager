@@ -3,14 +3,14 @@
   "version": "1.0.0",
   "description": "A website and server to schedule, view, and manage conference room bookings for the 525 Chestnut St. office building",
   "scripts": {
-    "dev": "dotenv -e concurrently 'npm:api-dev' 'npm:static'",
-    "api": "node src/server",
-    "api-dev": "nodemon src/server",
+    "dev": "concurrently 'dotenv -v NODE_ENV='development' -v PORT='5000' -e .env npm:server-dev' 'dotenv -e .env npm:static'",
+    "server-dev": "nodemon src/server",
+    "server": "node src/server",
     "static": "react-scripts start",
     "genusers": "node src/server/util/genUsers.js",
-    "build": ". ~/deployment/environment.rc && react-scripts build",
-    "postbuild": ". ~/deployment/environment.rc && rm -rf $DEPLOYPATH $APIPATH && mv build $DEPLOYPATH && cp -r src/server $APIPATH"
+    "build": "react-scripts build"
   },
+  "proxy": "https://localhost:5000",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/exoRift/conference-manager.git"
@@ -64,7 +64,8 @@
     "react-markdown": "^5.0.3",
     "react-moment": "^1.1.1",
     "react-router-dom": "^5.2.0",
-    "react-scripts": "^4.0.3"
+    "react-scripts": "^4.0.3",
+    "sirv": "^2.0.2"
   },
   "devDependencies": {
     "concurrently": "^6.0.0",

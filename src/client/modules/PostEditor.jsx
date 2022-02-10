@@ -5,10 +5,6 @@ import postFetch from '../util/postFetch.js'
 
 import '../styles/PostEditor.css'
 
-const {
-  REACT_APP_API_URL
-} = process.env
-
 class UserBox extends React.Component {
   static defaultProps = {
     data: {},
@@ -27,7 +23,7 @@ class UserBox extends React.Component {
 
   componentDidMount () {
     if (!this.props.blank) {
-      return fetch(`${REACT_APP_API_URL}/user/${this.props.data.creator}/name`, {
+      return fetch(`/api/user/${this.props.data.creator}/name`, {
         method: 'GET'
       })
         .then(postFetch)
@@ -91,7 +87,7 @@ class UserBox extends React.Component {
     event.preventDefault()
 
     if (Object.keys(this.state.alter).length) {
-      fetch(REACT_APP_API_URL + '/post/' + this.props.data.id, {
+      fetch('/api/post/' + this.props.data.id, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
