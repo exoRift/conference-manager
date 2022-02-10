@@ -4,10 +4,6 @@ import postFetch from '../util/postFetch.js'
 
 import '../styles/MeetingCard.css'
 
-const {
-  REACT_APP_API_URL
-} = process.env
-
 class MeetingCard extends React.Component {
   constructor (props) {
     super(props)
@@ -18,7 +14,7 @@ class MeetingCard extends React.Component {
   }
 
   componentDidMount () {
-    return fetch(`${REACT_APP_API_URL}/user/${this.props.data.creator}/name`, {
+    return fetch(`/api/user/${this.props.data.creator}/name`, {
       method: 'GET'
     })
       .then(postFetch)

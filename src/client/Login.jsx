@@ -11,10 +11,6 @@ import entrance from '../assets/images/entrance.jpg'
 
 import './styles/Login.css'
 
-const {
-  REACT_APP_API_URL
-} = process.env
-
 class Login extends React.Component {
   constructor (props) {
     super(props)
@@ -101,7 +97,7 @@ class Login extends React.Component {
     event.preventDefault() // Don't refresh page
 
     if (!this.state.success && document.getElementById('emailInput').checkValidity() && this.state.email.length && this.state.pass.length) {
-      fetch(REACT_APP_API_URL + '/user/login', {
+      fetch('/api/user/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

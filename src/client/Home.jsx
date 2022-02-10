@@ -7,10 +7,6 @@ import about from '../assets/about.md'
 
 import './styles/Home.css'
 
-const {
-  REACT_APP_API_URL
-} = process.env
-
 function Post (props) {
   return (
     <div className='post'>
@@ -57,7 +53,7 @@ class Home extends React.Component {
       .catch(this.props.onError)
 
     if ('auth' in localStorage) {
-      fetch(REACT_APP_API_URL + '/post/list/20', {
+      fetch('/api/post/list/20', {
         method: 'GET',
         headers: {
           Authorization: localStorage.auth
@@ -65,7 +61,7 @@ class Home extends React.Component {
       })
         .then(postFetch)
         .then((posts) => posts.json())
-        .then((posts) => Promise.all(posts.map((p) => fetch(`${REACT_APP_API_URL}/user/${p.creator}/name`, {
+        .then((posts) => Promise.all(posts.map((p) => fetch(`/api/user/${p.creator}/name`, {
           method: 'GET'
         })
           .then(postFetch)

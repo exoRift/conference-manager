@@ -8,10 +8,6 @@ import user from '../../assets/svg/user.svg'
 
 import '../styles/UserButton.css'
 
-const {
-  REACT_APP_API_URL
-} = process.env
-
 class UserButton extends React.Component {
   constructor (props) {
     super(props)
@@ -23,7 +19,7 @@ class UserButton extends React.Component {
 
   componentDidMount () {
     if ('auth' in localStorage) {
-      fetch(REACT_APP_API_URL + '/user/current/firstname', {
+      fetch('/api/user/current/firstname', {
         method: 'GET',
         headers: {
           Authorization: localStorage.auth

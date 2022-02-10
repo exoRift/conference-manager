@@ -8,10 +8,6 @@ import room from '../assets/images/conference-vert.jpg'
 
 import './styles/RoomPanel.css'
 
-const {
-  REACT_APP_API_URL
-} = process.env
-
 const pickerColumns = [
   {
     title: 'Hour',
@@ -203,7 +199,7 @@ class RoomPanel extends React.Component {
   update () {
     for (const refresh of this.refreshes) clearTimeout(refresh)
 
-    return fetch(REACT_APP_API_URL + '/room/list/' + this.props.match.params.room, {
+    return fetch('/api/room/list/' + this.props.match.params.room, {
       method: 'GET'
     })
       .then(postFetch)
@@ -244,7 +240,7 @@ class RoomPanel extends React.Component {
   reserve (length, editID) {
     if ('auth' in localStorage) {
       if (this.state.extending) {
-        fetch(REACT_APP_API_URL + '/meeting/' + editID, {
+        fetch('/api/meeting/' + editID, {
           method: 'PATCH',
           headers: {
             'Content-Type': 'application/json',
@@ -258,7 +254,7 @@ class RoomPanel extends React.Component {
           .then(this._postReserve)
           .catch(this.props.onError)
       } else {
-        fetch(REACT_APP_API_URL + '/meeting', {
+        fetch('/api/meeting', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -282,7 +278,7 @@ class RoomPanel extends React.Component {
   }
 
   cancel (id) {
-    return fetch(REACT_APP_API_URL + '/meeting/' + id, {
+    return fetch('/api/meeting/' + id, {
       method: 'DELETE',
       headers: {
         Authorization: localStorage.auth

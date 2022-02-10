@@ -15,7 +15,6 @@ import '../styles/MeetingStrip.css'
 const dateDelimRegex = /-|:|\./g
 
 const {
-  REACT_APP_API_URL,
   REACT_APP_LOCATION
 } = process.env
 
@@ -37,7 +36,7 @@ class MeetingStrip extends React.Component {
   }
 
   componentDidMount () {
-    fetch(`${REACT_APP_API_URL}/user/${this.props.data.creator}/name`, {
+    fetch(`/api/user/${this.props.data.creator}/name`, {
       method: 'GET'
     })
       .then(postFetch)
@@ -146,7 +145,7 @@ class MeetingStrip extends React.Component {
   }
 
   delete () {
-    fetch(REACT_APP_API_URL + '/meeting/' + this.state.data.id, {
+    fetch('/api/meeting/' + this.state.data.id, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',

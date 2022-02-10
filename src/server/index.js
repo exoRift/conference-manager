@@ -1,4 +1,7 @@
+const https = require('https')
 const polka = require('polka')
+const serve = require('sirv')
+const fs = require('fs')
 const path = require('path')
 const {
   json
@@ -22,13 +25,21 @@ const modules = require('./modules/')
 const controllers = require('./controllers/')
 
 const {
-  API_PORT,
+  NODE_ENV,
+  PORT,
   MAILER_HOST,
   MAILER_PORT,
   MAILER_USER,
   MAILER_PASS,
-  SALT_ROUNDS
+  SALT_ROUNDS,
+  SSL_CRT_FILE,
+  SSL_KEY_FILE
 } = process.env
+
+const ssl = {
+  cert: fs.readFileSync(path.join(process.cwd(), SSL_CRT_FILE)),
+  key: fs.readFileSync(path.join(process.cwd(), SSL_KEY_FILE))
+}
 
 const app = polka()
 
@@ -57,16 +68,20 @@ app
 for (const controller of controllers) {
   const layers = controller.requisites.reduce((a, r) => a.concat(modules[r](controller)), [])
 
-  app[controller.method](controller.route, ...layers, controller.action)
+  app[controller.method]('/api' + controller.route, ...layers, controller.action)
 }
 
-const {
-  server
-} = app.listen(API_PORT, () => {
+if (NODE_ENV !== 'development') {
+  app.use(serve('build'))
+
+  console.info('Frontend mounted')
+}
+
+const server = https.createServer(ssl, app.handler).listen(PORT, () => {
   const {
     address,
     port
   } = server.address()
 
-  console.info('API online listening at http://%s:%s', address, port)
+  console.info('Server online listening at https://%s:%s', address, port)
 })
