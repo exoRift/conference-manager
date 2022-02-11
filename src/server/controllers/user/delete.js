@@ -24,10 +24,10 @@ module.exports = {
                 console.log('USER DELETED: ', req.auth.id, req.params.id)
 
                 return readFile(`src/server/templates/${found.token ? 'deleted' : 'canceled'}.ejs`, { encoding: 'utf8' })
-                  .then((temp) => req.util.user.email({
+                  .then((template) => req.util.user.email({
                     address: found.email,
                     subject: `${found.token ? 'Account deleted' : 'Account creation canceled'} by ${req.auth.firstname} ${req.auth.lastname}`,
-                    temp,
+                    template,
                     material: {
                       name: `${found.firstname} ${found.lastname}`,
                       executor: `${req.auth.firstname} ${req.auth.lastname}`

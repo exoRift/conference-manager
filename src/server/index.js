@@ -37,8 +37,8 @@ const {
 } = process.env
 
 const ssl = {
-  cert: fs.readFileSync(path.join(process.cwd(), SSL_CRT_FILE)),
-  key: fs.readFileSync(path.join(process.cwd(), SSL_KEY_FILE))
+  cert: fs.readFileSync(SSL_CRT_FILE),
+  key: fs.readFileSync(SSL_KEY_FILE)
 }
 
 const app = polka()

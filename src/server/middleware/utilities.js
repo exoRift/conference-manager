@@ -182,11 +182,11 @@ module.exports = function (req, res, next) {
                 } catch (err) {
                   console.error('bcrypt', err)
 
-                  const perr = Error('hashing error')
-                  perr.code = 500
-                  perr.type = 'internal'
+                  const pubErr = Error('hashing error')
+                  pubErr.code = 500
+                  pubErr.type = 'internal'
 
-                  throw perr
+                  throw pubErr
                 }
 
                 try {
@@ -197,11 +197,11 @@ module.exports = function (req, res, next) {
                 } catch (err) {
                   console.error('jwt', err)
 
-                  const perr = Error('token encoding error')
-                  perr.code = 500
-                  perr.type = 'internal'
+                  const pubErr = Error('token encoding error')
+                  pubErr.code = 500
+                  pubErr.type = 'internal'
 
-                  throw perr
+                  throw pubErr
                 }
               }
 
@@ -225,19 +225,19 @@ module.exports = function (req, res, next) {
             }
           })
       },
-      email: ({ address, subject, temp, material }) => {
+      email: ({ address, subject, template, material }) => {
         let html
 
         try {
-          html = ejs.render(temp, material)
+          html = ejs.render(template, material)
         } catch (err) {
           console.error('ejs', err)
 
-          const perr = Error('email unable to render')
-          perr.code = 500
-          perr.type = 'internal'
+          const pubErr = Error('email unable to render')
+          pubErr.code = 500
+          pubErr.type = 'internal'
 
-          throw perr
+          throw pubErr
         }
 
         return req.mailer.sendMail({
@@ -253,11 +253,11 @@ module.exports = function (req, res, next) {
           .catch((err) => {
             console.error('mailer', err)
 
-            const perr = Error('email unable to send')
-            perr.code = 200
-            perr.type = 'internal'
+            const pubErr = Error('email unable to send')
+            pubErr.code = 200
+            pubErr.type = 'internal'
 
-            throw perr
+            throw pubErr
           })
       }
     }
