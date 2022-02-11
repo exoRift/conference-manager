@@ -51,10 +51,10 @@ module.exports = {
               console.log('USER CREATED: ', req.auth.id, id)
 
               return readFile('src/server/templates/invited.ejs', { encoding: 'utf8' })
-                .then((temp) => req.util.user.email({
+                .then((template) => req.util.user.email({
                   address: req.args.email,
                   subject: `You've been invited by ${req.auth.firstname} ${req.auth.lastname} to create an account for the 525 Chestnut office building`,
-                  temp,
+                  template,
                   material: {
                     name: `${req.args.firstname} ${req.args.lastname}`,
                     executor: `${req.auth.firstname} ${req.auth.lastname}`,
@@ -75,10 +75,10 @@ module.exports = {
                               console.log('USER CREATION EXPIRED: ', id)
 
                               return readFile('src/server/templates/canceled.ejs', { encoding: 'utf8' })
-                                .then((temp) => req.util.user.email({
+                                .then((template) => req.util.user.email({
                                   address: req.args.email,
                                   subject: 'Account registration expired',
-                                  temp,
+                                  template,
                                   material: {
                                     name: `${req.args.firstname} ${req.args.lastname}`,
                                     executor: `${req.auth.firstname} ${req.auth.lastname}`
