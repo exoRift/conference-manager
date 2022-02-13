@@ -7,6 +7,7 @@ module.exports = {
   options: {
     argtypes: {
       content: {
+        maxStringLen: 500,
         allowNewlines: true
       }
     }
