@@ -205,9 +205,9 @@ class RoomPanel extends React.Component {
       .then(postFetch)
       .then((meetings) => meetings.json())
       .then((meetings) => {
-        this.refreshes = meetings.reduce((a, m, i) => { // TODO: ENABLE THIS
-          // if (i) a.push(setTimeout(this.update, new Date(m.startdate).getTime() - Date.now()))
-          // else a.push(setTimeout(this.update, m.length))
+        this.refreshes = meetings.reduce((a, m, i) => {
+          if (i) a.push(setTimeout(this.update, new Date(m.startdate).getTime() - Date.now()))
+          else a.push(setTimeout(this.update, m.length))
 
           return a
         }, [])

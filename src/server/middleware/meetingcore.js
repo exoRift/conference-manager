@@ -19,16 +19,15 @@ class Entry {
     setTimeout(this.delete, new Date(this.data.startdate).getTime() + length - Date.now())
   }
 
-  delete () { // TODO: ENABLE THIS
-    // if (this.limited) this.remove()
-    // else {
-    //   return this.db('meetings')
-    //     .delete()
-    //     .where('id', this.data.id)
-    //     .then(this.remove)
-    //     .catch((err) => console.error('db', err))
-    // }
-    console.log('DELETE TRIGGERED', this.data.id) // DEBUG
+  delete () {
+    if (this.limited) this.remove()
+    else {
+      return this.db('meetings')
+        .delete()
+        .where('id', this.data.id)
+        .then(this.remove)
+        .catch((err) => console.error('db', err))
+    }
   }
 
   remove () {
