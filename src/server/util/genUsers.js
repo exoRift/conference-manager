@@ -13,12 +13,12 @@ const salt = bcrypt.genSaltSync(parseInt(SALT_ROUNDS))
 const db = new Knex(require(path.join(process.cwd(), 'knexfile.js')))
 
 const users = [
-  // {
-  //   firstname: 'SYSTEM',
-  //   lastname: 'ADMINISTRATOR',
-  //   email: 'sys@admin',
-  //   admin: true
-  // },
+  {
+    firstname: 'SYSTEM',
+    lastname: 'ADMINISTRATOR',
+    email: 'sys@admin',
+    admin: true
+  },
   {
     firstname: 'CR',
     lastname: 'PANEL',

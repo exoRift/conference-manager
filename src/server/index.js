@@ -79,9 +79,8 @@ if (NODE_ENV !== 'development') {
 
 const server = https.createServer(ssl, app.handler).listen(PORT, () => {
   const {
-    address,
     port
   } = server.address()
 
-  console.info('Server online listening at https://%s:%s', address, port)
+  console.info('Server online listening at https://localhost:%s', port)
 })
