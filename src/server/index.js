@@ -70,9 +70,13 @@ for (const controller of controllers) {
 
   app[controller.method]('/api' + controller.route, ...layers, controller.action)
 }
+app.all('/api', (req, res) => res.send(200))
 
 if (NODE_ENV !== 'development') {
-  app.use(serve('build'))
+  app.use(serve('build', {
+    single: true,
+    ignores: '/api/*'
+  }))
 
   console.info('Frontend mounted')
 }
