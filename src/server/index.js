@@ -83,12 +83,12 @@ if (NODE_ENV !== 'development') {
   polka()
     .use((req, res) => {
       res.writeHead(301, {
-        Location: `https://${req.url}`
+        Location: `https://${req.host}`
       })
 
       res.end()
     })
-    .listen(REDIRECT_PORT)
+    .listen(REDIRECT_PORT, () => console.info('HTTPS redirect online'))
 
   console.info('Frontend mounted')
 }
