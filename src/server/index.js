@@ -83,7 +83,7 @@ if (NODE_ENV !== 'development') {
   polka()
     .use((req, res) => {
       res.writeHead(301, {
-        Location: `https://${req.host}`
+        Location: `https://${req.headers.host}`
       })
 
       res.end()
