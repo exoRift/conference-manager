@@ -27,6 +27,9 @@ module.exports = {
       },
       email: {
         maxStringLen: 40
+      },
+      suite: {
+        maxStringLen: 4
       }
     }
   },

@@ -51,7 +51,7 @@ class Register extends React.Component {
           <UserBox
             data={this.initial}
             header='Register Your Account'
-            display={['name', 'email', 'suite', 'entity', 'pass']}
+            display={['name', 'email', 'suite', 'tenant', 'pass']}
             locked={['suite']}
             blank={true}
             invalid={this.state.invalid}
@@ -100,7 +100,7 @@ class Register extends React.Component {
           clearTimeout(this.timeout)
           this.timeout = setTimeout(() => {
             this.setState({
-              redirect: '/account'
+              redirect: '/'
             })
 
             this.props.refreshNav()

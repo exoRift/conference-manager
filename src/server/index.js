@@ -27,6 +27,7 @@ const controllers = require('./controllers/')
 const {
   NODE_ENV,
   PORT,
+  REDIRECT_PORT,
   MAILER_HOST,
   MAILER_PORT,
   MAILER_USER,
@@ -77,6 +78,17 @@ if (NODE_ENV !== 'development') {
     single: true,
     ignores: '/api/*'
   }))
+
+  // Force HTTPS
+  polka()
+    .use((req, res) => {
+      res.writeHead(301, {
+        Location: `https://${req.url}`
+      })
+
+      res.end()
+    })
+    .listen(REDIRECT_PORT)
 
   console.info('Frontend mounted')
 }

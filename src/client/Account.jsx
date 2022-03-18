@@ -35,7 +35,7 @@ class Account extends React.Component {
           <UserBox
             user='current'
             header='Account'
-            display={['name', 'email', 'suite', 'entity', 'pass']}
+            display={['name', 'email', 'suite', 'tenant', 'pass']}
             locked={['suite']}
             onSuccess={(token) => localStorage.setItem('auth', token)}
             onError={this.props.onError}

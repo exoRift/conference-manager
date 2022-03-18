@@ -38,16 +38,12 @@
 }
 
 .room-id-label {
-  flex-shrink: 0;
   display: flex;
   align-items: center;
   background-color: whitesmoke;
   font-size: 25rem;
-  width: 6vw;
-  overflow: hidden;
-}
-.room-id-label span {
-  margin-left: -2.2rem;
+  clip-path: polygon(100% 0, 100% 70%, 80% 100%, 0 100%, 0 0);
+  margin-left: -2rem;
 }
 
 .page-switch {
