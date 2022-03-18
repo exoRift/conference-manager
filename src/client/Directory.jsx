@@ -3,6 +3,7 @@ import React from 'react'
 import postFetch from './util/postFetch.js'
 import MeetingCard from './modules/MeetingCard.jsx'
 import Clock from './modules/Clock.jsx'
+import entrance from '../assets/images/entrance.jpg'
 import room from '../assets/images/conference-horiz.jpg'
 
 import './styles/Directory.css'
@@ -15,7 +16,7 @@ class Directory extends React.Component {
       rooms: [],
       tenants: [],
       touchscreen: false,
-      entities: this.props.query.page === 'entities'
+      page: this.props.query.page === 'tenants'
     }
 
     this.rails = [
@@ -53,22 +54,21 @@ class Directory extends React.Component {
   }
 
   render () {
-    console.log(this.state)
     if (this.state.touchscreen || this.rails.reduce((a, r) => a ||
       (r.current?.clientWidth < r.current?.scrollWidth), false)) this.scrollInterval = clearInterval(this.scrollInterval)
     else if (!this.scrollInterval) this.scrollInterval = setInterval(this.autoScroll, 3000)
 
     return (
-      <div className='app-container directory' style={{ backgroundImage: `url(${room})` }}>
+      <div className='app-container directory' style={{ backgroundImage: `url(${this.state.page ? entrance : room})` }}>
         {this.props.query.ui === 'false'
           ? null
           : (
-            <button className='btn btn-outline-info page-switch' onClick={() => this.setState({ entities: !this.state.entities })}>
-              {this.state.entities ? 'Meetings' : 'Tenants'}
+            <button className='btn btn-outline-info page-switch' onClick={() => this.setState({ page: !this.state.page })}>
+              {this.state.page ? 'Meetings' : 'Tenants'}
             </button>
             )}
 
-        {this.state.entities
+        {this.state.page
           ? (
             <div className='suite-list-container'>
               <div className='suite-list' style={{ gridTemplateColumns: `repeat(${Math.ceil(this.state.tenants.length / 2)}, 1fr)` }}>
@@ -79,7 +79,7 @@ class Directory extends React.Component {
                     </div>
 
                     <div className='body'>
-                      <span>{t.entity}</span>
+                      <span>{t.tenant}</span>
                     </div>
                   </div>
                 ))}
@@ -168,7 +168,7 @@ class Directory extends React.Component {
     bar.parentNode.replaceChild(clone, bar)
 
     this.setState({
-      entities: !this.state.entities
+      page: !this.state.page
     })
   }
 }

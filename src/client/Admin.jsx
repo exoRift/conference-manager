@@ -82,7 +82,7 @@ class Admin extends React.Component {
                     ? <UserBox
                       user={u.id}
                       header={'Edit User: ' + u.id}
-                      display={['name', 'email', 'suite', 'entity', 'pass', 'admin']}
+                      display={['name', 'email', 'suite', 'tenant', 'pass', 'admin']}
                       onError={this.props.onError}/>
                     : (
                       <>

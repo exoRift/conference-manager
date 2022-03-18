@@ -31,7 +31,7 @@ module.exports = {
               : req.params.prop === 'name'
                 ? ['firstname', 'lastname']
                 : req.params.prop === 'suite'
-                  ? ['suite', 'entity']
+                  ? ['suite', 'tenant']
                   : req.params.prop === 'partial'
                     ? [partialQuery]
                     : [req.params.prop]))

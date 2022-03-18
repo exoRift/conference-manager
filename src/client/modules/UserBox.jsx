@@ -15,7 +15,7 @@ const gloss = {
   suite: {
     label: 'Suite ID'
   },
-  entity: {
+  tenant: {
     label: 'Tenant Name'
   },
   pass: {
@@ -31,8 +31,8 @@ const gloss = {
 
 const maxLengths = {
   name: 20,
-  suite: 3,
-  entity: 20,
+  suite: 4,
+  tenant: 20,
   email: 40,
   pass: 100
 }
@@ -165,7 +165,7 @@ class UserBox extends React.Component {
                         : ''}`}
                     id={p + 'UBInput'}
                     aria-describedby={p === 'email' ? 'emailUBHelp' : null}
-                    placeholder={this.state.user[p] || (p === 'entity' ? 'NONE' : null)}
+                    placeholder={this.state.user[p] || (p === 'tenant' ? 'NONE' : null)}
                     disabled={!this.state.editing || this.props.locked?.includes(p)}
                     value={this.state.alter[p] || ''}
                     maxLength={maxLengths[p]}
@@ -229,7 +229,7 @@ class UserBox extends React.Component {
         },
         body: JSON.stringify({
           ...this.state.alter,
-          entity: this.state.alter.entity === 'NONE' ? '' : this.state.alter.entity
+          tenant: this.state.alter.tenant === 'NONE' ? '' : this.state.alter.tenant
         })
       })
         .then(postFetch)

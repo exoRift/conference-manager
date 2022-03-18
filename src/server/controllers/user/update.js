@@ -5,8 +5,8 @@ module.exports = {
     lastname: 'opt:string',
     email: 'opt:string',
     pass: 'opt:string',
-    suite: 'opt:suite',
-    entity: 'opt:string',
+    suite: 'opt:string',
+    tenant: 'opt:string',
     admin: 'opt:boolean'
   },
   options: {
@@ -23,7 +23,10 @@ module.exports = {
       pass: {
         maxStringLen: 40
       },
-      entity: {
+      suite: {
+        maxStringLen: 4
+      },
+      tenant: {
         maxStringLen: 20,
         allowEmpty: true
       }

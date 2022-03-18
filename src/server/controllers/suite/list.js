@@ -4,9 +4,9 @@ module.exports = {
   route: '/suite/list',
   action: function (req, res) {
     return req.db('users')
-      .select([req.db.raw('id AS owner'), 'suite', 'entity'])
+      .select([req.db.raw('id AS owner'), 'suite', 'tenant'])
       .whereNotNull('suite')
-      .whereNotNull('entity')
+      .whereNotNull('tenant')
       .then((suites) => res.send(200, suites))
       .catch((err) => {
         console.error('db', err)

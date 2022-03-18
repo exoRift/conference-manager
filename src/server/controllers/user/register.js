@@ -5,7 +5,7 @@ module.exports = {
     lastname: 'opt:string',
     email: 'opt:string',
     pass: 'string',
-    entity: 'opt:string'
+    tenant: 'opt:string'
   },
   options: {
     argtypes: {
@@ -21,7 +21,7 @@ module.exports = {
       pass: {
         maxStringLen: 40
       },
-      entity: {
+      tenant: {
         maxStringLen: 20,
         allowEmpty: true
       }
