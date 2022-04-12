@@ -117,7 +117,7 @@ class Login extends React.Component {
           clearTimeout(this.timeout)
           this.timeout = setTimeout(() => {
             this.setState({
-              redirect: '/account'
+              redirect: '/'
             })
 
             this.props.refreshNav()
