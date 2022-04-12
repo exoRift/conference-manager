@@ -75,7 +75,7 @@
   content: 'Attendees:';
   position: absolute;
   margin-left: -1vw;
-  margin-top: -4vh;
+  margin-top: -2.5rem;
 }
 
 .meeting-card .attendees .attendee {

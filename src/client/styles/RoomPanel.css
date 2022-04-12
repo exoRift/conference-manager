@@ -22,25 +22,25 @@
 }
 
 .app-container.room-panel .current {
+  position: relative;
   flex: 1;
   padding: 2%;
   overflow: hidden;
   backdrop-filter: blur(5px);
 }
-.app-container.room-panel .current.vacant {
-  background-color: var(--vacant);
-}
 .app-container.room-panel .current::before {
   content: '';
   display: block;
   position: absolute;
-  width: 100rem;
-  height: 100rem;
-  margin-left: 70%;
-  margin-top: -30%;
-  transform: rotate(30deg);
+  width: 100%;
+  height: 100%;
+  margin: -2%;
+  clip-path: polygon(100% 0, 40% 100%, 100% 100%);
   opacity: 0.4;
   z-index: 1;
+}
+.app-container.room-panel .current.vacant {
+  background-color: var(--vacant);
 }
 .app-container.room-panel .current.vacant::before {
   background-color: var(--vacant);
