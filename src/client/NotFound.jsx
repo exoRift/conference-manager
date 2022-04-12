@@ -1,4 +1,7 @@
 import React from 'react'
+import {
+  Link
+} from 'react-router-dom'
 
 import {
   ReactComponent as MagnifierSVG
@@ -10,6 +13,8 @@ function NotFound () {
   return (
     <div className='app-container notfound'>
       <MagnifierSVG className='backdrop'/>
+
+      <Link id='return' to='/'>&#8617;&#xfe0e;</Link>
 
       <div className='header'>404</div>
 
