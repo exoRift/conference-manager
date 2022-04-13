@@ -38,8 +38,6 @@ module.exports = {
         .then(() => {
           const id = String(Date.now())
 
-          if (req.args.length && !req.auth.limited) req.args.length += ' milliseconds'
-
           if (req.auth.limited) {
             req.meetingCore.upload(req.db, {
               id,
@@ -54,6 +52,7 @@ module.exports = {
                 id,
                 creator: req.auth.id,
                 ...req.args,
+                length: req.args.length + ' milliseconds',
                 attendees: JSON.stringify(req.args.attendees)
               })
               .catch((err) => {
