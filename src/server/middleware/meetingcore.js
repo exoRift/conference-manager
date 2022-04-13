@@ -3,10 +3,7 @@ class Entry {
     this.collection = collection
     this.db = db
 
-    this.data = {
-      ...data,
-      startdate: new Date(data.startdate)
-    }
+    this.data = data
     this.limited = limited
 
     this.delete = this.delete.bind(this)
@@ -16,7 +13,9 @@ class Entry {
   }
 
   start (length) {
-    setTimeout(this.delete, new Date(this.data.startdate).getTime() + length - Date.now())
+    const startdate = new Date(this.data.startdate)
+
+    if (startdate.getTime() - Date.now() < 172800000 /* 48 hours */) return setTimeout(this.delete, startdate.getTime() + length - Date.now())
   }
 
   delete () {

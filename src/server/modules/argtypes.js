@@ -23,7 +23,7 @@ function transform (input, name, type, receivedType, options = {}) {
     case 'array':
       if (!Array.isArray(input)) throw Error(buildErrorString(name, 'array of strings', receivedType))
 
-      break
+      return input
     case 'number': {
       const number = forceInt ? parseInt(input) : Number(input)
 
