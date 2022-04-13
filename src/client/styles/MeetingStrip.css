@@ -11,15 +11,15 @@
 
 .meeting-strip .btn:not(.submit) {
   transition: 0.2s;
-  width: 2vw;
-  height: 2vw;
+  width: 2.8em;
+  height: 2.8em;
   margin: 0.5vw;
   padding: 0.2vw;
   border-radius: 10px;
 }
 .meeting-strip .btn:not(.submit):hover {
-  width: 2.5vw;
-  height: 2.5vw;
+  width: 3em;
+  height: 3em;
 }
 
 .meeting-strip .share-button {
@@ -92,7 +92,7 @@
   vertical-align: middle;
 }
 
-.meeting-strip .info-container.title {
+.meeting-strip .info-container > .title {
   font-weight: bold;
 }
 
