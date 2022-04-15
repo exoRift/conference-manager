@@ -171,12 +171,12 @@
   border-top: 0px solid transparent;
 }
 .upcoming:not(.none):not(.expanded) {
-  animation: stretch 8s ease 0s infinite forwards normal;
+  animation: stretch 8s ease 0s infinite normal forwards;
 }
 .upcoming:not(.none)::before {
   content: '\f102';
   transition: 0.4s;
-  animation: bounce 8s ease 0s infinite forwards normal;
+  animation: bounce 8s ease 0s infinite normal forwards;
   position: absolute;
   width: 100%;
   font: normal normal normal 14px/1 FontAwesome;
@@ -195,13 +195,13 @@
 .upcoming.expanded .upcoming-list-container {
   position: absolute;
   height: -webkit-fill-available;
-  animation: accommodateFlyIn 1s ease 0s 1 forwards normal;
+  animation: accommodateFlyIn 1s ease 0s 1 normal forwards;
   padding-left: 1rem;
 }
 
 .upcoming .upcoming-entry {
   vertical-align: middle;
-  animation: flyIn 1s ease 0s 1 forwards normal;
+  animation: flyIn 1s ease 0s 1 normal forwards;
 }
 .upcoming .upcoming-entry::before {
   content: '\2022';

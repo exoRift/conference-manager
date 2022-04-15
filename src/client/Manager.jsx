@@ -109,11 +109,11 @@ class Manager extends React.Component {
     })
 
     const data = this.state.creating
-    console.log(data)
+
     if ('enddate' in data) data.length = new Date(data.enddate).getTime() - new Date(data.startdate).getTime()
 
     // Automatically add uncommitted attendee
-    if (!data.attendees.includes(data.attendeeInput)) data.attendees.push(data.attendeeInput)
+    if (data.attendees && data.attendeeInput && !data.attendees.includes(data.attendeeInput)) data.attendees.push(data.attendeeInput)
 
     return fetch('/api/meeting/', {
       method: 'POST',
