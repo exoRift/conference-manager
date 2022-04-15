@@ -67,6 +67,7 @@ code {
   flex-direction: column;
   max-width: fit-content;
   padding-right: 1.25rem !important;
+  z-index: 100;
 }
 .error .header {
   margin-bottom: 1vh;
@@ -126,6 +127,7 @@ input[type='checkbox']:focus {
   align-items: center;
   background: rgba(0, 0, 0, 0.8);
   animation: fadeIn 0.1s linear 0s 1 normal forwards;
+  z-index: 50;
 }
 
 .modal-dialogue {
