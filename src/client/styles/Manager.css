@@ -35,3 +35,21 @@ button.create:hover {
   transform: scale(2.2) translateY(-4.5%);
   color: #0d703f;
 }
+
+@media (max-width: 800px) {
+  .app-container.manager .modal-dialogue {
+    width: 80%;
+  }
+}
+
+@media (max-height: 600px) {
+  .app-container.manager .modal-dialogue .meeting-card .content {
+    padding-top: 3%;
+    flex-flow: row;
+  }
+
+  .app-container.manager .modal-dialogue .meeting-card .footer {
+    position: relative;
+    padding-top: 2%;
+  }
+}
