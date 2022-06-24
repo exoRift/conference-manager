@@ -58,8 +58,10 @@
   background: rgba(161, 207, 238, 0.1);
 }
 .page-switch::before {
-  content: '\1f5d8';
+  content: '\e86a';
+  font-family: 'Material Symbols Outlined';
   margin-right: 0.1rem;
+  vertical-align: middle;
 }
 
 .suite-list-container {
@@ -147,7 +149,7 @@
   border-radius: 10px;
 }
 
-@media only screen and (max-height: 600px) {
+@media (max-height: 600px) {
   .meeting-list-container {
     height: 20rem;
   }

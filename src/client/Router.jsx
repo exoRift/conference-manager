@@ -65,6 +65,8 @@ class Routes extends React.Component {
   }
 
   onError (error) {
+    console.error(error)
+
     this.setState({
       error
     })

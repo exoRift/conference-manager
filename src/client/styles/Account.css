@@ -57,3 +57,9 @@
 .nav-container .admin-container svg path {
   fill: #212529;
 }
+
+@media (max-width: 800px) {
+  .nav-container {
+    padding-top: 5%;
+  }
+}
