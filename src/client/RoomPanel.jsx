@@ -42,15 +42,20 @@ class RoomPanel extends React.Component {
     this.setCustom = this.setCustom.bind(this)
     this.toggleExpand = this.toggleExpand.bind(this)
     this._postReserve = this._postReserve.bind(this)
+    this._cancelGesture = this._cancelGesture.bind(this)
   }
 
   componentDidMount () {
     this.update()
 
+    document.addEventListener('gesturestart', this._cancelGesture)
+
     this.updateInterval = setInterval(this.update, 300000 /* 5 minutes */)
   }
 
   componentWillUnmount () {
+    document.removeEventListener('gesturestart', this._cancelGesture)
+
     clearInterval(this.updateInterval)
     clearTimeout(this.cancelReserveTimeout)
     clearTimeout(this.expandTimeout)
@@ -307,6 +312,10 @@ class RoomPanel extends React.Component {
         expanded: true
       })
     }
+  }
+
+  _cancelGesture (e) {
+    e.preventDefault()
   }
 }
 
