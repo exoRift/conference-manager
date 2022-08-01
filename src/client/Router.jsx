@@ -29,6 +29,9 @@ class Routes extends React.Component {
     this.refreshNav = this.refreshNav.bind(this)
 
     this.query = parseQuery(window.location.search)
+
+    // Silk doesn't support query params
+    this.hideUI = this.query.ui === 'false' || navigator.userAgent.toLowerCase().includes('silk')
   }
 
   componentWillUnmount () {
@@ -38,7 +41,7 @@ class Routes extends React.Component {
   render () {
     return (
       <Router>
-        {this.query.ui === 'false' ? undefined : <Navbar routes={routes} refreshFlag={this.state.navRefreshFlag}/>}
+        {this.hideUI ? null : <Navbar routes={routes} refreshFlag={this.state.navRefreshFlag}/>}
 
         <div id='app'>
           <Switch>
@@ -47,7 +50,13 @@ class Routes extends React.Component {
                 key={index}
                 path={route.path}
                 exact={route.exact}
-                render={(props) => <route.Component onError={this.onError} refreshNav={this.refreshNav} query={this.query} {...props}/>}
+                render={(props) => <route.Component
+                  onError={this.onError}
+                  refreshNav={this.refreshNav}
+                  query={this.query}
+                  hideUI={this.hideUI}
+                  {...props}
+                />}
               />
             ))}
 
@@ -55,7 +64,7 @@ class Routes extends React.Component {
           </Switch>
         </div>
 
-        {this.query.ui === 'false' ? undefined : <UserButton onError={this.onError}/>}
+        {this.hideUI ? null : <UserButton onError={this.onError}/>}
 
         {this.state.error
           ? <Error error={this.state.error} onClose={this.closeError}/>

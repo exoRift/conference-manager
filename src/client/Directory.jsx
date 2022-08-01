@@ -16,7 +16,7 @@ class Directory extends React.Component {
       rooms: [],
       tenants: [],
       touchscreen: false,
-      page: this.props.query.page === 'tenants'
+      page: props.query.page === 'tenants' || props.location === '/tenants'
     }
 
     this.rails = [
@@ -60,7 +60,7 @@ class Directory extends React.Component {
 
     return (
       <div className='app-container directory' style={{ backgroundImage: `url(${this.state.page ? entrance : room})` }}>
-        {this.props.query.ui === 'false'
+        {this.props.hideUI
           ? null
           : (
             <button className='btn btn-outline-info page-switch' onClick={() => this.setState({ page: !this.state.page })}>

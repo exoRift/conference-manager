@@ -45,6 +45,13 @@ const routes = [
     Component: Directory
   },
   {
+    path: '/tenants',
+    name: 'Tenants',
+    exact: true,
+    Component: Directory,
+    hidden: true
+  },
+  {
     path: '/meetings/:room',
     name: 'Room Panel',
     hidden: true,
