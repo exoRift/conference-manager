@@ -36,31 +36,6 @@ code {
   border-radius: 2px;
 }
 
-.btn-primary {
-  background-color: rgba(44, 62, 80, 0.6) !important;
-}
-.btn-primary:hover {
-  background-color: rgba(44, 62, 80, 0.9) !important;
-}
-.btn-info {
-  background-color: rgba(52, 152, 219, 0.6) !important;
-}
-.btn-info:hover {
-  background-color: rgba(52, 152, 219, 0.9) !important;
-}
-.btn-success {
-  background-color: rgba(24, 188, 156, 0.6) !important;
-}
-.btn-success:hover {
-  background-color: rgba(24, 188, 156, 0.9) !important;
-}
-.btn-danger {
-  background-color: rgba(231, 76, 60, 0.6) !important;
-}
-.btn-danger:hover {
-  background-color: rgba(231, 76, 60, 0.9) !important;
-}
-
 .error {
   position: fixed;
   top: 0;
@@ -92,16 +67,6 @@ code {
   color: red;
 }
 
-.sub-message {
-  color: black !important;
-  font-style: italic;
-}
-
-.header {
-  font-size: xx-large;
-  text-align: center;
-}
-
 input:disabled {
   background-color: #e1e7e9 !important;
 }
@@ -112,15 +77,6 @@ input[type='checkbox'] {
 }
 input[type='checkbox']:focus {
   box-shadow: none;
-}
-
-.floating-text {
-  width: 100%;
-  font-size: calc(5vh + 5vw);
-  color: lightgray;
-  align-self: center;
-  text-align: center;
-  font-style: italic;
 }
 
 .modal {

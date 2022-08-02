@@ -10,6 +10,7 @@
   background-color: white;
   border-radius: 5vw;
   padding: 0.6%;
+  z-index: 100;
 }
 #userContainer:hover {
   transform: scale(1.1) translateX(-0.3vw);
