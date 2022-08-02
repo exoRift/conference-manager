@@ -4,13 +4,8 @@ import {
 } from 'react-router-dom'
 
 import UserBox from './modules/UserBox.jsx'
+
 import interior from '../assets/images/interior.jpg'
-import {
-  ReactComponent as LogoutSVG
-} from '../assets/svg/logout.svg'
-import {
-  ReactComponent as AdminSVG
-} from '../assets/svg/admin.svg'
 
 import './styles/Account.css'
 
@@ -33,10 +28,10 @@ class Account extends React.Component {
       return (
         <div className='app-container account interior-bg' style={{ backgroundImage: `url(${interior})` }}>
           <UserBox
-            user='current'
-            header='Account'
-            display={['name', 'email', 'suite', 'tenant', 'pass']}
-            locked={['suite']}
+            user='self'
+            header='My Account'
+            display={['name', 'email', 'tenant', 'pass']}
+            locked={['tenant']}
             onSuccess={(token) => localStorage.setItem('auth', token)}
             onError={this.props.onError}
             onInfo={this.onInfo}>
@@ -45,7 +40,9 @@ class Account extends React.Component {
                   {this.state.user.admin
                     ? (
                       <>
-                        <AdminSVG/>
+                        <span className='material-symbols-outlined'>
+                          security
+                        </span>
 
                         <strong>Admin Panel</strong>
                       </>
@@ -54,7 +51,9 @@ class Account extends React.Component {
                 </div>
 
                 <div className='logout-container' onClick={this.logout}>
-                  <LogoutSVG/>
+                  <span className='material-symbols-outlined'>
+                    logout
+                  </span>
 
                   <strong>Logout</strong>
                 </div>
@@ -69,8 +68,6 @@ class Account extends React.Component {
     localStorage.removeItem('auth')
 
     this.forceUpdate() // Rerender for redirect
-
-    this.props.refreshNav()
   }
 
   redirect (path) {

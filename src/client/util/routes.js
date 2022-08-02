@@ -2,6 +2,7 @@ import Home from '../Home.jsx'
 import Account from '../Account.jsx'
 import Login from '../Login.jsx'
 import Register from '../Register.jsx'
+import Schedule from '../Schedule.jsx'
 import Directory from '../Directory.jsx'
 import RoomPanel from '../RoomPanel.jsx'
 import Admin from '../Admin.jsx'
@@ -40,16 +41,15 @@ const routes = [
   },
   {
     path: '/meetings',
-    name: 'Directory',
+    name: 'Schedule',
     exact: true,
-    Component: Directory
+    Component: Schedule
   },
   {
     path: '/tenants',
-    name: 'Tenants',
+    name: 'Tenant Directory',
     exact: true,
-    Component: Directory,
-    hidden: true
+    Component: Directory
   },
   {
     path: '/meetings/:room',

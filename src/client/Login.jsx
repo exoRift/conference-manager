@@ -46,8 +46,8 @@ class Login extends React.Component {
               ? (
                 <span className='header issue'>You have been logged out. Please log back in</span>
                 )
-              : null}
-            <span className='header'>Log In</span>
+              : <span className='header'>Login to your account</span>}
+
             <div className='form-group'>
               <label htmlFor='emailInput'>Email address</label>
               <input
@@ -119,8 +119,6 @@ class Login extends React.Component {
             this.setState({
               redirect: '/'
             })
-
-            this.props.refreshNav()
           }, 1000)
         })
         .catch((res) => {
@@ -131,7 +129,7 @@ class Login extends React.Component {
                 if (res.status === 404) {
                   this.setState({
                     invalid: {
-                      email: 'This email is not linked to an account'
+                      email: 'There is no account with this email'
                     }
                   })
                 } else if (error.message === 'incorrect password') {

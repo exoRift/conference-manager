@@ -14,7 +14,6 @@ module.exports = {
     firstname: 'string',
     lastname: 'string',
     email: 'string',
-    suite: 'opt:string',
     admin: 'opt:boolean'
   },
   options: {
@@ -27,9 +26,6 @@ module.exports = {
       },
       email: {
         maxStringLen: 40
-      },
-      suite: {
-        maxStringLen: 4
       }
     }
   },
@@ -47,7 +43,6 @@ module.exports = {
               firstname: req.args.firstname,
               lastname: req.args.lastname,
               email: req.args.email,
-              suite: req.args.suite,
               admin: req.args.admin
             })
             .then(() => {

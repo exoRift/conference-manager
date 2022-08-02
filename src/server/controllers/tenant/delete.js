@@ -1,18 +1,16 @@
 module.exports = {
   requisites: ['authorize'],
   method: 'delete',
-  route: '/post/:id',
+  route: '/tenant/:suite',
   action: function (req, res) {
     if (req.auth.admin) {
-      return req.db('posts')
+      return req.db('users')
         .delete()
-        .where('id', req.params.id)
-        .then((amount) => {
-          if (amount) {
-            console.log('POST DELETED:', req.auth.id, req.params.id)
+        .where('suite', req.params.suite)
+        .then(() => {
+          console.log('TENANT DELETED: ', req.auth.id, req.params.suite)
 
-            return res.send(200)
-          } else return res.sendError(404, 'target', 'post does not exist')
+          return res.send(200)
         })
         .catch((err) => {
           console.error('db', err)

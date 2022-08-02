@@ -12,9 +12,6 @@ const gloss = {
     label: 'Email Address',
     type: 'email'
   },
-  suite: {
-    label: 'Suite ID'
-  },
   tenant: {
     label: 'Tenant Name'
   },
@@ -31,7 +28,6 @@ const gloss = {
 
 const maxLengths = {
   name: 20,
-  suite: 4,
   tenant: 20,
   email: 40,
   pass: 100
@@ -165,7 +161,7 @@ class UserBox extends React.Component {
                         : ''}`}
                     id={p + 'UBInput'}
                     aria-describedby={p === 'email' ? 'emailUBHelp' : null}
-                    placeholder={this.state.user[p] || (p === 'tenant' ? 'NONE' : null)}
+                    placeholder={this.state.user[p] || (p === 'tenant' ? 'Unassigned' : null)}
                     disabled={!this.state.editing || this.props.locked?.includes(p)}
                     value={this.state.alter[p] || ''}
                     maxLength={maxLengths[p]}

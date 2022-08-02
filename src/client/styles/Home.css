@@ -2,7 +2,23 @@
   display: flex;
   justify-content: center;
   align-items: stretch;
-  padding: 10%
+  padding: 10%;
+}
+
+.app-container.home .content {
+  display: flex;
+  flex-flow: column;
+  justify-content: center;
+  padding: 0.5%;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  backdrop-filter: blur(5px);
+}
+
+.app-container.home .content h2 {
+  color: white;
+  font-weight: 900;
 }
 
 .app-container.home #pages {
@@ -10,11 +26,6 @@
   flex-wrap: wrap;
   justify-content: center;
   align-items: center;
-  width: 100%;
-  padding: 0.5%;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 10px;
-  backdrop-filter: blur(5px);
 }
 
 .app-container.home #pages a {
@@ -44,6 +55,17 @@
 
 @media (max-width: 800px) {
   .app-container.home {
-    padding: none;
+    padding: 0;
+  }
+
+  .app-container.home #pages a {
+    width: 10rem;
+    height: 14rem;
+    margin: 0.4rem;
+    font-size: 2rem;
+  }
+
+  .app-container.home #pages a .material-symbols-outlined {
+    font-size: 7rem;
   }
 }

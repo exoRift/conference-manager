@@ -36,6 +36,16 @@ code {
   border-radius: 2px;
 }
 
+.sub-message {
+  color: black !important;
+  font-style: italic;
+}
+
+.header {
+  font-size: xx-large;
+  text-align: center;
+}
+
 .error {
   position: fixed;
   top: 0;

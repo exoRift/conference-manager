@@ -1,12 +1,11 @@
 module.exports = {
   requisites: [],
   method: 'get',
-  route: '/suite/list',
+  route: '/tenant/list',
   action: function (req, res) {
-    return req.db('users')
-      .select([req.db.raw('id AS owner'), 'suite', 'tenant'])
-      .whereNotNull('suite')
-      .whereNotNull('tenant')
+    return req.db('tenants')
+      .select([req.db.raw('name AS tenant'), 'suite'])
+      .orderBy('suite', 'asc')
       .then((suites) => res.send(200, suites))
       .catch((err) => {
         console.error('db', err)
