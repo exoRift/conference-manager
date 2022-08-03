@@ -23,7 +23,6 @@ module.exports = {
         maxStringLen: 40
       },
       tenant: {
-        maxStringLen: 20,
         allowEmpty: true
       }
     }

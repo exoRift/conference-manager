@@ -23,7 +23,7 @@ module.exports = {
       .orWhere('suite', req.args.suite)
       .then(([tenant]) => {
         if (tenant) {
-          return res.sendError(409, tenant.suite === req.args.suite ? 'suite' : 'name', `"${req.args.name} is already assigned to suite ${tenant.suite}"`)
+          return res.sendError(409, tenant.suite === req.args.suite ? 'suite' : 'name', `"${tenant.name} is already assigned to suite ${tenant.suite}"`)
         }
 
         const id = String(Date.now())

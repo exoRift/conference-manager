@@ -14,6 +14,7 @@ module.exports = {
     firstname: 'string',
     lastname: 'string',
     email: 'string',
+    tenant: 'opt:string',
     admin: 'opt:boolean'
   },
   options: {
@@ -26,6 +27,9 @@ module.exports = {
       },
       email: {
         maxStringLen: 40
+      },
+      tenant: {
+        allowEmpty: true
       }
     }
   },

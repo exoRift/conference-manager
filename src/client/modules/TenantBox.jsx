@@ -9,7 +9,7 @@ const maxLengths = {
   suite: 4
 }
 
-class UserBox extends React.Component {
+class Tenant extends React.Component {
   static defaultProps = {
     blank: false,
     invalid: {}
@@ -29,20 +29,22 @@ class UserBox extends React.Component {
   }
 
   componentDidMount () {
-    fetch(`/api/tenant/${this.props.id}/all`, {
-      method: 'GET',
-      headers: {
-        Authorization: localStorage.auth
-      }
-    })
-      .then(postFetch)
-      .then((tenant) => tenant.json())
-      .then((tenant) => {
-        this.setState({ tenant })
-
-        this.props.onInfo?.(tenant)
+    if (!this.props.blank && !this.props.data) {
+      return fetch(`/api/tenant/${this.props.id}/all`, {
+        method: 'GET',
+        headers: {
+          Authorization: localStorage.auth
+        }
       })
-      .catch(this.props.onError)
+        .then(postFetch)
+        .then((tenant) => tenant.json())
+        .then((tenant) => {
+          this.setState({ tenant })
+
+          this.props.onInfo?.(tenant)
+        })
+        .catch(this.props.onError)
+    }
   }
 
   render () {
@@ -152,4 +154,4 @@ class UserBox extends React.Component {
   }
 }
 
-export default UserBox
+export default Tenant

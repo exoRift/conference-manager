@@ -30,35 +30,35 @@ class UserBox extends React.Component {
       lockSave: false
     }
 
-    if (this.props.blank) {
-      const template = {}
+    // if (this.props.blank) {
+    //   const template = {}
 
-      for (const field of props.display) {
-        switch (field) {
-          case 'name':
-            template.firstname = ''
-            template.lastname = ''
+    //   for (const field of props.display) {
+    //     switch (field) {
+    //       case 'name':
+    //         template.firstname = ''
+    //         template.lastname = ''
 
-            break
-          case 'admin':
-            template.admin = false
+    //         break
+    //       case 'admin':
+    //         template.admin = false
 
-            break
-          default:
-            template[field] = ''
-            break
-        }
-      }
+    //         break
+    //       default:
+    //         template[field] = ''
+    //         break
+    //     }
+    //   }
 
-      this.state.user = {
-        ...this.state.user
-      }
-    }
+    //   this.state.user = {
+    //     ...this.state.user
+    //   }
+    // }
   }
 
   componentDidMount () {
-    if ('auth' in localStorage && !this.props.blank) {
-      fetch(`/api/user/${this.props.user}/all`, {
+    if ('auth' in localStorage && !this.props.blank && !this.props.data) {
+      fetch(`/api/user/${this.props.id}/all`, {
         method: 'GET',
         headers: {
           Authorization: localStorage.auth
@@ -114,7 +114,7 @@ class UserBox extends React.Component {
                 ? ' is-invalid'
                 : ''}`}
             id='lastNameUBInput'
-            placeholder={this.state.user.last || 'Last'}
+            placeholder={this.state.user.lastname || 'Last'}
             disabled={!this.state.editing || this.props.locked?.includes('name')}
             value={this.state.alter.lastname || ''}
             maxLength={maxLengths.name}
@@ -151,11 +151,11 @@ class UserBox extends React.Component {
                 ? ' is-invalid'
                 : ''}`}
             id='tenantUBInput'
-            disabled={this.props.locked?.includes('tenant')}
-            value={this.state.alter.tenant || this.state.user.tenant || ''}
+            disabled={!this.state.editing || this.props.locked?.includes('tenant')}
+            value={this.state.alter.tenant || this.state.user.tenant || 'none'}
             onChange={this.onChange.bind(this, 'tenant')}
           >
-            <option value=''>NONE</option>
+            <option value='none'>NONE</option>
             {this.state.tenants.map((t) => <option value={t.id} key={t.id}>{t.name}</option>)}
           </select>
         </div>
@@ -215,13 +215,16 @@ class UserBox extends React.Component {
         lockSave: true
       })
 
-      fetch('/api/user/' + this.props.user, {
+      fetch('/api/user/' + this.props.id, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
           Authorization: localStorage.auth
         },
-        body: JSON.stringify(this.state.alter)
+        body: JSON.stringify({
+          ...this.state.alter,
+          tenant: this.state.alter.tenant === 'none' ? '' : this.state.alter.tenant
+        })
       })
         .then(postFetch)
         .then((token) => token.text())

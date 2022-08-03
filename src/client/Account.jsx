@@ -29,7 +29,7 @@ class Account extends React.Component {
       return (
         <div className='app-container account interior-bg' style={{ backgroundImage: `url(${interior})` }}>
           <UserBox
-            user='self'
+            id='self'
             header='My Account'
             locked={['tenant']}
             onSuccess={(token) => localStorage.setItem('auth', token)}
