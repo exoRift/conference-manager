@@ -6,7 +6,7 @@ import {
 import postFetch from './util/postFetch.js'
 import UserBox from './modules/UserBox.jsx'
 import MeetingStrip from './modules/MeetingStrip.jsx'
-import PostEditor from './modules/PostEditor.jsx'
+// import PostEditor from './modules/PostEditor.jsx'
 import {
   ReactComponent as RefreshSVG
 } from '../assets/svg/refresh.svg'
@@ -14,6 +14,8 @@ import {
 import './styles/Admin.css'
 
 const roomBounds = [1, 2]
+
+const PostEditor = () => <></>
 
 class Admin extends React.Component {
   constructor (props) {

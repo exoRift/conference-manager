@@ -22,15 +22,20 @@ module.exports = {
       .where('name', req.args.name)
       .orWhere('suite', req.args.suite)
       .then(([tenant]) => {
-        if (tenant) return res.sendError(409, 'name', `"${req.args.name} is already assigned to suite ${tenant.suite}"`)
+        if (tenant) {
+          return res.sendError(409, tenant.suite === req.args.suite ? 'suite' : 'name', `"${req.args.name} is already assigned to suite ${tenant.suite}"`)
+        }
+
+        const id = String(Date.now())
 
         return req.db('tenants')
           .insert({
+            id,
             name: req.args.name,
             suite: req.args.suite
           })
           .then(() => {
-            console.log('TENANT CREATED: ', req.auth.id, req.args.name, req.args.suite)
+            console.log('TENANT CREATED: ', req.auth.id, id)
 
             return res.send(200)
           })

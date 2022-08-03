@@ -44,7 +44,7 @@ class Directory extends React.Component {
               </div>
 
               <div className='body'>
-                <span>{t.tenant}</span>
+                <span>{t.name}</span>
               </div>
             </div>
           ))}

@@ -206,9 +206,7 @@ module.exports = function (req, res, next) {
               }
 
               return req.db('users')
-                .update({
-                  ...req.args
-                })
+                .update(req.args)
                 .where('id', req.params.id)
                 .then(() => req.args.token || found.token)
                 .catch((err) => {

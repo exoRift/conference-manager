@@ -2,7 +2,8 @@ import React from 'react'
 import {
   BrowserRouter as Router,
   Switch,
-  Route
+  Route,
+  Link
 } from 'react-router-dom'
 import {
   parse as parseQuery
@@ -25,6 +26,9 @@ class Routes extends React.Component {
     this.closeError = this.closeError.bind(this)
 
     this.query = parseQuery(window.location.search)
+
+    // Silk doesn't support query params
+    this.hideUI = this.query.ui === 'false' || navigator.userAgent.toLowerCase().includes('silk')
   }
 
   componentWillUnmount () {
@@ -35,6 +39,14 @@ class Routes extends React.Component {
     return (
       <Router>
         <div id='app'>
+          {this.hideUI
+            ? null
+            : (
+                <Link to='/' className='material-symbols-outlined home-button'>
+                  home
+                </Link>
+              )}
+
           <Switch>
             {routes.map((route, index) => (
               <Route

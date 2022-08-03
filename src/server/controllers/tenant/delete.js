@@ -1,14 +1,14 @@
 module.exports = {
   requisites: ['authorize'],
   method: 'delete',
-  route: '/tenant/:suite',
+  route: '/tenant/:id',
   action: function (req, res) {
     if (req.auth.admin) {
       return req.db('users')
         .delete()
-        .where('suite', req.params.suite)
+        .where('id', req.params.id)
         .then(() => {
-          console.log('TENANT DELETED: ', req.auth.id, req.params.suite)
+          console.log('TENANT DELETED: ', req.auth.id, req.params.id)
 
           return res.send(200)
         })
