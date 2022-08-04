@@ -3,20 +3,16 @@ import React from 'react'
 import postFetch from './util/postFetch.js'
 import MeetingCard from './modules/MeetingCard.jsx'
 import Clock from './modules/Clock.jsx'
-import entrance from '../assets/images/entrance.jpg'
 import room from '../assets/images/conference-horiz.jpg'
 
-import './styles/Directory.css'
+import './styles/Schedule.css'
 
 class Directory extends React.Component {
   constructor (props) {
     super(props)
 
     this.state = {
-      rooms: [],
-      tenants: [],
-      touchscreen: false,
-      page: props.query.page === 'tenants' || props.location === '/tenants'
+      rooms: []
     }
 
     this.rails = [
@@ -25,116 +21,65 @@ class Directory extends React.Component {
     ]
 
     this.autoScroll = this.autoScroll.bind(this)
-
-    window.addEventListener('touchstart', this.setTouch.bind(this, true))
-    window.addEventListener('touchend', this.setTouch.bind(this, false))
   }
 
   componentDidMount () {
-    const rooms = new Array(2).fill(undefined)
+    return fetch('/api/room/count', {
+      method: 'GET'
+    })
+      .then(postFetch)
+      .then((count) => count.json())
+      .then((count) => {
+        const rooms = new Array(count).fill(undefined)
 
-    this.update(rooms)
+        this.update(rooms)
 
-    this.updateInterval = setInterval(this.update.bind(this, rooms), 300000 /* 5 minutes */)
-
-    if ('toggleInterval' in this.props.query) {
-      const interval = parseInt(this.props.query.toggleInterval)
-
-      if (!isNaN(interval)) this.toggleInterval = setInterval(this.togglePage.bind(this), interval)
-    }
+        this.updateInterval = setInterval(this.update.bind(this, rooms), 300000 /* 5 minutes */)
+        if (this.props.hideUI) this.scrollInterval = setInterval(this.autoScroll, 3000)
+      })
+      .catch(this.props.onError)
   }
 
   componentWillUnmount () {
     this.scrollInterval = clearInterval(this.scrollInterval)
     this.updateInterval = clearInterval(this.updateInterval)
-    this.toggleInterval = clearInterval(this.toggleInterval)
-
-    window.removeEventListener('touchstart', this.setTouch)
-    window.removeEventListener('touchend', this.setTouch)
   }
 
   render () {
-    if (this.state.touchscreen || this.rails.reduce((a, r) => a ||
-      (r.current?.clientWidth < r.current?.scrollWidth), false)) this.scrollInterval = clearInterval(this.scrollInterval)
-    else if (!this.scrollInterval) this.scrollInterval = setInterval(this.autoScroll, 3000)
-
     return (
-      <div className='app-container directory' style={{ backgroundImage: `url(${this.state.page ? entrance : room})` }}>
-        {this.props.hideUI
-          ? null
-          : (
-            <button className='btn btn-outline-info page-switch' onClick={() => this.setState({ page: !this.state.page })}>
-              {this.state.page ? 'Meetings' : 'Tenants'}
-            </button>
-            )}
-
-        {this.state.page
-          ? (
-            <div className='suite-list-container'>
-              <div className='suite-list' style={{ gridTemplateColumns: `repeat(${Math.ceil(this.state.tenants.length / 2)}, 1fr)` }}>
-                {this.state.tenants.map((t, i) => (
-                  <div className='tenant-card' key={i}>
-                    <div className='header'>
-                      <span>{t.suite}</span>
-                    </div>
-
-                    <div className='body'>
-                      <span>{t.tenant}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-            )
-          : this.state.rooms.map((r, i) => (
-            <div className='meeting-list-container' key={i}>
-              <div className='room-id-label'>
-                <span>{i + 1}</span>
-              </div>
-
-              {r.length
-                ? (
-                  <div className='meeting-list' ref={this.rails[i]}>
-                    {r.map((m, i) => <MeetingCard onError={this.props.onError} data={m} key={i}/>)}
-                  </div>
-                  )
-                : <span className='floating-text'>No meetings scheduled</span>}
-            </div>
-          ))}
-
+      <div className='app-container directory' style={{ backgroundImage: `url(${room})` }}>
         <div className='clock-container'>
           <Clock className='clock' format='h:mma' interval={30000} ticking={true}/>
         </div>
 
-        {'toggleInterval' in this.props.query
-          ? (
-            <div className='progress'>
-              <div id='progbar' className='progress-bar bg-info' role='progressbar' style={{
-                animationDuration: this.props.query.toggleInterval + 'ms'
-              }}/>
-            </div>
-            )
-          : null}
+        {this.state.rooms.map((r, i) => (
+          <div className='meeting-list-container' key={i}>
+            <div className='room-id-label'>{i + 1}</div>
+
+            {r.length
+              ? (
+                <div className='meeting-list' ref={this.rails[i]}>
+                  {r.map((m) => <MeetingCard onError={this.props.onError} data={m} key={m.id}/>)}
+                </div>
+                )
+              : <span className='floating-text'>No upcoming meetings</span>}
+          </div>
+        ))}
       </div>
     )
   }
 
-  async update (rooms) {
-    await Promise.all(rooms.map((r, i) => fetch('/api/room/list/' + (i + 1), {
-      method: 'GET'
+  update (rooms) {
+    return Promise.all(rooms.map((r, i) => fetch('/api/room/list/' + (i + 1), {
+      method: 'GET',
+      headers: {
+        Authorization: localStorage.getItem('auth')
+      }
     })
       .then(postFetch)
       .then((meetings) => meetings.json())))
 
       .then((rooms) => this.setState({ rooms }))
-      .catch(this.props.onError)
-
-    await fetch('/api/suite/list', {
-      method: 'GET'
-    })
-      .then(postFetch)
-      .then((tenants) => tenants.json())
-      .then((tenants) => this.setState({ tenants }))
       .catch(this.props.onError)
   }
 
@@ -149,27 +94,6 @@ class Directory extends React.Component {
         })
       }
     }
-  }
-
-  setTouch (status) {
-    for (const rail of this.rails) {
-      if (rail.current) rail.current.style.overflow = status ? 'auto' : 'hidden'
-    }
-
-    this.setState({
-      touchscreen: status
-    })
-  }
-
-  togglePage () {
-    const bar = document.getElementById('progbar')
-    const clone = bar.cloneNode(true)
-
-    bar.parentNode.replaceChild(clone, bar)
-
-    this.setState({
-      page: !this.state.page
-    })
   }
 }
 

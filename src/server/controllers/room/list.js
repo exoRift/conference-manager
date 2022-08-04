@@ -3,7 +3,7 @@ const {
 } = process.env
 
 module.exports = {
-  requisites: [],
+  requisites: ['authorize'],
   method: 'get',
   route: '/room/list/:id',
   action: function (req, res) {

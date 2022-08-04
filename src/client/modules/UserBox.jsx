@@ -30,30 +30,7 @@ class UserBox extends React.Component {
       lockSave: false
     }
 
-    // if (this.props.blank) {
-    //   const template = {}
-
-    //   for (const field of props.display) {
-    //     switch (field) {
-    //       case 'name':
-    //         template.firstname = ''
-    //         template.lastname = ''
-
-    //         break
-    //       case 'admin':
-    //         template.admin = false
-
-    //         break
-    //       default:
-    //         template[field] = ''
-    //         break
-    //     }
-    //   }
-
-    //   this.state.user = {
-    //     ...this.state.user
-    //   }
-    // }
+    this.submit = this.submit.bind(this)
   }
 
   componentDidMount () {
@@ -85,7 +62,7 @@ class UserBox extends React.Component {
 
   render () {
     return (
-      <form className='userbox' onSubmit={this.submit.bind(this)}>
+      <form className='userbox' onSubmit={this.props.onSubmit || this.submit}>
         {this.props.header
           ? <span className='header'>{this.props.header}</span>
           : null}
@@ -96,7 +73,7 @@ class UserBox extends React.Component {
           <input
             className={`form-control${this.state.success || this.props.success
               ? ' is-valid'
-              : ''}${this.state.invalid.firstname
+              : ''}${this.state.invalid.firstname || this.props.invalid.firstname
                 ? ' is-invalid'
                 : ''}`}
             id='firstNameUBInput'
@@ -107,10 +84,14 @@ class UserBox extends React.Component {
             onChange={this.onChange.bind(this, 'firstname')}
           />
 
+          {this.state.invalid.firstname || this.props.invalid.firstname
+            ? <div className='invalid-feedback'>{this.state.invalid.firstname || this.props.invalid.firstname}</div>
+            : null}
+
           <input
             className={`form-control${this.state.success || this.props.success
               ? ' is-valid'
-              : ''}${this.state.invalid.lastname
+              : ''}${this.state.invalid.lastname || this.props.invalid.lastname
                 ? ' is-invalid'
                 : ''}`}
             id='lastNameUBInput'
@@ -120,13 +101,17 @@ class UserBox extends React.Component {
             maxLength={maxLengths.name}
             onChange={this.onChange.bind(this, 'lastname')}
           />
+
+          {this.state.invalid.lastname || this.props.invalid.lastname
+            ? <div className='invalid-feedback'>{this.state.invalid.lastname || this.props.invalid.lastname}</div>
+            : null}
         </div>
         <div className='form-group'>
           <label htmlFor={'emailUBInput'}>Email Address</label>
 
           <input className={`form-control${this.state.success || this.props.success
               ? ' is-valid'
-              : ''}${this.state.invalid.email
+              : ''}${this.state.invalid.email || this.props.invalid.email
                 ? ' is-invalid'
                 : ''}`}
             type='email'
@@ -139,6 +124,10 @@ class UserBox extends React.Component {
             onChange={this.onChange.bind(this, 'email')}
           />
 
+          {this.state.invalid.email || this.props.invalid.email
+            ? <div className='invalid-feedback'>{this.state.invalid.email || this.props.invalid.email}</div>
+            : null}
+
           <small id='emailUBHelp' className='form-text text-muted sub-message'>This email is visibile to only those with an account.</small>
         </div>
         <div className='form-group'>
@@ -147,7 +136,7 @@ class UserBox extends React.Component {
           <select
             className={`form-control${this.state.success || this.props.success
               ? ' is-valid'
-              : ''}${this.state.invalid.pass
+              : ''}${this.state.invalid.tenant || this.props.invalid.tenant
                 ? ' is-invalid'
                 : ''}`}
             id='tenantUBInput'
@@ -158,23 +147,35 @@ class UserBox extends React.Component {
             <option value='none'>NONE</option>
             {this.state.tenants.map((t) => <option value={t.id} key={t.id}>{t.name}</option>)}
           </select>
-        </div>
-        <div className='form-group'>
-          <label htmlFor={'passUBInput'}>Change Password</label>
 
-          <input className={`form-control${this.state.success || this.props.success
-              ? ' is-valid'
-              : ''}${this.state.invalid.pass
-                ? ' is-invalid'
-                : ''}`}
-            type='password'
-            id='passUBInput'
-            disabled={!this.state.editing || this.props.locked?.includes('pass')}
-            value={this.state.alter.email || ''}
-            maxLength={maxLengths.pass}
-            onChange={this.onChange.bind(this, 'pass')}
-          />
+          {this.state.invalid.tenant || this.props.invalid.tenant
+            ? <div className='invalid-feedback'>{this.state.invalid.tenant || this.props.invalid.tenant}</div>
+            : null}
         </div>
+        {this.props.hide?.includes?.('pass')
+          ? null
+          : (
+            <div className='form-group'>
+              <label htmlFor={'passUBInput'}>{this.props.blank ? 'Set' : 'Change'} Password</label>
+
+              <input className={`form-control${this.state.success || this.props.success
+                  ? ' is-valid'
+                  : ''}${this.state.invalid.pass || this.props.invalid.pass
+                    ? ' is-invalid'
+                    : ''}`}
+                type='password'
+                id='passUBInput'
+                disabled={!this.state.editing || this.props.locked?.includes('pass')}
+                value={this.state.alter.pass || ''}
+                maxLength={maxLengths.pass}
+                onChange={this.onChange.bind(this, 'pass')}
+              />
+
+              {this.state.invalid.pass || this.props.invalid.pass
+                ? <div className='invalid-feedback'>{this.state.invalid.pass || this.props.invalid.pass}</div>
+                : null}
+            </div>
+            )}
 
         {this.props.blank
           ? null

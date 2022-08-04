@@ -13,28 +13,27 @@ import './styles/Admin.css'
 const roomBounds = [1, 2]
 
 class Admin extends React.Component {
+  state = {
+    page: 'users',
+    users: [],
+    tenants: [],
+    meetings: [],
+    index: null,
+    deletingUser: null,
+    deletingTenant: null,
+    addingUser: null,
+    addingTenant: null,
+    deflect: false,
+    refreshed: false,
+    locked: false
+  }
+
   constructor (props) {
     super(props)
 
-    this.state = {
-      page: 'users',
-      users: [],
-      tenants: [],
-      meetings: [],
-      index: null,
-      deletingUser: null,
-      deletingTenant: null,
-      addingUser: null,
-      addingTenant: null,
-      deflect: false,
-      refreshed: false
-    }
-
-    this.refresh = this.refresh.bind(this)
     this.updateUsers = this.updateUsers.bind(this)
     this.updateTenants = this.updateTenants.bind(this)
     this.updateMeetings = this.updateMeetings.bind(this)
-    this.onChange = this.onChange.bind(this)
   }
 
   componentDidMount () {
@@ -169,6 +168,7 @@ class Admin extends React.Component {
                       ? <UserBox
                         header='New User'
                         blank={true}
+                        hide={['pass']}
                         onChange={(user) => this.setState({ addingUser: user })}
                         onError={this.props.onError}/>
                       : <TenantBox

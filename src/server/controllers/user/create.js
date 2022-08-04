@@ -47,6 +47,7 @@ module.exports = {
               firstname: req.args.firstname,
               lastname: req.args.lastname,
               email: req.args.email,
+              tenant: req.args.tenant,
               admin: req.args.admin
             })
             .then(() => {
@@ -60,7 +61,7 @@ module.exports = {
                   material: {
                     name: `${req.args.firstname} ${req.args.lastname}`,
                     executor: `${req.auth.firstname} ${req.auth.lastname}`,
-                    link: `${FRONTEND_DOMAIN}/register/${id}?firstname=${req.args.firstname}&lastname=${req.args.lastname}&email=${req.args.email}`
+                    link: `${FRONTEND_DOMAIN}/register/${id}?firstname=${req.args.firstname}&lastname=${req.args.lastname}&email=${req.args.email}&tenant=${req.args.tenant}` // eslint-disable-line
                   }
                 }))
                 .then(() => {
