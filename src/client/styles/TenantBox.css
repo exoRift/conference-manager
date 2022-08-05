@@ -1,0 +1,23 @@
+.tenantbox {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+
+.tenantbox input {
+  margin-top: .25rem;
+}
+
+.tenantbox > button {
+  width: 100%;
+  margin: 0 auto;
+}
+
+.tenantbox .editing-button-container {
+  display: flex;
+}
+
+.tenantbox .editing-button-container > button {
+  width: 100%;
+  white-space: nowrap;
+}

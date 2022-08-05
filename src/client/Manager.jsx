@@ -22,6 +22,8 @@ class Manager extends React.Component {
 
     this.updateMeetings = this.updateMeetings.bind(this)
     this.toggleCreate = this.toggleCreate.bind(this)
+    this.onChange = this.onChange.bind(this)
+    this.submit = this.submit.bind(this)
   }
 
   componentDidMount () {
@@ -33,20 +35,21 @@ class Manager extends React.Component {
     else {
       return (
         <div className='app-container manager' style={{ backgroundImage: `url(${room})` }}>
-          <div className='header'>
-            <span>My Meetings</span>
+          <div className='content'>
+            <h1>My Meetings</h1>
 
-          <button
-            className='create'
-            onClick={this.toggleCreate.bind(this)}>
-              +
-          </button>
-        </div>
+            <div className='meeting-container'>
+              {this.state.meetings.length
+                ? this.state.meetings.map((m) => <MeetingStrip data={m} key={m.id} onError={this.props.onError} onDelete={this.updateMeetings}/>)
+                : <span className='floating-text'>No meetings scheduled</span>}
+            </div>
 
-          <div className='manager-container'>
-            {this.state.meetings.length
-              ? this.state.meetings.map((m) => <MeetingStrip data={m} key={m.id} onError={this.props.onError} onDelete={this.updateMeetings}/>)
-              : <span className='floating-text'>No meetings scheduled</span>}
+            <button
+              className='create'
+              onClick={this.toggleCreate.bind(this)}
+              >
+                Schedule
+            </button>
           </div>
 
           {this.state.creating
@@ -58,11 +61,11 @@ class Manager extends React.Component {
                   </div>
 
                   <div className='modal-body'>
-                    <MeetingEditor blank={true} onChange={this.onChange.bind(this)}/>
+                    <MeetingEditor blank={true} onChange={this.onChange}/>
                   </div>
 
                   <div className='modal-footer'>
-                    <button className='btn btn-success' onClick={this.onSubmit.bind(this)} disabled={this.state.locked}>Create</button>
+                    <button className='btn btn-success' onClick={this.submit} disabled={this.state.locked}>Create</button>
 
                     <button className='btn btn-secondary' onClick={this.toggleCreate}>Cancel</button>
                   </div>
@@ -76,7 +79,7 @@ class Manager extends React.Component {
   }
 
   updateMeetings () {
-    return fetch('/api/meeting/list/current', {
+    return fetch('/api/meeting/list/self', {
       method: 'GET',
       headers: {
         Authorization: localStorage.auth
@@ -103,17 +106,12 @@ class Manager extends React.Component {
     })
   }
 
-  onSubmit () {
+  submit () {
     this.setState({
       locked: true
     })
 
     const data = this.state.creating
-
-    if ('enddate' in data) data.length = new Date(data.enddate).getTime() - new Date(data.startdate).getTime()
-
-    // Automatically add uncommitted attendee
-    if (data.attendees && data.attendeeInput && !data.attendees.includes(data.attendeeInput)) data.attendees.push(data.attendeeInput)
 
     return fetch('/api/meeting/', {
       method: 'POST',

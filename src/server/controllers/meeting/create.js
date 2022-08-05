@@ -8,7 +8,6 @@ module.exports = {
     title: 'string',
     room: 'number',
     desc: 'opt:string',
-    attendees: 'opt:array',
     startdate: 'opt:date',
     length: 'number'
   },
@@ -32,7 +31,7 @@ module.exports = {
   route: '/meeting',
   action: function (req, res) {
     if (req.args.room <= parseInt(ROOM_COUNT) && req.args.room > 0) {
-      if (req.auth.limited || !req.args.startdate) req.args.startdate = Date.now()
+      req.args.startdate = new Date(Math.max(req.args.startdate.getTime(), Date.now()))
 
       return req.util.meeting.validate()
         .then(() => {
@@ -52,8 +51,7 @@ module.exports = {
                 id,
                 creator: req.auth.id,
                 ...req.args,
-                length: req.args.length + ' milliseconds',
-                attendees: JSON.stringify(req.args.attendees)
+                length: req.args.length + ' milliseconds'
               })
               .catch((err) => {
                 console.error('db', err)

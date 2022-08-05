@@ -8,7 +8,6 @@ module.exports = {
     title: 'opt:string',
     room: 'opt:number',
     desc: 'opt:string',
-    attendees: 'opt:array',
     startdate: 'opt:date',
     length: 'opt:number'
   },
@@ -60,8 +59,7 @@ module.exports = {
                   .then(() => req.db('meetings')
                     .update({
                       ...req.args,
-                      length: req.args.length ? req.args.length + ' milliseconds' : undefined,
-                      attendees: req.args.attendees ? JSON.stringify(req.args.attendees) : undefined
+                      length: req.args.length ? req.args.length + ' milliseconds' : undefined
                     })
                     .where('id', req.params.id)
                     .then(() => {

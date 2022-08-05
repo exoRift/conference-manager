@@ -54,12 +54,6 @@
 .nav-container .material-symbols-outlined {
   font-size: 2.5rem;
 }
-.nav-container > .logout-container svg path {
-  stroke: #212529;
-}
-.nav-container .admin-container svg path {
-  fill: #212529;
-}
 
 @keyframes width-reveal {
   from {
@@ -70,8 +64,30 @@
 }
 
 @media (max-width: 800px) {
+  .app-container.account {
+    flex-flow: column;
+    padding-top: 10%;
+  }
+
   .app-container.account .userbox {
     width: 100%;
+    margin-bottom: 5%;
+  }
+
+  .tenantbox > button {
+    width: 40%;
+    margin: 0 auto;
+  }
+
+  .app-container.account .editing-button-container {
+    padding: 0 20%;
+  }
+
+  .app-container.account .tenantbox {
+    width: 100%;
+    height: fit-content;
+    border-radius: 10px;
+    animation: none;
   }
 
   .nav-container {

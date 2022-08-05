@@ -46,11 +46,10 @@ module.exports = function (req, res, next) {
 
                   throw err
                 } else {
-                  const start = new Date(args.startdate)
                   const end = new Date(new Date(args.startdate).getTime() + args.length)
 
                   // Time validation
-                  if (!req.auth.limited && 'startdate' in req.args && start < Date.now()) { // Will only error if startdate is being initialized/modified
+                  if ('startdate' in req.args && req.method !== 'POST' && args.startdate < Date.now()) {
                     const err = Error('start date earlier than current date')
                     err.code = 400
                     err.type = 'argument'
@@ -86,7 +85,7 @@ module.exports = function (req, res, next) {
                       req.db.raw('(:start::date >= startdate AND :start::date <= (startdate + length))' +
                         'OR (:end::date >= startdate AND :end::date <= (startdate + length))',
                       {
-                        start: start.toISOString(),
+                        start: args.startdate.toISOString(),
                         end: end.toISOString()
                       })
                     )
@@ -98,10 +97,12 @@ module.exports = function (req, res, next) {
                       throw req.errors.database
                     })
                     .then(([overlap]) => {
-                      if (!overlap) overlap = req.meetingCore.findConflict(start, args.length, args.room, exclude)?.data
+                      if (!overlap) overlap = req.meetingCore.findConflict(args.startdate, args.length, args.room, exclude)?.data
 
                       if (overlap) {
-                        const enddate = new Date(new Date(overlap.startdate) + overlap.length).toISOString()
+                        const enddate = new Date(new Date(overlap.startdate) + overlap.length).toLocaleTimeString('en-US', {
+                          timeStyle: 'short'
+                        })
 
                         const err = Error(
                           `meeting overlaps existing meeting: {${overlap.title}} which is in session from {${overlap.startdate}} to {${enddate}}`

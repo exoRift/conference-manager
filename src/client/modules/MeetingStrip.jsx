@@ -2,13 +2,6 @@ import React from 'react'
 
 import postFetch from '../util/postFetch.js'
 import MeetingEditor from './MeetingEditor.jsx'
-import edit from '../../assets/svg/edit.svg'
-import trash from '../../assets/svg/trash.svg'
-import x from '../../assets/svg/x.svg'
-import check from '../../assets/svg/check.svg'
-import {
-  ReactComponent as ShareSVG
-} from '../../assets/svg/share.svg'
 
 import '../styles/MeetingStrip.css'
 
@@ -31,6 +24,7 @@ class MeetingStrip extends React.Component {
       shared: false
     }
 
+    this.toggleEditing = this.toggleEditing.bind(this)
     this.onSave = this.onSave.bind(this)
     this.onShare = this.onShare.bind(this)
   }
@@ -62,12 +56,18 @@ class MeetingStrip extends React.Component {
         : ''} ${this.state.editing ? ' editing' : ''} ${this.state.saved ? ' saved' : ''}`}>
         <div className='info-container'>
           {this.state.data.owned || this.props.admin
-            ? <img className={`btn edit${this.state.editing ? ' editing' : ''}`} src={edit} alt='edit' onClick={this.toggleEditing.bind(this)}/>
+            ? <div
+              className={`btn material-symbols-outlined edit${this.state.editing ? ' editing' : ''}`}
+              alt='edit'
+              onClick={this.toggleEditing}
+              >
+                edit
+              </div>
             : null}
 
-          <div className={`share-button${this.state.shared ? ' active' : ''}`} title='Share' onClick={this.onShare}>
-            <ShareSVG/>
-          </div>
+          <span className={`material-symbols-outlined share${this.state.shared ? ' active' : ''}`} title='Share' onClick={this.onShare}>
+            share
+          </span>
 
           {this.state.editing
             ? <MeetingEditor data={this.state.data} onSave={this.onSave} onError={this.props.onError}/>
@@ -75,12 +75,12 @@ class MeetingStrip extends React.Component {
               <>
                 <span className='title'>{this.state.data.title}</span>
 
-                <span className='times'>
+                <span className='time-container'>
                   <span className='date'>{start.toLocaleDateString('en-US', {
                     dateStyle: 'short'
                   })}</span>
 
-                  <span className='time-container'>
+                  <span className='times'>
                     <span className='starttime'>{start.toLocaleTimeString('en-US', {
                       timeStyle: 'short'
                     })}</span>
@@ -105,12 +105,18 @@ class MeetingStrip extends React.Component {
               {this.state.deleting
                 ? (
                   <span className='delete-confirm-container'>
-                    <img className='btn cancel' src={x} alt='cancel' onClick={this.toggleDeleting.bind(this)}/>
-                    <img className='btn confirm' src={check} alt='confirm' onClick={this.delete.bind(this)}/>
+                    <div className='btn material-symbols-outlined cancel' onClick={this.toggleDeleting.bind(this)}>
+                      close
+                    </div>
+                    <div className='btn material-symbols-outlined confirm' onClick={this.delete.bind(this)}>
+                      done
+                    </div>
                   </span>
                   )
                 : this.state.data.owned || this.props.admin
-                  ? <img className='btn delete' src={trash} alt='delete' onClick={this.toggleDeleting.bind(this)}/>
+                  ? <div className='btn material-symbols-outlined delete' onClick={this.toggleDeleting.bind(this)}>
+                      delete
+                    </div>
                   : null}
 
               <span className='creator'>{this.state.creator.firstname} {this.state.creator.lastname}</span>

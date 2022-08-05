@@ -15,10 +15,16 @@ exports.up = function (knex) {
         .inTable('tenants')
         .onDelete('SET null')
     })
+    .alterTable('meetings', (table) => {
+      table.dropColumn('attendees')
+    })
 }
 
 exports.down = function (knex) {
   return knex.schema
+    .alterTable('meetings', (table) => {
+      table.jsonb('attendees').default('[]').notNullable()
+    })
     .alterTable('users', (table) => {
       table.string('suite', 3)
       table.dropForeign('tenant')
