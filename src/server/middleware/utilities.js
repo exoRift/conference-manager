@@ -79,12 +79,10 @@ module.exports = function (req, res, next) {
                   }
 
                   return req.db('meetings')
-                    .select('title', 'startdate', 'length')
+                    .select('title', 'startdate', 'length', req.db.raw('EXTRACT(EPOCH FROM length) * 1000 as epochlength'))
                     .where('room', args.room)
                     .andWhere(
-                      req.db.raw('(:start::date >= startdate AND :start::date <= (startdate + length))' +
-                        'OR (:end::date >= startdate AND :end::date <= (startdate + length))',
-                      {
+                      req.db.raw('(:start::TIMESTAMPTZ, :end::TIMESTAMPTZ) OVERLAPS (startdate, (startdate + length))', {
                         start: args.startdate.toISOString(),
                         end: end.toISOString()
                       })
@@ -100,9 +98,7 @@ module.exports = function (req, res, next) {
                       if (!overlap) overlap = req.meetingCore.findConflict(args.startdate, args.length, args.room, exclude)?.data
 
                       if (overlap) {
-                        const enddate = new Date(new Date(overlap.startdate) + overlap.length).toLocaleTimeString('en-US', {
-                          timeStyle: 'short'
-                        })
+                        const enddate = new Date(new Date(overlap.startdate) + overlap.epochlength)
 
                         const err = Error(
                           `meeting overlaps existing meeting: {${overlap.title}} which is in session from {${overlap.startdate}} to {${enddate}}`

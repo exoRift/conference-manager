@@ -4,7 +4,7 @@ module.exports = {
   route: '/tenant/list',
   action: function (req, res) {
     return req.db('tenants')
-      .select(['id', 'name', 'suite'])
+      .select('id', 'name', 'suite')
       .orderBy('suite', 'asc')
       .then((tenants) => res.send(200, tenants))
       .catch((err) => {

@@ -12,7 +12,6 @@ module.exports = {
         .filter((m) => m.limited && m.data.room === parseInt(req.params.id))
         .map((m) => {
           return {
-            attendees: [],
             ...m.data,
             limited: true
           }

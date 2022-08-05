@@ -31,7 +31,7 @@ module.exports = {
   route: '/meeting',
   action: function (req, res) {
     if (req.args.room <= parseInt(ROOM_COUNT) && req.args.room > 0) {
-      req.args.startdate = new Date(Math.max(req.args.startdate.getTime(), Date.now()))
+      req.args.startdate = new Date(Math.max(req.args.startdate?.getTime?.() ?? 0, Date.now()))
 
       return req.util.meeting.validate()
         .then(() => {

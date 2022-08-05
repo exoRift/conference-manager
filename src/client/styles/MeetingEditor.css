@@ -18,7 +18,6 @@
   margin: 0 3%;
 }
 
-
 .meeting-card.editing .content {
   margin-bottom: 1rem;
 }
@@ -26,33 +25,6 @@
 .meeting-card.editing .description {
   resize: none;
   height: 8rem !important;
-}
-
-.meeting-card.editing .attendees {
-  max-height: 8rem;
-  border: 2px solid gray;
-  border-radius: 10px;
-}
-
-.meeting-card.editing .attendees .attendee {
-  cursor: pointer;
-}
-.meeting-card.editing .attendees .attendee:hover {
-  background: rgba(44, 62, 80, 0.5);
-}
-.meeting-card.editing .attendees .attendee:hover::before {
-  content: 'x';
-  position: absolute;
-  color: white;
-  line-height: 2rem;
-}
-
-.meeting-card.editing .attendees input {
-  width: fit-content;
-  min-width: 20%;
-}
-.meeting-card.editing .attendees input:disabled {
-  background: none !important;
 }
 
 .meeting-card.editing .footer {

@@ -50,7 +50,7 @@ class RoomPanel extends React.Component {
 
     document.addEventListener('gesturestart', this._cancelGesture)
 
-    this.updateInterval = setInterval(this.update, 300000 /* 5 minutes */)
+    this.updateInterval = setInterval(this.update, 60000 /* 1 minute */)
   }
 
   componentWillUnmount () {
@@ -174,11 +174,11 @@ class RoomPanel extends React.Component {
                       <div className='upcoming-entry' key={i}>
                         <strong className='title'>{m.title}</strong>
 
-                        <span className='date'>{start.toLocaleDateString('en-US', {
+                        <strong className='date'>{start.toLocaleDateString('en-US', {
                           dateStyle: 'short'
-                        })}</span>
+                        })}</strong>
 
-                        <span className='time-container'>
+                        <span className='times'>
                           <span className='starttime'>{start.toLocaleTimeString('en-US', {
                             timeStyle: 'short'
                           })}</span>
@@ -205,7 +205,10 @@ class RoomPanel extends React.Component {
     for (const refresh of this.refreshes) clearTimeout(refresh)
 
     return fetch('/api/room/list/' + this.props.match.params.room, {
-      method: 'GET'
+      method: 'GET',
+      headers: {
+        Authorization: localStorage.getItem('auth')
+      }
     })
       .then(postFetch)
       .then((meetings) => meetings.json())

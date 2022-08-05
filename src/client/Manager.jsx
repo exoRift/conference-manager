@@ -42,8 +42,8 @@ class Manager extends React.Component {
           <button
             className='create'
             onClick={this.toggleCreate.bind(this)}
-            >
-              Schedule
+          >
+            Schedule
           </button>
         </div>
 

@@ -3,8 +3,6 @@
   background-color: rgba(200, 200, 200, 0.8);
   backdrop-filter: blur(8px);
   border-radius: 10px;
-  overflow: hidden;
-  clip-path: polygon(0 0, 90% 0%, 100% 10%, 100% 100%, 10% 100%, 0 90%);
 }
 
 .meeting-card .header {
@@ -22,12 +20,12 @@
   overflow: hidden;
 }
 
-.meeting-card.in-session .header .title::after {
+.meeting-card.in-session .header::after {
   content: ' - IN SESSION';
 }
 
 .meeting-card .header .title::placeholder {
-  color:rgba(44, 62, 80, 0.6);
+  color: rgba(44, 62, 80, 0.6);
 }
 
 .meeting-card .subheader {
@@ -38,70 +36,32 @@
   font-size: x-large;
 }
 
-.meeting-card .subheader .time-container {
+.meeting-card .subheader .date {
+  margin-right: 1%;
+}
+
+.meeting-card .subheader .times {
   display: flex;
   justify-content: space-evenly;
   width: 60%;
 }
-.meeting-card.soon:not(.in-session) .subheader .time-container .starttime {
+.meeting-card.soon:not(.in-session) .subheader .times .starttime {
   animation: pulse 1s ease-in-out 0s infinite alternate forwards;
 }
 
-.meeting-card .content {
-  display: flex;
-  flex-flow: column;
-  height: 30vh;
-}
-
 .meeting-card .description {
-  flex-shrink: 1;
-  max-height: 8em;
   padding: 1% 2%;
   font-size: xx-large;
   background-color: rgba(44, 62, 80, 0.2);
-  overflow: hidden;
-  text-overflow: ellipsis;
+  word-break: break-word;
 }
 .meeting-card .description.empty {
   font-style: italic;
 }
 
-.meeting-card .attendees {
-  flex-shrink: 1;
-  margin: 4vh 4%;
-  font-size: x-large;
-}
-.meeting-card .attendees::before {
-  content: 'Attendees:';
-  position: absolute;
-  margin-left: -1vw;
-  margin-top: -2.5rem;
-}
-
-.meeting-card .attendees .attendee {
-  transition: 0.2s;
-  padding: 0.5%;
-  background-color: rgba(44, 62, 80, 0.3);
-  border-radius: 5px;
-}
-.meeting-card .attendees .attendee:not(:last-child) {
-  margin-right: 1rem;
-}
-.meeting-card .attendees .attendee:not(:last-child)::after {
-  content: ',';
-  position: absolute;
-  margin-left: 0.5%;
-}
-
 .meeting-card .footer {
-  position: absolute;
-  left: 0%;
-  bottom: 0%;
-  width: 100%;
-  padding: 0 2% 0.2% 10%;
-  display: flex;
-  justify-content: flex-end;
-  font-size: x-large;
+  float: right;
+  padding-right: 2%;
 }
 .meeting-card .footer .creator::before {
   content: 'Created By:';

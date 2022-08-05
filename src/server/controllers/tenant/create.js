@@ -18,7 +18,7 @@ module.exports = {
   route: '/tenant',
   action: function (req, res) {
     return req.db('tenants')
-      .select(['name', 'suite'])
+      .select('name', 'suite')
       .where('name', req.args.name)
       .orWhere('suite', req.args.suite)
       .then(([tenant]) => {
