@@ -44,13 +44,17 @@
   border-radius: 25px;
   filter: drop-shadow(0.5rem 0.5rem 0 rgba(0, 0, 0, 0.2));
 }
-.app-container.home #pages a:hover {
+.app-container.home #pages a .material-symbols-outlined {
+  font-size: 10rem;
+}
+.app-container.home #pages a:hover:not([disabled]) {
   color: lightgray;
   transform: translate(-0.2rem, -0.2rem);
   filter: drop-shadow(1rem 1rem 0 rgba(0, 0, 0, 0.6));
 }
-.app-container.home #pages a .material-symbols-outlined {
-  font-size: 10rem;
+.app-container.home #pages a[disabled] {
+  pointer-events: none;
+  filter: contrast(0.5);
 }
 
 @media (max-width: 800px) {

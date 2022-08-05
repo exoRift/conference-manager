@@ -12,21 +12,21 @@ import entrance from '../assets/images/entrance.jpg'
 import './styles/Login.css'
 
 class Login extends React.Component {
+  state = {
+    email: '',
+    pass: '',
+    invalid: {
+      email: null,
+      pass: null
+    },
+    success: null,
+    redirect: null
+  }
+
   constructor (props) {
     super(props)
 
     this.query = parseQuery(window.location.search)
-
-    this.state = {
-      email: '',
-      pass: '',
-      invalid: {
-        email: null,
-        pass: null
-      },
-      success: null,
-      redirect: null
-    }
 
     this.submit = this.submit.bind(this)
   }
@@ -38,53 +38,52 @@ class Login extends React.Component {
   render () {
     if (this.state.redirect) return <Redirect to={this.state.redirect}/>
     else if ('auth' in localStorage) return <Redirect to='/'/>
-    else {
-      return (
-        <div className='app-container login interior-bg' style={{ backgroundImage: `url(${entrance})` }}>
-          <form className='login-box' onSubmit={this.submit}>
-            {this.query.error === 'logged_out'
-              ? (
-                <span className='header issue'>You have been logged out. Please log back in</span>
-                )
-              : <span className='header'>Login to your account</span>}
 
-            <div className='form-group'>
-              <label htmlFor='emailInput'>Email address</label>
-              <input
-                type='email'
-                className={`form-control ${this.state.success ? 'is-valid' : ''} ${this.state.invalid.email ? 'is-invalid' : ''}`}
-                id='emailInput'
-                aria-describedby='emailHelp'
-                placeholder='Enter email'
-                value={this.state.email}
-                onChange={this.onChange.bind(this, 'email')}/>
-              {this.state.invalid.email
-                ? <div className='invalid-feedback'>{this.state.invalid.email}</div>
-                : null
-              }
-              <small id='emailHelp' className='form-text text-muted sub-message'>This email is visibile to only those with an account.</small>
-            </div>
+    return (
+      <div className='app-container login interior-bg' style={{ backgroundImage: `url(${entrance})` }}>
+        <form className='login-box' onSubmit={this.submit}>
+          {this.query.error === 'logged_out'
+            ? (
+              <span className='header issue'>You have been logged out. Please log back in</span>
+              )
+            : <span className='header'>Login to your account</span>}
 
-            <div className='form-group'>
-              <label htmlFor='passwordInput'>Password</label>
-              <input
-                type='password'
-                className={`form-control ${this.state.success ? 'is-valid' : ''} ${this.state.invalid.pass ? 'is-invalid' : ''}`}
-                id='passwordInput'
-                placeholder='Enter password'
-                value={this.state.pass}
-                onChange={this.onChange.bind(this, 'pass')}/>
-              {this.state.invalid.pass
-                ? <div className='invalid-feedback'>{this.state.invalid.pass}</div>
-                : null
-              }
-            </div>
+          <div className='form-group'>
+            <label htmlFor='emailInput'>Email address</label>
+            <input
+              type='email'
+              className={`form-control ${this.state.success ? 'is-valid' : ''} ${this.state.invalid.email ? 'is-invalid' : ''}`}
+              id='emailInput'
+              aria-describedby='emailHelp'
+              placeholder='Enter email'
+              value={this.state.email}
+              onChange={this.onChange.bind(this, 'email')}/>
+            {this.state.invalid.email
+              ? <div className='invalid-feedback'>{this.state.invalid.email}</div>
+              : null
+            }
+            <small id='emailHelp' className='form-text text-muted sub-message'>This email is visibile to only those with an account.</small>
+          </div>
 
-            <button type='submit' className='btn btn-primary' disabled={this.state.success}>Log In</button>
-          </form>
-        </div>
-      )
-    }
+          <div className='form-group'>
+            <label htmlFor='passwordInput'>Password</label>
+            <input
+              type='password'
+              className={`form-control ${this.state.success ? 'is-valid' : ''} ${this.state.invalid.pass ? 'is-invalid' : ''}`}
+              id='passwordInput'
+              placeholder='Enter password'
+              value={this.state.pass}
+              onChange={this.onChange.bind(this, 'pass')}/>
+            {this.state.invalid.pass
+              ? <div className='invalid-feedback'>{this.state.invalid.pass}</div>
+              : null
+            }
+          </div>
+
+          <button type='submit' className='btn btn-primary' disabled={this.state.success}>Log In</button>
+        </form>
+      </div>
+    )
   }
 
   onChange (field, event) {
@@ -96,7 +95,7 @@ class Login extends React.Component {
   submit (event) {
     event.preventDefault() // Don't refresh page
 
-    if (!this.state.success && document.getElementById('emailInput').checkValidity() && this.state.email.length && this.state.pass.length) {
+    if (!this.state.success && this.state.email.length && this.state.pass.length) {
       fetch('/api/user/login', {
         method: 'POST',
         headers: {
@@ -117,7 +116,7 @@ class Login extends React.Component {
           clearTimeout(this.timeout)
           this.timeout = setTimeout(() => {
             this.setState({
-              redirect: '/'
+              redirect: this.query.redirect || '/'
             })
           }, 1000)
         })

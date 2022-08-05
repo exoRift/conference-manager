@@ -31,24 +31,25 @@
   justify-content: space-between;
 }
 
-.nav-container > div {
+.nav-container > * {
   display: flex;
   height: fit-content;
   align-items: center;
   transition: 0.3s;
   cursor: pointer;
   padding: 0.5%;
+  color: #212529 !important;
   background-color: var(--secondary);
   border-radius: 10px;
   font-size: x-large;
 }
-.nav-container > div:hover {
+.nav-container > *:hover {
   transform: scale(1.1);
 }
-.nav-container > .logout-container:hover {
+.nav-container .logout-container:hover {
   background-color: var(--danger);
 }
-.nav-container > .admin-container:hover {
+.nav-container .admin-container:hover {
   background-color: var(--warning);
 }
 .nav-container .material-symbols-outlined {

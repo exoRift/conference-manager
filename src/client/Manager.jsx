@@ -1,7 +1,4 @@
 import React from 'react'
-import {
-  Redirect
-} from 'react-router-dom'
 
 import MeetingStrip from './modules/MeetingStrip.jsx'
 import MeetingEditor from './modules/MeetingEditor.jsx'
@@ -31,51 +28,48 @@ class Manager extends React.Component {
   }
 
   render () {
-    if (!('auth' in localStorage)) return <Redirect to='/login'/>
-    else {
-      return (
-        <div className='app-container manager' style={{ backgroundImage: `url(${room})` }}>
-          <div className='content'>
-            <h1>My Meetings</h1>
+    return (
+      <div className='app-container manager' style={{ backgroundImage: `url(${room})` }}>
+        <div className='content'>
+          <h1>My Meetings</h1>
 
-            <div className='meeting-container'>
-              {this.state.meetings.length
-                ? this.state.meetings.map((m) => <MeetingStrip data={m} key={m.id} onError={this.props.onError} onDelete={this.updateMeetings}/>)
-                : <span className='floating-text'>No meetings scheduled</span>}
-            </div>
-
-            <button
-              className='create'
-              onClick={this.toggleCreate.bind(this)}
-              >
-                Schedule
-            </button>
+          <div className='meeting-container'>
+            {this.state.meetings.length
+              ? this.state.meetings.map((m) => <MeetingStrip data={m} key={m.id} onError={this.props.onError} onDelete={this.updateMeetings}/>)
+              : <span className='floating-text'>No meetings scheduled</span>}
           </div>
 
-          {this.state.creating
-            ? (
-              <div className='create modal'>
-                <div className='modal-dialogue'>
-                  <div className='modal-header'>
-                    <h5 className='modal-title'>Schedule Meeting</h5>
-                  </div>
+          <button
+            className='create'
+            onClick={this.toggleCreate.bind(this)}
+            >
+              Schedule
+          </button>
+        </div>
 
-                  <div className='modal-body'>
-                    <MeetingEditor blank={true} onChange={this.onChange}/>
-                  </div>
+        {this.state.creating
+          ? (
+            <div className='create modal'>
+              <div className='modal-dialogue'>
+                <div className='modal-header'>
+                  <h5 className='modal-title'>Schedule Meeting</h5>
+                </div>
 
-                  <div className='modal-footer'>
-                    <button className='btn btn-success' onClick={this.submit} disabled={this.state.locked}>Create</button>
+                <div className='modal-body'>
+                  <MeetingEditor blank={true} onChange={this.onChange}/>
+                </div>
 
-                    <button className='btn btn-secondary' onClick={this.toggleCreate}>Cancel</button>
-                  </div>
+                <div className='modal-footer'>
+                  <button className='btn btn-success' onClick={this.submit} disabled={this.state.locked}>Create</button>
+
+                  <button className='btn btn-secondary' onClick={this.toggleCreate}>Cancel</button>
                 </div>
               </div>
-              )
-            : null}
-        </div>
-      )
-    }
+            </div>
+            )
+          : null}
+      </div>
+    )
   }
 
   updateMeetings () {

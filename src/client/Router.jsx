@@ -57,7 +57,7 @@ class Routes extends React.Component {
                   onError={this.onError}
                   refreshNav={this.refreshNav}
                   query={this.query}
-                  hideUI={this.query.ui === 'false' || navigator.userAgent.toLowerCase().includes('silk')}
+                  hideUI={this.hideUI}
                   {...props}
                 />}
               />

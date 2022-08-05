@@ -35,7 +35,7 @@ class Home extends React.Component {
           {this.state.user ? <h2>Welcome back, {this.state.user.firstname}</h2> : null}
 
           <div id='pages'>
-            <Link to='/manager'>
+            <Link to='/manager' disabled={!('auth' in localStorage)}>
               <span className='material-symbols-outlined'>
                 schedule
               </span>
@@ -43,7 +43,7 @@ class Home extends React.Component {
               My Meetings
             </Link>
 
-            <Link to='/meetings'>
+            <Link to='/meetings' disabled={!('auth' in localStorage)}>
               <span className='material-symbols-outlined'>
                 calendar_month
               </span>
@@ -59,13 +59,25 @@ class Home extends React.Component {
               Tenant Directory
             </Link>
 
-            <Link to='/account'>
-              <span className='material-symbols-outlined'>
-                account_circle
-              </span>
+            {'auth' in localStorage
+              ? (
+                <Link to='/account'>
+                  <span className='material-symbols-outlined'>
+                    account_circle
+                  </span>
 
-              Account
-            </Link>
+                  Account
+                </Link>
+                )
+              : (
+                <Link to='/login'>
+                  <span className='material-symbols-outlined'>
+                    login
+                  </span>
+
+                  Login
+                </Link>
+                )}
           </div>
         </div>
       </div>

@@ -46,27 +46,26 @@ class Register extends React.Component {
   render () {
     if (this.state.redirect) return <Redirect to={this.state.redirect}/>
     else if ('auth' in localStorage) return <Redirect to='/'/>
-    else {
-      return (
-        <div className='app-container register interior-bg' style={{ backgroundImage: `url(${entrance})` }}>
-          <div className='login-box'>
-            <UserBox
-              data={this.initial}
-              header='Register Your Account'
-              locked={['tenant']}
-              blank={true}
-              invalid={this.state.invalid}
-              success={this.state.success}
-              onChange={this.onChange}
-              onError={this.props.onError}
-              onSubmit={this.submit}
-            >
-              <button type='submit' className='btn btn-success' disabled={this.state.locked}>Finish</button>
-            </UserBox>
-          </div>
+
+    return (
+      <div className='app-container register interior-bg' style={{ backgroundImage: `url(${entrance})` }}>
+        <div className='login-box'>
+          <UserBox
+            data={this.initial}
+            header='Register Your Account'
+            locked={['tenant']}
+            blank={true}
+            invalid={this.state.invalid}
+            success={this.state.success}
+            onChange={this.onChange}
+            onError={this.props.onError}
+            onSubmit={this.submit}
+          >
+            <button type='submit' className='btn btn-success' disabled={this.state.locked}>Finish</button>
+          </UserBox>
         </div>
-      )
-    }
+      </div>
+    )
   }
 
   onChange (data) {

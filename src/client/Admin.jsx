@@ -135,89 +135,89 @@ class Admin extends React.Component {
       }
     }
 
-    if ('auth' in localStorage && !this.state.deflect) {
-      return (
-        <div className='app-container admin'>
-          <h1>Admin Panel</h1>
+    if (!('auth' in localStorage) || this.state.deflect) return <Redirect to='/'/>
 
-          <div className='page-container'>
-            {Object.entries(pages).map((p, i) => (
-              <button
-                className={`btn btn-${this.state.page === p[0] ? 'success' : 'primary'} page-button ${p[0]}`}
-                onClick={() => this.setState({ page: p[0], index: null })}
-                key={i}>
-                  {p[1].name}
-              </button>
-            ))}
+    return (
+      <div className='app-container admin'>
+        <h1>Admin Panel</h1>
 
-            <span className={`material-symbols-outlined refresh-button${this.state.refreshed ? ' refreshed' : ''}`} onClick={this.refresh}>cached</span>
-          </div>
+        <div className='page-container'>
+          {Object.entries(pages).map((p, i) => (
+            <button
+              className={`btn btn-${this.state.page === p[0] ? 'success' : 'primary'} page-button ${p[0]}`}
+              onClick={() => this.setState({ page: p[0], index: null })}
+              key={i}>
+                {p[1].name}
+            </button>
+          ))}
 
-          {pages[this.state.page].dom}
-
-          {this.state.addingUser || this.state.addingTenant
-            ? (
-              <div className='create modal'>
-                <div className='modal-dialogue'>
-                  <div className='modal-header'>
-                    <h5 className='modal-title'>{this.state.addingUser ? 'Create User' : 'Register Tenant'}</h5>
-                  </div>
-
-                  <div className='modal-body'>
-                    {this.state.addingUser
-                      ? <UserBox
-                        header='New User'
-                        blank={true}
-                        hide={['pass']}
-                        onChange={(user) => this.setState({ addingUser: user })}
-                        onError={this.props.onError}/>
-                      : <TenantBox
-                        header='New Tenant'
-                        blank={true}
-                        onChange={(tenant) => this.setState({ addingTenant: tenant })}
-                        onError={this.props.onError}/>}
-                  </div>
-
-                  <div className='modal-footer'>
-                    <button className='btn btn-success' onClick={this.state.addingUser
-                      ? this.createUser.bind(this)
-                      : this.createTenant.bind(this)} disabled={this.state.locked}>Create</button>
-
-                    <button className='btn btn-secondary' onClick={() => this.setState({ addingUser: null, addingTenant: null })}>Cancel</button>
-                  </div>
-                </div>
-              </div>
-              )
-            : null}
-
-          {this.state.deletingUser || this.state.deletingTenant
-            ? (
-              <div className='delete modal'>
-                <div className='modal-dialogue'>
-                  <div className='modal-header'>
-                    <h5 className='modal-title'>{this.state.deletingUser ? 'Delete User' : 'Unregsiter Tenant'}</h5>
-                  </div>
-
-                  <div className='modal-body'>
-                    <p>Are you sure you want to {this.state.deletingUser ? 'delete' : 'unregsiter'} {this.state.deletingUser
-                      ? this.state.deletingUser.firstname + ' ' + this.state.deletingUser.lastname
-                      : this.state.deletingTenant.name}?</p>
-                  </div>
-
-                  <div className='modal-footer'>
-                    <button className='btn btn-danger' onClick={this.state.deletingUser
-                      ? this.deleteUser.bind(this, this.state.deletingUser.id)
-                      : this.deleteTenant.bind(this, this.state.deletingTenant.id)}>Yes</button>
-
-                    <button className='btn btn-secondary' onClick={() => this.setState({ deletingUser: null, deletingTenant: null })}>No</button>
-                  </div>
-                </div>
-              </div>
-              )
-            : null}
+          <span className={`material-symbols-outlined refresh-button${this.state.refreshed ? ' refreshed' : ''}`} onClick={this.refresh}>cached</span>
         </div>
-      )
-    } else return <Redirect to='/'/>
+
+        {pages[this.state.page].dom}
+
+        {this.state.addingUser || this.state.addingTenant
+          ? (
+            <div className='create modal'>
+              <div className='modal-dialogue'>
+                <div className='modal-header'>
+                  <h5 className='modal-title'>{this.state.addingUser ? 'Create User' : 'Register Tenant'}</h5>
+                </div>
+
+                <div className='modal-body'>
+                  {this.state.addingUser
+                    ? <UserBox
+                      header='New User'
+                      blank={true}
+                      hide={['pass']}
+                      onChange={(user) => this.setState({ addingUser: user })}
+                      onError={this.props.onError}/>
+                    : <TenantBox
+                      header='New Tenant'
+                      blank={true}
+                      onChange={(tenant) => this.setState({ addingTenant: tenant })}
+                      onError={this.props.onError}/>}
+                </div>
+
+                <div className='modal-footer'>
+                  <button className='btn btn-success' onClick={this.state.addingUser
+                    ? this.createUser.bind(this)
+                    : this.createTenant.bind(this)} disabled={this.state.locked}>Create</button>
+
+                  <button className='btn btn-secondary' onClick={() => this.setState({ addingUser: null, addingTenant: null })}>Cancel</button>
+                </div>
+              </div>
+            </div>
+            )
+          : null}
+
+        {this.state.deletingUser || this.state.deletingTenant
+          ? (
+            <div className='delete modal'>
+              <div className='modal-dialogue'>
+                <div className='modal-header'>
+                  <h5 className='modal-title'>{this.state.deletingUser ? 'Delete User' : 'Unregsiter Tenant'}</h5>
+                </div>
+
+                <div className='modal-body'>
+                  <p>Are you sure you want to {this.state.deletingUser ? 'delete' : 'unregsiter'} {this.state.deletingUser
+                    ? this.state.deletingUser.firstname + ' ' + this.state.deletingUser.lastname
+                    : this.state.deletingTenant.name}?</p>
+                </div>
+
+                <div className='modal-footer'>
+                  <button className='btn btn-danger' onClick={this.state.deletingUser
+                    ? this.deleteUser.bind(this, this.state.deletingUser.id)
+                    : this.deleteTenant.bind(this, this.state.deletingTenant.id)}>Yes</button>
+
+                  <button className='btn btn-secondary' onClick={() => this.setState({ deletingUser: null, deletingTenant: null })}>No</button>
+                </div>
+              </div>
+            </div>
+            )
+          : null}
+      </div>
+    )
   }
 
   refresh () {

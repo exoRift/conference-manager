@@ -1,5 +1,6 @@
 import React from 'react'
 import {
+  Link,
   Redirect
 } from 'react-router-dom'
 
@@ -15,8 +16,7 @@ class Account extends React.Component {
     super(props)
 
     this.state = {
-      user: {},
-      redirect: null
+      user: {}
     }
 
     this.logout = this.logout.bind(this)
@@ -25,18 +25,19 @@ class Account extends React.Component {
 
   render () {
     if (this.state.redirect) return <Redirect to={this.state.redirect}/>
-    else if ('auth' in localStorage) {
-      return (
-        <div className='app-container account interior-bg' style={{ backgroundImage: `url(${interior})` }}>
-          <UserBox
-            id='self'
-            header='My Account'
-            locked={['tenant']}
-            onSuccess={(token) => localStorage.setItem('auth', token)}
-            onError={this.props.onError}
-            onInfo={this.onInfo}>
+
+    return (
+      <div className='app-container account interior-bg' style={{ backgroundImage: `url(${interior})` }}>
+        <UserBox
+          id='self'
+          header='My Account'
+          locked={['tenant']}
+          onSuccess={(token) => localStorage.setItem('auth', token)}
+          onError={this.props.onError}
+          onInfo={this.onInfo}
+          >
             <div className='nav-container'>
-              <div className='admin-container' onClick={() => this.redirect('/admin')}>
+              <Link to='/admin' className='admin-container'>
                 {this.state.user.admin
                   ? (
                     <>
@@ -48,7 +49,7 @@ class Account extends React.Component {
                     </>
                     )
                   : null}
-              </div>
+              </Link>
 
               <div className='logout-container' onClick={this.logout}>
                 <span className='material-symbols-outlined'>
@@ -58,29 +59,24 @@ class Account extends React.Component {
                 <strong>Logout</strong>
               </div>
             </div>
-          </UserBox>
+        </UserBox>
 
-          {this.state.user?.tenant
-            ? <TenantBox
-              id={this.state.user.tenant}
-              header='Tenant Info'
-              locked={['suite']}
-              onError={this.props.onError}/>
-            : null}
-        </div>
-      )
-    } else return <Redirect to='/login'/>
+        {this.state.user?.tenant
+          ? <TenantBox
+            id={this.state.user.tenant}
+            header='Tenant Info'
+            locked={['suite']}
+            onError={this.props.onError}/>
+          : null}
+      </div>
+    )
   }
 
   logout () {
     localStorage.removeItem('auth')
 
-    this.forceUpdate() // Rerender for redirect
-  }
-
-  redirect (path) {
     this.setState({
-      redirect: path
+      redirect: '/'
     })
   }
 

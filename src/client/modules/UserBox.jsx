@@ -34,7 +34,7 @@ class UserBox extends React.Component {
   }
 
   componentDidMount () {
-    if ('auth' in localStorage && !this.props.blank && !this.props.data) {
+    if (!this.props.blank && !this.props.data) {
       fetch(`/api/user/${this.props.id}/all`, {
         method: 'GET',
         headers: {
