@@ -8,12 +8,15 @@ import postFetch from './util/postFetch.js'
 import './styles/Manager.css'
 
 class Manager extends React.Component {
+  static overlapRegex = /{(.+)}.*{(.+)}.*{(.+)}/
+
   constructor (props) {
     super(props)
 
     this.state = {
       meetings: [],
-      creating: false,
+      creating: null,
+      invalid: {},
       locked: false
     }
 
@@ -62,7 +65,7 @@ class Manager extends React.Component {
                 </div>
 
                 <div className='modal-body'>
-                  <MeetingEditor blank={true} onChange={this.onChange}/>
+                  <MeetingEditor blank={true} onChange={this.onChange} invalid={this.state.invalid}/>
                 </div>
 
                 <div className='modal-footer'>
@@ -93,7 +96,8 @@ class Manager extends React.Component {
 
   toggleCreate () {
     this.setState({
-      creating: this.state.creating ? false : {}
+      creating: this.state.creating ? null : {},
+      invalid: {}
     })
   }
 
@@ -106,28 +110,68 @@ class Manager extends React.Component {
     })
   }
 
-  submit () {
+  submit (e) {
+    e.preventDefault()
+
     this.setState({
       locked: true
     })
 
-    const data = this.state.creating
-
-    return fetch('/api/meeting/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: localStorage.auth
-      },
-      body: JSON.stringify(data)
-    })
-      .then(postFetch)
-      .then(() => {
-        this.toggleCreate()
-        this.updateMeetings()
+    if (this.state.creating?.title?.length) {
+      return fetch('/api/meeting/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: localStorage.auth
+        },
+        body: JSON.stringify(this.state.creating)
       })
-      .catch(this.props.onError)
-      .finally(() => this.setState({ locked: false }))
+        .then(postFetch)
+        .then(() => {
+          this.toggleCreate()
+          this.updateMeetings()
+        })
+        .catch((res) => {
+          if (res instanceof TypeError) return this.props.onError(res) // Network errors
+          else {
+            return res.json()
+              .then(({ error }) => {
+                if (res.status === 409) {
+                  if (error.message === 'title taken') {
+                    this.setState({
+                      invalid: {
+                        title: 'Title taken by another meeting'
+                      }
+                    })
+                  } else if (error.message.includes('overlap')) {
+                    const [, title, start, end] = error.message.match(Manager.overlapRegex)
+                    const startdate = new Date(start)
+                    const enddate = new Date(end)
+
+                    this.setState({
+                      invalid: {
+                        date: `Your meeting overlaps [${title}] which is in session from ${startdate.toLocaleString('en-US', {
+                          dateStyle: 'short',
+                          timeStyle: 'short'
+                        })} to ${enddate.toLocaleTimeString('en-US', {
+                          timeStyle: 'short'
+                        })}`
+                      }
+                    })
+                  } else return this.props.onError(error)
+                } else return this.props.onError(error)
+              })
+          }
+        })
+        .finally(() => this.setState({ locked: false }))
+    } else {
+      this.setState({
+        locked: false,
+        invalid: {
+          title: 'Required Field'
+        }
+      })
+    }
   }
 }
 

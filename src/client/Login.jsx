@@ -52,7 +52,7 @@ class Login extends React.Component {
             <label htmlFor='emailInput'>Email address</label>
             <input
               type='email'
-              className={`form-control ${this.state.success ? 'is-valid' : ''} ${this.state.invalid.email ? 'is-invalid' : ''}`}
+              className={`form-control${this.state.success ? ' is-valid' : ''}${this.state.invalid.email ? ' is-invalid' : ''}`}
               id='emailInput'
               aria-describedby='emailHelp'
               placeholder='Enter email'
@@ -60,8 +60,7 @@ class Login extends React.Component {
               onChange={this.onChange.bind(this, 'email')}/>
             {this.state.invalid.email
               ? <div className='invalid-feedback'>{this.state.invalid.email}</div>
-              : null
-            }
+              : null}
             <small id='emailHelp' className='form-text text-muted sub-message'>This email is visibile to only those with an account.</small>
           </div>
 
@@ -69,15 +68,14 @@ class Login extends React.Component {
             <label htmlFor='passwordInput'>Password</label>
             <input
               type='password'
-              className={`form-control ${this.state.success ? 'is-valid' : ''} ${this.state.invalid.pass ? 'is-invalid' : ''}`}
+              className={`form-control${this.state.success ? ' is-valid' : ''}${this.state.invalid.pass ? ' is-invalid' : ''}`}
               id='passwordInput'
               placeholder='Enter password'
               value={this.state.pass}
               onChange={this.onChange.bind(this, 'pass')}/>
             {this.state.invalid.pass
               ? <div className='invalid-feedback'>{this.state.invalid.pass}</div>
-              : null
-            }
+              : null}
           </div>
 
           <button type='submit' className='btn btn-primary' disabled={this.state.success}>Log In</button>
@@ -121,9 +119,9 @@ class Login extends React.Component {
           }, 1000)
         })
         .catch((res) => {
-          if (res instanceof TypeError) this.props.onError(res) // Network errors
+          if (res instanceof TypeError) return this.props.onError(res) // Network errors
           else {
-            res.json()
+            return res.json()
               .then(({ error }) => {
                 if (res.status === 404) {
                   this.setState({

@@ -98,9 +98,9 @@ module.exports = function (req, res, next) {
                       if (!overlap) overlap = req.meetingCore.findConflict(args.startdate, args.length, args.room, exclude)?.data
 
                       if (overlap) {
-                        const enddate = new Date(new Date(overlap.startdate) + overlap.epochlength)
+                        const enddate = new Date(overlap.startdate.getTime() + overlap.epochlength)
 
-                        const err = Error(
+                        const err = new Error(
                           `meeting overlaps existing meeting: {${overlap.title}} which is in session from {${overlap.startdate}} to {${enddate}}`
                         )
                         err.code = 409

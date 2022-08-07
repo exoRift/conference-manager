@@ -8,6 +8,7 @@ import '../styles/MeetingEditor.css'
 class MeetingEditor extends React.Component {
   static defaultProps = {
     data: {},
+    invalid: {},
     blank: false
   }
 
@@ -26,6 +27,7 @@ class MeetingEditor extends React.Component {
       data: props.data,
       alter: {},
       creator: {},
+      invalid: {},
       roomCount: 0
     }
 
@@ -65,17 +67,22 @@ class MeetingEditor extends React.Component {
     const end = new Date(start.getTime() + (this.state.alter.length || this.state.data.length))
 
     return (
-      <div className='meeting-card editing'>
-        <div className='header'>
+      <form className='meeting-card editing' onSubmit={this.props.onSubmit || this.submit}>
+        <div className='form-group header'>
           <input
-            className='title'
+            className={`form-control title${this.state.invalid.title || this.props.invalid.title
+              ? ' is-invalid'
+              : ''}`}
             placeholder={this.state.data.title || 'Title'}
             value={this.state.alter.title || ''}
             maxLength={MeetingEditor.maxLengths.title}
             onChange={this.onChange.bind(this, 'title')}/>
+          {this.state.invalid.title || this.props.invalid.title
+            ? <div className='invalid-feedback'>{this.state.invalid.title || this.props.invalid.title}</div>
+            : null}
         </div>
 
-        <div className='subheader'>
+        <div className='form-group subheader'>
           <input
             type='date'
             className='date'
@@ -97,6 +104,9 @@ class MeetingEditor extends React.Component {
             value={this.dateToTime(end)}
             onChange={this.onChange.bind(this, 'endtime')}/>
         </div>
+        {this.state.invalid.date || this.props.invalid.date
+          ? <div className='invalid-feedback'>{this.state.invalid.date || this.props.invalid.date}</div>
+          : null}
 
         <textarea
           className='description'
@@ -109,6 +119,7 @@ class MeetingEditor extends React.Component {
           {new Array(this.state.roomCount).fill(null).map((r, i) => (
             <button
               className={`btn room-button${(((this.state.alter.room || this.state.data.room) - 1 || 0) === i ? ' active' : '')}`}
+              type='button'
               key={i}
               onClick={this.onChange.bind(this, 'room', i + 1)}
             >
@@ -132,15 +143,18 @@ class MeetingEditor extends React.Component {
           : (
             <button
               className='btn btn-success submit'
-              onClick={this.submit}>
+              type='submit'
+            >
                 Save
             </button>
             )}
-      </div>
+      </form>
     )
   }
 
-  onChange (prop, event) {
+  onChange (prop, e) {
+    e?.preventDefault?.()
+
     const start = new Date(this.state.alter.startdate || this.state.data.startdate)
 
     let field
@@ -149,23 +163,23 @@ class MeetingEditor extends React.Component {
     switch (prop) {
       case 'date':
         field = 'date'
-        value = event.target.value + 'T' + this.dateToTime(start)
+        value = e.target.value + 'T' + this.dateToTime(start)
         break
       case 'starttime':
         field = 'startdate'
-        value = this.dateToDate(start) + 'T' + event.target.value
+        value = this.dateToDate(start) + 'T' + e.target.value
         break
       case 'endtime':
         field = 'length'
-        value = Math.max(MeetingEditor.minLength, new Date(this.dateToDate(start) + 'T' + event.target.value).getTime() - start.getTime())
+        value = Math.max(MeetingEditor.minLength, new Date(this.dateToDate(start) + 'T' + e.target.value).getTime() - start.getTime())
         break
       case 'room':
         field = prop
-        value = event
+        value = e
         break
       default:
         field = prop
-        value = event.target.value
+        value = e.target.value
         break
     }
 
@@ -183,7 +197,7 @@ class MeetingEditor extends React.Component {
   }
 
   submit () {
-    fetch('/api/meeting/' + this.state.data.id, {
+    return fetch('/api/meeting/' + this.state.data.id, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',

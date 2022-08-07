@@ -2,9 +2,24 @@
   padding-bottom: 1%;
 }
 
+.meeting-card.editing .form-group {
+  margin: 0;
+}
+
+.meeting-card.editing > .invalid-feedback {
+  display: block;
+  margin: 0;
+  padding: 0 1%;
+  color: #ff9595;
+  background: rgba(44, 62, 80, 0.8);
+  font-size: 1.2rem;
+}
+
 .meeting-card.editing .header .title {
   width: 100%;
   border-radius: 10px 10px 0 0;
+  font-size: 2.5rem;
+  color: black;
 }
 
 .meeting-card.editing * {
@@ -13,7 +28,7 @@
 
 .meeting-card.editing input,
 .meeting-card.editing textarea {
-  background: none;
+  background-color: unset;
   border: none;
   resize: none;
 }
@@ -64,4 +79,10 @@
 .meeting-card.editing .btn.submit {
   margin: 0 auto;
   width: 5em;
+}
+
+@media (max-width: 800px) {
+  .meeting-card.editing .date {
+    margin-right: 0;
+  }
 }
