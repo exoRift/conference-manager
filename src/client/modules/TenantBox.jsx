@@ -4,15 +4,15 @@ import postFetch from '../util/postFetch.js'
 
 import '../styles/TenantBox.css'
 
-const maxLengths = {
-  name: 20,
-  suite: 4
-}
-
 class Tenant extends React.Component {
   static defaultProps = {
     blank: false,
     invalid: {}
+  }
+
+  static maxLengths = {
+    name: 20,
+    suite: 4
   }
 
   constructor (props) {
@@ -67,7 +67,7 @@ class Tenant extends React.Component {
             placeholder={this.state.tenant.name || ''}
             disabled={!this.state.editing || this.props.locked?.includes('name')}
             value={this.state.alter.name || ''}
-            maxLength={maxLengths.name}
+            maxLength={Tenant.maxLengths.name}
             onChange={this.onChange.bind(this, 'name')}
           />
         </div>
@@ -83,7 +83,7 @@ class Tenant extends React.Component {
             placeholder={this.state.tenant.suite || ''}
             disabled={!this.state.editing || this.props.locked?.includes('suite')}
             value={this.state.alter.suite || ''}
-            maxLength={maxLengths.suite}
+            maxLength={Tenant.maxLengths.suite}
             onChange={this.onChange.bind(this, 'suite')}
           />
         </div>

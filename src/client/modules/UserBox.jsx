@@ -4,17 +4,17 @@ import postFetch from '../util/postFetch.js'
 
 import '../styles/UserBox.css'
 
-const maxLengths = {
-  name: 20,
-  email: 40,
-  pass: 100,
-  tenant: 20
-}
-
 class UserBox extends React.Component {
   static defaultProps = {
     blank: false,
     invalid: {}
+  }
+
+  static maxLengths = {
+    name: 20,
+    email: 40,
+    pass: 100,
+    tenant: 20
   }
 
   constructor (props) {
@@ -80,7 +80,7 @@ class UserBox extends React.Component {
             placeholder={this.state.user.firstname || 'First'}
             disabled={!this.state.editing || this.props.locked?.includes('name')}
             value={this.state.alter.firstname || ''}
-            maxLength={maxLengths.name}
+            maxLength={UserBox.maxLengths.name}
             onChange={this.onChange.bind(this, 'firstname')}
           />
 
@@ -98,7 +98,7 @@ class UserBox extends React.Component {
             placeholder={this.state.user.lastname || 'Last'}
             disabled={!this.state.editing || this.props.locked?.includes('name')}
             value={this.state.alter.lastname || ''}
-            maxLength={maxLengths.name}
+            maxLength={UserBox.maxLengths.name}
             onChange={this.onChange.bind(this, 'lastname')}
           />
 
@@ -120,7 +120,7 @@ class UserBox extends React.Component {
             placeholder={this.state.user.email || ''}
             disabled={!this.state.editing || this.props.locked?.includes('email')}
             value={this.state.alter.email || ''}
-            maxLength={maxLengths.email}
+            maxLength={UserBox.maxLengths.email}
             onChange={this.onChange.bind(this, 'email')}
           />
 
@@ -167,7 +167,7 @@ class UserBox extends React.Component {
                 id='passUBInput'
                 disabled={!this.state.editing || this.props.locked?.includes('pass')}
                 value={this.state.alter.pass || ''}
-                maxLength={maxLengths.pass}
+                maxLength={UserBox.maxLengths.pass}
                 onChange={this.onChange.bind(this, 'pass')}
               />
 

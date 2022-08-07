@@ -5,202 +5,212 @@ import postFetch from '../util/postFetch.js'
 import '../styles/MeetingCard.css'
 import '../styles/MeetingEditor.css'
 
-const maxLengths = {
-  title: 45,
-  desc: 150,
-  attendee: 25
-}
-const roomBounds = [1, 2]
-
 class MeetingEditor extends React.Component {
+  static defaultProps = {
+    data: {},
+    blank: false
+  }
+
+  static maxLengths = {
+    title: 45,
+    desc: 150
+  }
+
+  static defaultLength = 3600000 /* 1 hour */
+  static minLength = 900000 /* 15 minutes */
+
   constructor (props) {
     super(props)
 
-    const start = props.blank
-      ? this.toLocalISO(new Date())
-      : this.toLocalISO(new Date(props.data.startdate))
-    const end = props.blank
-      ? this.toLocalISO(new Date(new Date().getTime() + 3600000))
-      : this.toLocalISO(new Date(new Date(props.data.startdate).getTime() + props.data.length))
-
     this.state = {
-      data: {
-        attendees: [],
-        ...props.data,
-        startdate: start,
-        enddate: end
-      },
+      data: props.data,
       alter: {},
-      creator: null,
-      attendeeInput: '',
-      error: null
+      creator: {},
+      roomCount: 0
+    }
+
+    if (props.blank) {
+      this.state.alter.startdate = new Date().toISOString()
+
+      this.state.alter.length = MeetingEditor.defaultLength
+
+      this.state.alter.room = 1
     }
 
     this.submit = this.submit.bind(this)
   }
 
+  componentDidMount () {
+    if (!this.props.blank) {
+      fetch(`/api/user/${this.props.data.creator}/name`, {
+        method: 'GET'
+      })
+        .then(postFetch)
+        .then((creator) => creator.json())
+        .then((creator) => this.setState({ creator }))
+        .catch(this.props.onError)
+    }
+
+    fetch('/api/room/count', {
+      method: 'GET'
+    })
+      .then(postFetch)
+      .then((count) => count.json())
+      .then((count) => this.setState({ roomCount: count }))
+      .catch(this.props.onError)
+  }
+
   render () {
+    const start = new Date(this.state.alter.startdate || this.state.data.startdate)
+    const end = new Date(start.getTime() + (this.state.alter.length || this.state.data.length))
+
     return (
       <div className='meeting-card editing'>
         <div className='header'>
           <input
             className='title'
-            placeholder='Title'
-            value={this.state.alter.title ?? this.state.data.title ?? ''}
-            maxLength={maxLengths.title}
+            placeholder={this.state.data.title || 'Title'}
+            value={this.state.alter.title || ''}
+            maxLength={MeetingEditor.maxLengths.title}
             onChange={this.onChange.bind(this, 'title')}/>
         </div>
+
         <div className='subheader'>
-          <span className='time-container'>
-            <input
-              className='startdate'
-              type='datetime-local'
-              value={this.state.alter.startdate ?? this.state.data.startdate}
-              onChange={this.onChange.bind(this, 'startdate')}/>
+          <input
+            type='date'
+            className='date'
+            value={this.dateToDate(start)}
+            onChange={this.onChange.bind(this, 'date')}/>
 
-            <span className='dash'>&#x2e3a;</span>
+          <input
+            type='time'
+            className='starttime'
+            value={this.dateToTime(start)}
+            onChange={this.onChange.bind(this, 'starttime')}/>
 
-            <input
-              className='enddate'
-              type='datetime-local'
-              value={this.state.alter.enddate ?? this.state.data.enddate}
-              onChange={this.onChange.bind(this, 'enddate')}/>
-          </span>
-        </div>
-        <div className='content'>
-          <textarea
-            className='description'
-            placeholder='No Description'
-            value={this.state.alter.desc ?? this.state.data.desc ?? ''}
-            maxLength={maxLengths.desc}
-            onChange={this.onChange.bind(this, 'desc')}/>
+          <span className='dash'>&#x2e3a;</span>
 
-          <div className='attendees'>
-            {(this.state.alter.attendees || this.state.data.attendees).map((a, i) => (
-              <span className='attendee' key={i} onClick={() => this.removeAttendee(i)}>{a}</span>
-            ))}
-
-            <input
-              className='input'
-              value={this.state.attendeeInput}
-              maxLength={maxLengths.attendee}
-              onChange={this.onChange.bind(this, 'attendeeInput')}/>
-          </div>
+          <input
+            type='time'
+            className='endtime'
+            placeholder={this.state.data.length || 'Meeting length'}
+            value={this.dateToTime(end)}
+            onChange={this.onChange.bind(this, 'endtime')}/>
         </div>
 
-        <div className='footer'>
-          <span className='room-container'>
-            <input
-              className='room'
-              type='number'
-              min={roomBounds[0]}
-              max={roomBounds[1]}
-              value={this.state.alter.room ?? this.state.data.room ?? ''}
-              onChange={this.onChange.bind(this, 'room')}/>
-          </span>
+        <textarea
+          className='description'
+          placeholder={this.state.data.desc || 'No description'}
+          value={this.state.alter.desc || ''}
+          maxLength={MeetingEditor.maxLengths.desc}
+          onChange={this.onChange.bind(this, 'desc')}/>
 
-          {this.props.blank
-            ? null
-            : (
-              <button
-                className='btn btn-success submit'
-                onClick={this.submit}>
-                  Save
-              </button>
-              )}
+        <div className='room-container'>
+          {new Array(this.state.roomCount).fill(null).map((r, i) => (
+            <button
+              className={`btn room-button${(((this.state.alter.room || this.state.data.room) - 1 || 0) === i ? ' active' : '')}`}
+              key={i}
+              onClick={this.onChange.bind(this, 'room', i + 1)}
+            >
+              {i + 1}
+            </button>
+          ))}
         </div>
+
+        {this.props.blank
+          ? null
+          : (
+            <div className='footer'>
+              <span className='creator'>{this.state.creator
+                ? `${this.state.creator.firstname} ${this.state.creator.lastname}`
+                : this.props.data.creator}</span>
+            </div>
+            )}
+
+        {this.props.blank
+          ? null
+          : (
+            <button
+              className='btn btn-success submit'
+              onClick={this.submit}>
+                Save
+            </button>
+            )}
       </div>
     )
   }
 
-  onChange (field, event) {
-    if (field === 'room' && (event.target.value < roomBounds[0] || event.target.value > roomBounds[1])) return
+  onChange (prop, event) {
+    const start = new Date(this.state.alter.startdate || this.state.data.startdate)
 
-    if (field === 'attendeeInput') {
-      const containerBounds = event.target.parentElement.getBoundingClientRect()
-      const inputBounds = event.target.getBoundingClientRect()
+    let field
+    let value
 
-      if (inputBounds.bottom <= containerBounds.bottom) {
-        if (event.target.value.endsWith(',')) {
-          const name = event.target.value.substring(0, event.target.value.length - 1).trim()
-
-          this.setState({
-            attendeeInput: ''
-          })
-
-          if (name.length && !(this.state.alter.attendees || this.state.data.attendees).includes(name)) {
-            this.setState({
-              alter: {
-                ...this.state.alter,
-                attendees: (this.state.alter.attendees || this.state.data.attendees).concat(name)
-              }
-            })
-          }
-        } else {
-          this.setState({
-            attendeeInput: event.target.value
-          })
-        }
-      } else event.target.disabled = true
-    } else {
-      this.setState({
-        alter: {
-          ...this.state.alter,
-          [field]: event.target.value
-        }
-      })
+    switch (prop) {
+      case 'date':
+        field = 'date'
+        value = event.target.value + 'T' + this.dateToTime(start)
+        break
+      case 'starttime':
+        field = 'startdate'
+        value = this.dateToDate(start) + 'T' + event.target.value
+        break
+      case 'endtime':
+        field = 'length'
+        value = Math.max(MeetingEditor.minLength, new Date(this.dateToDate(start) + 'T' + event.target.value).getTime() - start.getTime())
+        break
+      case 'room':
+        field = prop
+        value = event
+        break
+      default:
+        field = prop
+        value = event.target.value
+        break
     }
 
+    this.setState({
+      alter: {
+        ...this.state.alter,
+        [field]: value
+      }
+    })
+
     this.props.onChange?.({
-      ...this.state.data,
       ...this.state.alter,
-      [field]: event.target.value
+      [field]: value
     })
   }
 
   submit () {
-    const alter = this.state.alter
-    if ('enddate' in alter) alter.length = new Date(alter.enddate).getTime() - new Date(alter.startdate || this.state.data.startdate).getTime()
-
     fetch('/api/meeting/' + this.state.data.id, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
         Authorization: localStorage.auth
       },
-      body: JSON.stringify(alter)
+      body: JSON.stringify(this.state.alter)
     })
       .then(postFetch)
       .then(() => this.props.onSave?.({
         ...this.state.data,
-        ...alter
+        ...this.state.alter
       }))
       .catch(this.props.onError)
   }
 
-  toLocalISO (date) {
-    return date.getFullYear() +
-      '-' + this.formatNumber(date.getMonth() + 1) +
-      '-' + this.formatNumber(date.getDate()) +
-      'T' + this.formatNumber(date.getHours()) +
-      ':' + this.formatNumber(date.getMinutes())
+  dateToDate (date) {
+    return `${date.getFullYear()}-${this.formatNumber(date.getMonth() + 1)}-${this.formatNumber(date.getDate())}`
+  }
+
+  dateToTime (date) {
+    return `${this.formatNumber(date.getHours())}:${this.formatNumber(date.getMinutes())}`
   }
 
   formatNumber (num) {
     return num.toLocaleString('en-US', {
       minimumIntegerDigits: 2,
       useGrouping: false
-    })
-  }
-
-  removeAttendee (i) {
-    const list = this.state.alter.attendees || this.state.data.attendees
-
-    this.setState({
-      alter: {
-        ...this.state.alter,
-        attendees: list.slice(0, i).concat(list.slice(i + 1, list.length))
-      }
     })
   }
 }

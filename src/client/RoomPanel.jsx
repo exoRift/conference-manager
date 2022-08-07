@@ -8,30 +8,30 @@ import room from '../assets/images/conference-vert.jpg'
 
 import './styles/RoomPanel.css'
 
-const pickerColumns = [
-  {
-    title: 'Hour',
-    type: 'numerical',
-    range: [0, 4]
-  },
-  {
-    title: 'Minute',
-    type: 'numerical',
-    range: [0, 59]
-  }
-]
-
 class RoomPanel extends React.Component {
+  static pickerColumns = [
+    {
+      title: 'Hour',
+      type: 'numerical',
+      range: [0, 4]
+    },
+    {
+      title: 'Minute',
+      type: 'numerical',
+      range: [0, 59]
+    }
+  ]
+
+  state = {
+    meetings: [],
+    reserving: false,
+    custom: false,
+    extending: false,
+    expanded: false
+  }
+
   constructor (props) {
     super(props)
-
-    this.state = {
-      meetings: [],
-      reserving: false,
-      custom: false,
-      extending: false,
-      expanded: false
-    }
 
     props.match.params.room = parseInt(props.match.params.room)
 
@@ -111,7 +111,7 @@ class RoomPanel extends React.Component {
                     {this.state.custom
                       ? (
                         <>
-                          <Picker columns={pickerColumns} onUpdate={this.setCustom}/>
+                          <Picker columns={RoomPanel.pickerColumns} onUpdate={this.setCustom}/>
 
                           <button
                             className='btn btn-success time-option submit'

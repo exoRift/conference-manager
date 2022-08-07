@@ -36,7 +36,6 @@
   margin: -2%;
   clip-path: polygon(100vw 0, 40vw 100vh, 100vw 100vh);
   opacity: 0.4;
-  z-index: 1;
 }
 .app-container.room-panel .current.vacant {
   background-color: var(--vacant);
@@ -49,10 +48,6 @@
 }
 .app-container.room-panel .current.occupied::before {
   background-color: var(--occupied);
-}
-
-.app-container.room-panel .current * {
-  z-index: 2;
 }
 
 .app-container.room-panel .current .subheader {
@@ -70,7 +65,6 @@
 .app-container.room-panel .meeting-card {
   background: none;
   border: 2px solid rgba(50, 50, 50, 0.4);
-  border-radius: 10px;
   overflow: auto;
 }
 

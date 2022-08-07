@@ -5,13 +5,13 @@ import MeetingEditor from './MeetingEditor.jsx'
 
 import '../styles/MeetingStrip.css'
 
-const dateDelimRegex = /-|:|\./g
-
 const {
   REACT_APP_LOCATION
 } = process.env
 
 class MeetingStrip extends React.Component {
+  static dateDelimRegex = /-|:|\./g
+
   constructor (props) {
     super(props)
 
@@ -49,10 +49,10 @@ class MeetingStrip extends React.Component {
     const end = new Date(new Date(this.state.data.startdate).getTime() + this.state.data.length)
 
     return (
-      <div className={`meeting-strip ${start - Date.now() <= 3600000 /* One hour */
-        ? 'soon'
-        : ''} ${start < Date.now()
-        ? 'in-session'
+      <div className={`meeting-strip${start - Date.now() <= 3600000 /* One hour */
+        ? ' soon'
+        : ''}${start < Date.now()
+        ? ' in-session'
         : ''} ${this.state.editing ? ' editing' : ''} ${this.state.saved ? ' saved' : ''}`}>
         <div className='info-container'>
           {this.props.editable
@@ -178,8 +178,8 @@ class MeetingStrip extends React.Component {
     return 'https://www.google.com/calendar/render?action=TEMPLATE&text=' + this.state.data.title +
       '&details=' + (this.state.data.desc || '') +
       '&location=' + REACT_APP_LOCATION +
-      '&dates=' + this.state.data.startdate.replace(dateDelimRegex, '') +
-      '%2F' + new Date(new Date(this.state.data.startdate).getTime() + this.state.data.length).toISOString().replace(dateDelimRegex, '')
+      '&dates=' + this.state.data.startdate.replace(MeetingStrip.dateDelimRegex, '') +
+      '%2F' + new Date(new Date(this.state.data.startdate).getTime() + this.state.data.length).toISOString().replace(MeetingStrip.dateDelimRegex, '')
   }
 }
 

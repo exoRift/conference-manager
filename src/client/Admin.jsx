@@ -10,8 +10,6 @@ import MeetingStrip from './modules/MeetingStrip.jsx'
 
 import './styles/Admin.css'
 
-const roomBounds = [1, 2]
-
 class Admin extends React.Component {
   state = {
     page: 'users',
@@ -282,20 +280,27 @@ class Admin extends React.Component {
   updateMeetings () {
     const promises = []
 
-    for (let r = roomBounds[0]; r <= roomBounds[1]; r++) {
-      promises.push(fetch('/api/room/list/' + r, {
-        method: 'GET',
-        headers: {
-          Authorization: localStorage.auth
+    return fetch('/api/room/count', {
+      method: 'GET'
+    })
+      .then(postFetch)
+      .then((count) => count.json())
+      .then((count) => {
+        for (let r = 1; r <= count; r++) {
+          promises.push(fetch('/api/room/list/' + r, {
+            method: 'GET',
+            headers: {
+              Authorization: localStorage.auth
+            }
+          })
+            .then(postFetch)
+            .then((meetings) => meetings.json()))
         }
-      })
-        .then(postFetch)
-        .then((meetings) => meetings.json()))
-    }
 
-    return Promise.all(promises)
-      .then((meetings) => this.setState({ meetings: meetings.flat() }))
-      .catch(this.props.onError)
+        return Promise.all(promises)
+          .then((meetings) => this.setState({ meetings: meetings.flat() }))
+          .catch(this.props.onError)
+      })
   }
 
   toggleIndex (index) {

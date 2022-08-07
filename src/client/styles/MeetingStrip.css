@@ -13,14 +13,18 @@
   transform: scale(1.01);
 }
 
-.meeting-strip .btn:not(.submit) {
+.meeting-strip.editing {
+  padding: 2%;
+}
+
+.meeting-strip .btn:not(.submit, .room-button) {
   transition: 0.2s;
   margin: 0.5vw;
   padding: 0.2vw;
   font-size: 2rem;
   border-radius: 10px;
 }
-.meeting-strip .btn:not(.submit):hover {
+.meeting-strip .btn:not(.submit, .room-button):hover {
   font-size: 2.5rem;
 }
 
@@ -79,13 +83,13 @@
   flex-wrap: wrap;
 }
 
-.meeting-strip .info-container > * {
+.meeting-strip .info-container > *:not(.meeting-card) {
   margin-right: 2%;
   font-size: xx-large;
   vertical-align: middle;
 }
 
-.meeting-strip .info-container > .title {
+.meeting-strip .info-container > .title:not(.meeting-card) {
   font-weight: bold;
 }
 
@@ -109,11 +113,6 @@
 .meeting-strip .info-container .time-container .times {
   display: inline-flex;
   justify-content: space-evenly;
-}
-
-.meeting-strip .meeting-card.editing {
-  width: 45%;
-  margin-left: 4%;
 }
 
 .meeting-strip .hover-info-container {

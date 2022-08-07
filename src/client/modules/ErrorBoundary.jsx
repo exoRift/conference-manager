@@ -3,12 +3,8 @@ import React from 'react'
 import Error from './Error.jsx'
 
 class ErrorBoundary extends React.Component {
-  constructor (props) {
-    super(props)
-
-    this.state = {
-      error: null
-    }
+  state = {
+    error: null
   }
 
   static getDerivedStateFromError (error) {
