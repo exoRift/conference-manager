@@ -35,7 +35,13 @@ class Manager extends React.Component {
 
           <div className='meeting-container'>
             {this.state.meetings.length
-              ? this.state.meetings.map((m) => <MeetingStrip data={m} key={m.id} onError={this.props.onError} onDelete={this.updateMeetings}/>)
+              ? this.state.meetings.map((m) => <MeetingStrip
+                data={m}
+                editable={true}
+                key={m.id}
+                onError={this.props.onError}
+                onDelete={this.updateMeetings}
+              />)
               : <span className='floating-text'>No meetings scheduled</span>}
           </div>
 

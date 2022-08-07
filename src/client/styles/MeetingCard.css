@@ -1,23 +1,20 @@
 .meeting-card {
-  position: relative;
-  background-color: rgba(200, 200, 200, 0.8);
+  display: flex;
+  flex-flow: column;
+  background: rgba(200, 200, 200, 0.8);
   backdrop-filter: blur(8px);
   border-radius: 10px;
 }
 
 .meeting-card .header {
-  background-color: rgba(44, 62, 80, 0.6);
+  border-radius: 10px 10px 0 0;
+  background: rgba(44, 62, 80, 0.6);
 }
 .meeting-card.soon .header {
-  background-color: rgba(52, 156, 219, 0.6);
+  background: rgba(52, 156, 219, 0.6);
 }
 .meeting-card.in-session .header {
-  background-color: rgba(24, 200, 156, 0.6);
-}
-
-.meeting-card .header {
-  max-height: 3em;
-  overflow: hidden;
+  background: rgba(24, 200, 156, 0.6);
 }
 
 .meeting-card.in-session .header::after {
@@ -31,28 +28,32 @@
 .meeting-card .subheader {
   display: flex;
   justify-content: center;
-  background-color: rgba(44, 62, 80, 0.8);
+  background: rgba(44, 62, 80, 0.8);
   color: white;
   font-size: x-large;
 }
 
 .meeting-card .subheader .date {
-  margin-right: 1%;
+  margin-right: 2rem;
 }
 
 .meeting-card .subheader .times {
   display: flex;
   justify-content: space-evenly;
-  width: 60%;
+  white-space: nowrap;
+}
+.meeting-card .subheader .times .dash {
+  margin: 0 1rem;
 }
 .meeting-card.soon:not(.in-session) .subheader .times .starttime {
   animation: pulse 1s ease-in-out 0s infinite alternate forwards;
 }
 
 .meeting-card .description {
+  flex: 1;
   padding: 1% 2%;
   font-size: xx-large;
-  background-color: rgba(44, 62, 80, 0.2);
+  background: rgba(44, 62, 80, 0.2);
   word-break: break-word;
 }
 .meeting-card .description.empty {
@@ -60,7 +61,7 @@
 }
 
 .meeting-card .footer {
-  float: right;
+  align-self: flex-end;
   padding-right: 2%;
 }
 .meeting-card .footer .creator::before {

@@ -55,7 +55,7 @@ class MeetingStrip extends React.Component {
         ? 'in-session'
         : ''} ${this.state.editing ? ' editing' : ''} ${this.state.saved ? ' saved' : ''}`}>
         <div className='info-container'>
-          {this.state.data.owned || this.props.admin
+          {this.props.editable
             ? <div
               className={`btn material-symbols-outlined edit${this.state.editing ? ' editing' : ''}`}
               alt='edit'
@@ -113,7 +113,7 @@ class MeetingStrip extends React.Component {
                     </div>
                   </span>
                   )
-                : this.state.data.owned || this.props.admin
+                : this.props.editable
                   ? <div className='btn material-symbols-outlined delete' onClick={this.toggleDeleting.bind(this)}>
                       delete
                     </div>
