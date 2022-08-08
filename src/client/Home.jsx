@@ -10,7 +10,7 @@ import './styles/Home.css'
 
 class Home extends React.Component {
   state = {
-    user: null
+    user: {}
   }
 
   componentDidMount () {
@@ -23,7 +23,28 @@ class Home extends React.Component {
       })
         .then(postFetch)
         .then((user) => user.json())
-        .then((user) => this.setState({ user }))
+        .then((user) => this.setState({
+          user: {
+            ...this.state.user,
+            ...user
+          }
+        }))
+        .catch(this.props.onError)
+
+      fetch('/api/user/self/admin', {
+        method: 'GET',
+        headers: {
+          Authorization: localStorage.auth
+        }
+      })
+        .then(postFetch)
+        .then((user) => user.json())
+        .then((user) => this.setState({
+          user: {
+            ...this.state.user,
+            ...user
+          }
+        }))
         .catch(this.props.onError)
     }
   }
@@ -78,6 +99,18 @@ class Home extends React.Component {
                   Login
                 </Link>
                 )}
+
+              {this.state.user.admin
+                ? (
+                  <Link to='/login'>
+                    <span className='material-symbols-outlined'>
+                      security
+                    </span>
+
+                    Admin Panel
+                  </Link>
+                  )
+                : null}
           </div>
         </div>
       </div>
