@@ -190,6 +190,12 @@ input[type='checkbox']:focus {
   }
 }
 
+@media (max-width: 1000px) and (min-width: 800px) {
+  .app-container.manager .modal-dialogue {
+    width: 60%;
+  }
+}
+
 @media (max-width: 800px) {
   .modal-dialogue {
     width: 100%;

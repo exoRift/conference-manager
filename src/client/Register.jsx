@@ -53,6 +53,7 @@ class Register extends React.Component {
           <UserBox
             data={this.initial}
             header='Register Your Account'
+            hide={['admin']}
             locked={['tenant']}
             blank={true}
             invalid={this.state.invalid}
@@ -70,15 +71,17 @@ class Register extends React.Component {
 
   onChange (data) {
     this.setState({
-      ...this.initial,
-      data
+      data: {
+        ...this.initial,
+        ...data
+      }
     })
   }
 
-  submit (event) {
-    event.preventDefault()
+  submit (e, validate) {
+    e.preventDefault()
 
-    const filled = Object.values(this.state.data).reduce((a, v) => a && v && v.length, true)
+    const filled = Object.entries(this.state.data).every(([k, v]) => (v && v.length) || k === 'tenant')
 
     this.setState({
       locked: true
@@ -109,7 +112,7 @@ class Register extends React.Component {
             })
           }, 1000)
         })
-        .catch(this.props.onError)
+        .catch(validate)
         .finally(() => this.setState({ locked: false }))
     } else {
       const invalid = {}

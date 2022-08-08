@@ -119,7 +119,7 @@ module.exports = function (req, res, next) {
     user: {
       validate: async (exclude) => {
         if ('pass' in req.args && req.args.pass.length < MAX_PASS_LENGTH) {
-          const err = Error('pass shorter than 8 characters')
+          const err = Error('pass shorter than {8} characters')
           err.code = 400
           err.type = 'argument'
 
