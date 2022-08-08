@@ -19,12 +19,9 @@ module.exports = {
   action: function (req, res) {
     return req.db('tenants')
       .select('name', 'suite')
-      .where('name', req.args.name)
-      .orWhere('suite', req.args.suite)
+      .where('suite', req.args.suite)
       .then(([tenant]) => {
-        if (tenant) {
-          return res.sendError(409, tenant.suite === req.args.suite ? 'suite' : 'name', `"${tenant.name} is already assigned to suite ${tenant.suite}"`)
-        }
+        if (tenant) return res.sendError(409, 'argument', `"${tenant.name} is already assigned to suite ${tenant.suite}"`)
 
         const id = String(Date.now())
 
