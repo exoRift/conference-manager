@@ -330,7 +330,7 @@ class Admin extends React.Component {
   }
 
   createUser () {
-    const filled = Object.entries(this.state.addingUser).every(([k, v]) => (v && v.length) || k === 'tenant')
+    const filled = Object.entries(this.state.addingUser).every(([k, v]) => (v && v.length) || k === 'tenant' || k === 'admin')
 
     this.setState({
       locked: true
