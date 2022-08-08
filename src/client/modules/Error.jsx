@@ -18,6 +18,8 @@ class Error extends React.Component {
   }
 
   componentDidUpdate (prevProps) {
+    if (this.state.error.message === 'invalid token') this.props.onClose()
+
     if (this.props !== prevProps) this.update()
   }
 
@@ -25,9 +27,7 @@ class Error extends React.Component {
     if (this.state.error.message === 'invalid token') {
       localStorage.removeItem('auth')
 
-      this.props.onClose()
-
-      return <Redirect to='/login?error=logged_out'/>
+      return <Redirect to={`/login?redirect=${window.location.pathname}&error=logged_out`}/>
     } else {
       return (
         <div className='alert alert-dismissible alert-danger error'>

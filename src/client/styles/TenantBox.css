@@ -1,24 +1,23 @@
-.userbox {
+.tenantbox {
   display: flex;
   flex-direction: column;
   justify-content: space-around;
 }
 
-.userbox input {
+.tenantbox input {
   margin-top: .25rem;
 }
 
-.userbox > button {
-  width: 40%;
+.tenantbox > button {
+  width: 100%;
   margin: 0 auto;
 }
 
-.userbox .editing-button-container {
+.tenantbox .editing-button-container {
   display: flex;
-  padding: 0 30%;
 }
 
-.userbox .editing-button-container > button {
+.tenantbox .editing-button-container > button {
   width: 100%;
   white-space: nowrap;
 }

@@ -20,12 +20,14 @@ module.exports = function (controller) {
             .where('id', match.id)
             .then(([user]) => {
               if (user) {
+                user.limited = user.email === 'cr@panel'
+
                 if (user.limited &&
                   !controller?.options?.authorize?.allowLimited) return res.sendError(401, 'authorization', 'endpoint not delegated to limited users')
 
                 req.auth = user
 
-                if (req.params.id === 'current') {
+                if (req.params.id === 'self') {
                   req.params.id = user.id
                 }
               } else {

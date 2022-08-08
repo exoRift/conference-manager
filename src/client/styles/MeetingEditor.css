@@ -1,78 +1,88 @@
-.meeting-card.editing input {
-  background: none;
-  border: none;
-}
-.meeting-card.editing input:focus {
-  outline: none;
-}
-.meeting-card.editing input::-webkit-calendar-picker-indicator {
-  margin-left: -1.5vw;
-}
-
-.meeting-card.editing .title {
-  width: 100%;
-  font-size: 4rem;
-}
-
-.meeting-card.editing .dash {
-  margin: 0 3%;
-}
-
-
-.meeting-card.editing .content {
-  margin-bottom: 1rem;
-}
-
-.meeting-card.editing .description {
-  resize: none;
-  height: 8rem !important;
-}
-
-.meeting-card.editing .attendees {
-  max-height: 8rem;
-  border: 2px solid gray;
-  border-radius: 10px;
-}
-
-.meeting-card.editing .attendees .attendee {
-  cursor: pointer;
-}
-.meeting-card.editing .attendees .attendee:hover {
-  background: rgba(44, 62, 80, 0.5);
-}
-.meeting-card.editing .attendees .attendee:hover::before {
-  content: 'x';
-  position: absolute;
-  color: white;
-  line-height: 2rem;
-}
-
-.meeting-card.editing .attendees input {
-  width: fit-content;
-  min-width: 20%;
-}
-.meeting-card.editing .attendees input:disabled {
-  background: none !important;
-}
-
-.meeting-card.editing .footer {
+.meeting-card.editing {
   padding-bottom: 1%;
 }
 
+.meeting-card.editing .form-group {
+  margin: 0;
+}
+
+.meeting-card.editing > .invalid-feedback {
+  display: block;
+  margin: 0;
+  padding: 0 1%;
+  color: #ff9595;
+  background: rgba(44, 62, 80, 0.8);
+  font-size: 1.2rem;
+}
+
+.meeting-card.editing .header .title {
+  width: 100%;
+  border-radius: 10px 10px 0 0;
+  font-size: 2.5rem;
+  color: black;
+}
+
+.meeting-card.editing * {
+  outline: none;
+}
+
+.meeting-card.editing input,
+.meeting-card.editing textarea {
+  background-color: unset;
+  border: none;
+  resize: none;
+}
+
+.meeting-card.editing .subheader input[type='date'],
+.meeting-card.editing .subheader input[type='time'] {
+  color-scheme: dark;
+}
+
+.meeting-card.editing input[type='date']::-webkit-calendar-picker-indicator {
+  margin-left: -2.2rem;
+}
+.meeting-card.editing input[type='time']::-webkit-calendar-picker-indicator {
+  margin-left: -0.1rem;
+}
+
 .meeting-card.editing .room-container {
-  margin-right: auto;
+  background: #adadad;
+  border-radius: 0 0 10px 10px;
 }
-
 .meeting-card.editing .room-container::before {
-  content: 'Room: ';
+  content: 'Room:';
+  margin: 0 1rem 2rem;
+  font-size: 2rem;
+  vertical-align: middle;
 }
 
-.meeting-card.editing input.room {
-  border: 1px solid black;
-  border-radius: 6px;
+.meeting-card.editing .room-button {
+  font-size: 2rem;
+  color: black;
+  background: white;
+}
+.meeting-card.editing .room-button.active {
+  color: white;
+  background: var(--success);
+}
+
+.meeting-card.editing .room-button {
+  border-radius: 0;
+}
+.meeting-card.editing .room-button:first-child {
+  border-radius: 0.25rem 0 0 0.25rem;
+}
+.meeting-card.editing .room-button:last-child {
+  border-radius: 0 0.25rem 0.25rem 0;
 }
 
 .meeting-card.editing .btn.submit {
-  width: 4em;
-  height: 2.5em;
+  margin: 0 auto;
+  width: 5em;
+}
+
+@media (max-width: 800px) {
+  .meeting-card.editing .date {
+    margin-right: 0;
+  }
 }

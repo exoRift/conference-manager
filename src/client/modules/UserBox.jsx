@@ -4,43 +4,17 @@ import postFetch from '../util/postFetch.js'
 
 import '../styles/UserBox.css'
 
-const gloss = {
-  name: {
-    label: 'Name'
-  },
-  email: {
-    label: 'Email Address',
-    type: 'email'
-  },
-  suite: {
-    label: 'Suite ID'
-  },
-  tenant: {
-    label: 'Tenant Name'
-  },
-  pass: {
-    label: 'Change Password',
-    blankLabel: 'Password',
-    type: 'password'
-  },
-  admin: {
-    label: 'Admin',
-    type: 'checkbox'
-  }
-}
-
-const maxLengths = {
-  name: 20,
-  suite: 4,
-  tenant: 20,
-  email: 40,
-  pass: 100
-}
-
 class UserBox extends React.Component {
   static defaultProps = {
     blank: false,
     invalid: {}
+  }
+
+  static maxLengths = {
+    name: 20,
+    email: 40,
+    pass: 100,
+    tenant: 20
   }
 
   constructor (props) {
@@ -49,42 +23,19 @@ class UserBox extends React.Component {
     this.state = {
       user: props.data || {},
       alter: {},
+      tenants: [],
       invalid: {},
       editing: props.blank,
       success: false,
       lockSave: false
     }
 
-    if (this.props.blank) {
-      const template = {}
-
-      for (const field of props.display) {
-        switch (field) {
-          case 'name':
-            template.firstname = ''
-            template.lastname = ''
-
-            break
-          case 'admin':
-            template.admin = false
-
-            break
-          default:
-            template[field] = ''
-            break
-        }
-      }
-
-      this.state.user = {
-        ...template,
-        ...this.state.user
-      }
-    }
+    this.submit = this.submit.bind(this)
   }
 
   componentDidMount () {
-    if ('auth' in localStorage && !this.props.blank) {
-      fetch(`/api/user/${this.props.user}/all`, {
+    if (!this.props.blank && !this.props.data) {
+      fetch(`/api/user/${this.props.id}/all`, {
         method: 'GET',
         headers: {
           Authorization: localStorage.auth
@@ -99,88 +50,155 @@ class UserBox extends React.Component {
         })
         .catch(this.props.onError)
     }
+
+    fetch('/api/tenant/list', {
+      method: 'GET'
+    })
+      .then(postFetch)
+      .then((tenants) => tenants.json())
+      .then((tenants) => this.setState({ tenants }))
+      .catch(this.props.onError)
   }
 
   render () {
     return (
-      <form className='userbox' onSubmit={this.submit.bind(this)}>
+      <form className='userbox' onSubmit={this.props.onSubmit || this.submit}>
         {this.props.header
           ? <span className='header'>{this.props.header}</span>
           : null}
-        {this.props.display.map((p, i) => {
-          const invalid = p === 'name'
-            ? this.state.invalid.firstname || this.state.invalid.lastname || this.props.invalid.firstname || this.props.invalid.lastname
-            : this.state.invalid[p] || this.props.invalid[p]
 
-          return (
-            <div className='form-group' key={i}>
-              <label htmlFor={p + 'UBInput'}>{(this.props.blank ? gloss[p].blankLabel : null) || gloss[p].label}</label>
-              {p === 'name'
-                ? <>
-                  <input
-                    className={`form-control${this.state.success || this.props.success
-                      ? ' is-valid'
-                      : ''}${this.state.invalid.firstname
-                        ? ' is-invalid'
-                        : ''}`}
-                    id={'firstNameUBInput'}
-                    placeholder={this.state.user.firstname || 'First'}
-                    disabled={!this.state.editing || this.props.locked?.includes(p)}
-                    value={this.state.alter.firstname || ''}
-                    maxLength={maxLengths.name}
-                    onChange={this.onChange.bind(this, 'firstname')}/>
+        <div className='form-group'>
+          <label htmlFor={'firstNameUBInput'}>Name</label>
 
-                  <input
-                    className={`form-control${this.state.success || this.props.success
-                      ? ' is-valid'
-                      : ''}${this.state.invalid.lastname
-                        ? ' is-invalid'
-                        : ''}`}
-                    id={'lastNameUBInput'}
-                    placeholder={this.state.user.lastname || 'Last'}
-                    disabled={!this.state.editing || this.props.locked?.includes(p)}
-                    value={this.state.alter.lastname || ''}
-                    maxLength={maxLengths.name}
-                    onChange={this.onChange.bind(this, 'lastname')}/>
-                </>
-                : gloss[p].type === 'checkbox'
-                  ? <input
-                    type={gloss[p].type}
-                    className={`form-control${this.state.success || this.props.success
-                      ? ' is-valid'
-                      : ''}${this.state.invalid[p]
-                        ? ' is-invalid'
-                        : ''}`}
-                    id={p + 'UBInput'}
-                    disabled={!this.state.editing || this.props.locked?.includes(p)}
-                    checked={this.state.alter[p] === undefined ? this.state.user[p] || '' : this.state.alter[p]}
-                    maxLength={maxLengths[p]}
-                    onChange={this.onChange.bind(this, p)}/>
-                  : <input
-                    type={gloss[p].type}
-                    className={`form-control${this.state.success || this.props.success
-                      ? ' is-valid'
-                      : ''}${this.state.invalid[p]
-                        ? ' is-invalid'
-                        : ''}`}
-                    id={p + 'UBInput'}
-                    aria-describedby={p === 'email' ? 'emailUBHelp' : null}
-                    placeholder={this.state.user[p] || (p === 'tenant' ? 'NONE' : null)}
-                    disabled={!this.state.editing || this.props.locked?.includes(p)}
-                    value={this.state.alter[p] || ''}
-                    maxLength={maxLengths[p]}
-                    onChange={this.onChange.bind(this, p)}/>}
-              {invalid
-                ? <div className='invalid-feedback'>{invalid}</div>
-                : null
-              }
-              {p === 'email'
-                ? <small id='emailUBHelp' className='form-text text-muted sub-message'>This email is visibile to only those with an account.</small>
-                : null
-              }
+          <input
+            className={`form-control${this.state.success || this.props.success
+              ? ' is-valid'
+              : ''}${this.state.invalid.firstname || this.props.invalid.firstname
+                ? ' is-invalid'
+                : ''}`}
+            id='firstNameUBInput'
+            placeholder={this.state.user.firstname || 'First'}
+            disabled={!this.state.editing || this.props.locked?.includes('name')}
+            value={this.state.alter.firstname || ''}
+            maxLength={UserBox.maxLengths.name}
+            onChange={this.onChange.bind(this, 'firstname')}
+          />
+
+          {this.state.invalid.firstname || this.props.invalid.firstname
+            ? <div className='invalid-feedback'>{this.state.invalid.firstname || this.props.invalid.firstname}</div>
+            : null}
+
+          <input
+            className={`form-control${this.state.success || this.props.success
+              ? ' is-valid'
+              : ''}${this.state.invalid.lastname || this.props.invalid.lastname
+                ? ' is-invalid'
+                : ''}`}
+            id='lastNameUBInput'
+            placeholder={this.state.user.lastname || 'Last'}
+            disabled={!this.state.editing || this.props.locked?.includes('name')}
+            value={this.state.alter.lastname || ''}
+            maxLength={UserBox.maxLengths.name}
+            onChange={this.onChange.bind(this, 'lastname')}
+          />
+
+          {this.state.invalid.lastname || this.props.invalid.lastname
+            ? <div className='invalid-feedback'>{this.state.invalid.lastname || this.props.invalid.lastname}</div>
+            : null}
+        </div>
+        <div className='form-group'>
+          <label htmlFor={'emailUBInput'}>Email Address</label>
+
+          <input className={`form-control${this.state.success || this.props.success
+              ? ' is-valid'
+              : ''}${this.state.invalid.email || this.props.invalid.email
+                ? ' is-invalid'
+                : ''}`}
+            type='email'
+            id='emailUBInput'
+            aria-describedby='emailUBHelp'
+            placeholder={this.state.user.email || ''}
+            disabled={!this.state.editing || this.props.locked?.includes('email')}
+            value={this.state.alter.email || ''}
+            maxLength={UserBox.maxLengths.email}
+            onChange={this.onChange.bind(this, 'email')}
+          />
+
+          {this.state.invalid.email || this.props.invalid.email
+            ? <div className='invalid-feedback'>{this.state.invalid.email || this.props.invalid.email}</div>
+            : null}
+
+          <small id='emailUBHelp' className='form-text text-muted sub-message'>This email is visibile to only those with an account.</small>
+        </div>
+        <div className='form-group'>
+          <label htmlFor={'tenantUBInput'}>Tenant</label>
+
+          <select
+            className={`form-control${this.state.success || this.props.success
+              ? ' is-valid'
+              : ''}${this.state.invalid.tenant || this.props.invalid.tenant
+                ? ' is-invalid'
+                : ''}`}
+            id='tenantUBInput'
+            disabled={!this.state.editing || this.props.locked?.includes('tenant')}
+            value={this.state.alter.tenant || this.state.user.tenant || 'none'}
+            onChange={this.onChange.bind(this, 'tenant')}
+          >
+            <option value='none'>NONE</option>
+            {this.state.tenants.map((t) => <option value={t.id} key={t.id}>{t.name}</option>)}
+          </select>
+
+          {this.state.invalid.tenant || this.props.invalid.tenant
+            ? <div className='invalid-feedback'>{this.state.invalid.tenant || this.props.invalid.tenant}</div>
+            : null}
+        </div>
+        {this.props.hide?.includes?.('pass')
+          ? null
+          : (
+            <div className='form-group'>
+              <label htmlFor={'passUBInput'}>{this.props.blank ? 'Set' : 'Change'} Password</label>
+
+              <input className={`form-control${this.state.success || this.props.success
+                  ? ' is-valid'
+                  : ''}${this.state.invalid.pass || this.props.invalid.pass
+                    ? ' is-invalid'
+                    : ''}`}
+                type='password'
+                id='passUBInput'
+                disabled={!this.state.editing || this.props.locked?.includes('pass')}
+                value={this.state.alter.pass || ''}
+                maxLength={UserBox.maxLengths.pass}
+                onChange={this.onChange.bind(this, 'pass')}
+              />
+
+              {this.state.invalid.pass || this.props.invalid.pass
+                ? <div className='invalid-feedback'>{this.state.invalid.pass || this.props.invalid.pass}</div>
+                : null}
             </div>
-          )
-        })}
+            )}
+        {this.props.hide?.includes?.('admin')
+          ? null
+          : (
+            <div className='form-group'>
+              <label htmlFor={'adminUBInput'}>Admin</label>
+
+              <input className={`form-control${this.state.success || this.props.success
+                  ? ' is-valid'
+                  : ''}${this.state.invalid.pass || this.props.invalid.pass
+                    ? ' is-invalid'
+                    : ''}`}
+                type='checkbox'
+                id='adminUBInput'
+                disabled={!this.state.editing || this.props.locked?.includes('admin')}
+                checked={this.state.alter.admin !== undefined ? this.state.alter.admin : this.state.user.admin || false}
+                onChange={this.onChange.bind(this, 'admin')}
+              />
+
+              {this.state.invalid.pass || this.props.invalid.pass
+                ? <div className='invalid-feedback'>{this.state.invalid.pass || this.props.invalid.pass}</div>
+                : null}
+            </div>
+            )}
 
         {this.props.blank
           ? null
@@ -221,7 +239,7 @@ class UserBox extends React.Component {
         lockSave: true
       })
 
-      fetch('/api/user/' + this.props.user, {
+      fetch('/api/user/' + this.props.id, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -229,7 +247,7 @@ class UserBox extends React.Component {
         },
         body: JSON.stringify({
           ...this.state.alter,
-          tenant: this.state.alter.tenant === 'NONE' ? '' : this.state.alter.tenant
+          tenant: this.state.alter.tenant === 'none' ? '' : this.state.alter.tenant
         })
       })
         .then(postFetch)

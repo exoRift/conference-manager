@@ -30,11 +30,9 @@ module.exports = {
               ? ['*', partialQuery]
               : req.params.prop === 'name'
                 ? ['firstname', 'lastname']
-                : req.params.prop === 'suite'
-                  ? ['suite', 'tenant']
-                  : req.params.prop === 'partial'
-                    ? [partialQuery]
-                    : [req.params.prop]))
+                : req.params.prop === 'partial'
+                  ? [partialQuery]
+                  : [req.params.prop]))
             .where('id', req.params.id)
             .then(([found]) => {
               if (found) {

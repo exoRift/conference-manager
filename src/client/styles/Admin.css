@@ -1,12 +1,14 @@
+.app-container.admin {
+  padding-top: 3%;
+}
+
 .refresh-button {
-  position: absolute;
-  left: 22rem;
-  width: 2.1rem;
-  height: 2.1rem;
+  font-size: 3rem;
   cursor: pointer;
+  vertical-align: middle;
 }
 .refresh-button.refreshed {
-  fill: #58cc7c;
+  color: #58cc7c;
 }
 
 .management-container {

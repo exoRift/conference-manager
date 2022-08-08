@@ -13,6 +13,27 @@
   overflow: overlay;
 }
 
+.home-button {
+  position: fixed;
+  top: 1%;
+  left: 1%;
+  padding: 0.4%;
+  color: white;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 10px;
+  z-index: 50;
+}
+.home-button:hover {
+  color: lightgray;
+}
+.home-button::before {
+  content: '\e15e';
+}
+.home-button::after {
+  content: 'Return Home';
+  font-family: Lato,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+}
+
 .app-container {
   flex: 1 1 auto;
   padding-top: 1vh;
@@ -34,6 +55,75 @@ code {
   color: #e83e3e;
   background: rgba(177, 48, 48, 0.2);
   border-radius: 2px;
+}
+
+.sub-message {
+  color: black !important;
+  font-style: italic;
+}
+
+.header {
+  font-size: xx-large;
+  text-align: center;
+}
+
+.error {
+  position: fixed;
+  top: 0;
+  margin: 1vw;
+  display: flex;
+  flex-direction: column;
+  max-width: fit-content;
+  padding-right: 1.25rem !important;
+  z-index: 150;
+}
+.error .header {
+  margin-bottom: 1vh;
+}
+.error .close {
+  padding: .3rem .5rem !important;
+}
+.error .code {
+  font-style: italic;
+}
+
+@media (max-width: 800px) {
+  .error .close {
+    font-size: 3rem;
+    line-height: 2rem;
+  }
+}
+
+.invalid-feedback {
+  color: red;
+}
+
+input:disabled {
+  background-color: #e1e7e9 !important;
+}
+
+input[type='checkbox'] {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+input[type='checkbox']:focus {
+  box-shadow: none;
+}
+
+.modal {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.8);
+  animation: fadeIn 0.1s linear 0s 1 normal forwards;
+  z-index: 100;
+}
+
+.modal-dialogue {
+  width: 50%;
+  background: white;
+  border-radius: 4px;
+  animation: floatIn 0.2s ease 0s 1 normal forwards;
 }
 
 .btn-primary {
@@ -59,84 +149,6 @@ code {
 }
 .btn-danger:hover {
   background-color: rgba(231, 76, 60, 0.9) !important;
-}
-
-.error {
-  position: fixed;
-  top: 0;
-  margin: 1vw;
-  display: flex;
-  flex-direction: column;
-  max-width: fit-content;
-  padding-right: 1.25rem !important;
-  z-index: 100;
-}
-.error .header {
-  margin-bottom: 1vh;
-}
-.error .close {
-  padding: .3rem .5rem !important;
-}
-.error .code {
-  font-style: italic;
-}
-
-@media (max-width: 800px) {
-  .error .close {
-    font-size: 3rem;
-    line-height: 2rem;
-  }
-}
-
-.invalid-feedback {
-  color: red;
-}
-
-.sub-message {
-  color: black !important;
-  font-style: italic;
-}
-
-.header {
-  font-size: xx-large;
-  text-align: center;
-}
-
-input:disabled {
-  background-color: #e1e7e9 !important;
-}
-
-input[type='checkbox'] {
-  width: 1.5rem;
-  height: 1.5rem;
-}
-input[type='checkbox']:focus {
-  box-shadow: none;
-}
-
-.floating-text {
-  width: 100%;
-  font-size: calc(5vh + 5vw);
-  color: lightgray;
-  align-self: center;
-  text-align: center;
-  font-style: italic;
-}
-
-.modal {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: rgba(0, 0, 0, 0.8);
-  animation: fadeIn 0.1s linear 0s 1 normal forwards;
-  z-index: 50;
-}
-
-.modal-dialogue {
-  width: 50%;
-  background: white;
-  border-radius: 4px;
-  animation: floatIn 0.2s ease 0s 1 normal forwards;
 }
 
 *::-webkit-scrollbar {
@@ -175,5 +187,11 @@ input[type='checkbox']:focus {
     transform: translateY(-5%);
   } to {
     transform: translateY(0%);
+  }
+}
+
+@media (max-width: 800px) {
+  .modal-dialogue {
+    width: 100%;
   }
 }

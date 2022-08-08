@@ -1,0 +1,61 @@
+.app-container.schedule {
+  display: flex;
+  flex-flow: column;
+  justify-content: stretch;
+  padding-top: 2%;
+}
+
+.clock-container {
+  align-self: center;
+  color: black;
+  background-color: rgba(250, 250, 250, 0.8);
+  border-radius: 10px;
+  font-size: 6vh;
+}
+
+.app-container.schedule .content {
+  display: flex;
+  flex-flow: column;
+  flex: 1;
+  justify-content: space-evenly;
+  padding-top: 2%;
+}
+
+.app-container.schedule .content .room-id-label {
+  align-self: center;
+  color: white;
+  font-size: 3rem;
+  margin-right: 1%;
+  writing-mode: vertical-lr;
+}
+
+.app-container.schedule .content .floating-text {
+  align-self: center;
+  color: rgb(240, 240, 240);
+  font-size: 2rem;
+  font-style: italic;
+}
+
+.app-container.schedule .content .meeting-list-container {
+  display: flex;
+  min-height: 22rem;
+  max-height: 25rem;
+  padding: 2% 0;
+  background: rgba(50, 50, 50, 0.4);
+}
+
+.app-container.schedule .content .meeting-list {
+  display: flex;
+  width: 100%;
+  overflow: auto;
+}
+
+.app-container.schedule .content .meeting-list > * {
+  min-width: 25rem;
+  margin: 0 1%;
+}
+
+.app-container.schedule .content .meeting-list .meeting-card .description {
+  max-width: 30rem;
+  font-size: x-large;
+}

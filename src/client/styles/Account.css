@@ -1,21 +1,25 @@
 .app-container.account {
   display: flex;
+  justify-content: center;
   align-items: center;
-  min-height: 100%;
-  padding: 0 10%;
-  background-attachment: fixed;
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-position: center;
+}
+
+.app-container.account .userbox,
+.app-container.account .tenantbox {
+  padding: 2%;
+  background-color: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(10px);
 }
 
 .app-container.account .userbox {
-  flex: 1;
-  padding: 5%;
-  background-color: rgba(255, 255, 255, 0.4);
-  border-radius: 5px;
-  clip-path: polygon(0 0, 90% 0%, 100% 10%, 100% 100%, 10% 100%, 0 90%);
-  backdrop-filter: blur(10px);
+  width: 60%;
+  border-radius: 10px;
+}
+.app-container.account .tenantbox {
+  height: 50vh;
+  border-radius: 0 10px 10px 0;
+  overflow: hidden;
+  animation: width-reveal ease-out 1s normal forwards;
 }
 
 .app-container.account .userbox .form-group {
@@ -27,38 +31,66 @@
   justify-content: space-between;
 }
 
-.nav-container > div {
+.nav-container > * {
   display: flex;
   height: fit-content;
   align-items: center;
   transition: 0.3s;
   cursor: pointer;
   padding: 0.5%;
+  color: #212529 !important;
   background-color: var(--secondary);
   border-radius: 10px;
   font-size: x-large;
 }
-.nav-container > div:hover {
+.nav-container > *:hover {
   transform: scale(1.1);
 }
-.nav-container > .logout-container:hover {
+.nav-container .logout-container:hover {
   background-color: var(--danger);
 }
-.nav-container > .admin-container:hover {
+.nav-container .admin-container:hover {
   background-color: var(--warning);
 }
-.nav-container > div svg {
-  width: 2rem;
-  height: 2rem;
+.nav-container .material-symbols-outlined {
+  font-size: 2.5rem;
 }
-.nav-container > .logout-container svg path {
-  stroke: #212529;
-}
-.nav-container .admin-container svg path {
-  fill: #212529;
+
+@keyframes width-reveal {
+  from {
+    max-width: 0%;
+  } to {
+    max-width: 40%;
+  }
 }
 
 @media (max-width: 800px) {
+  .app-container.account {
+    flex-flow: column;
+    padding-top: 10%;
+  }
+
+  .app-container.account .userbox {
+    width: 100%;
+    margin-bottom: 5%;
+  }
+
+  .tenantbox > button {
+    width: 40%;
+    margin: 0 auto;
+  }
+
+  .app-container.account .editing-button-container {
+    padding: 0 20%;
+  }
+
+  .app-container.account .tenantbox {
+    width: 100%;
+    height: fit-content;
+    border-radius: 10px;
+    animation: none;
+  }
+
   .nav-container {
     padding-top: 5%;
   }

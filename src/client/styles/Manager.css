@@ -1,44 +1,71 @@
-.app-container.manager > .header {
-  margin-left: 0.5%;
-  margin-bottom: 1%;
-  text-align: start;
-  font-weight: bold;
-  font-size: 5rem;
-  background: rgba(255, 248, 220, 0.4);
+.app-container.manager {
+  display: flex;
+  justify-content: center;
+  padding: 4% 1%;
 }
 
-.app-container.manager .modal-dialogue {
-  background: rgba(255, 255, 255, 0.9);
-  width: 45rem;
-}
-
-.manager-container {
-  padding: 0.1%;
-  background: rgba(170, 170, 170, 0.4);
+.app-container.manager > .content {
+  display: flex;
+  flex-flow: column;
+  justify-content: space-between;
+  align-items: center;
+  width: 80%;
+  padding: 1%;
+  background: rgba(140, 140, 140, 0.6);
   backdrop-filter: blur(5px);
+  border-radius: 10px;
+}
+
+.app-container.manager h1 {
+  margin-bottom: 1%;
+  text-align: center;
+}
+
+button.create {
+  transition: 0.1s;
+  padding: 1rem 1rem;
+  border: none;
+  color: #18bc69;
+  background: rgba(80, 80, 80, 0.6);
+  border-radius: 5px;
+  font-size: 2rem;
+}
+button.create::before {
+  content: '+ ';
+  display: inline-block;
+  margin-right: 1rem;
+  transform: scale(2) translateY(-2%);
+}
+button.create:hover {
+  transform: scale(1.04);
+  color: #149152;
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.app-container.manager .content .meeting-container {
+  width: 100%;
+  height: 100%;
+  padding: 1%;
+  margin-bottom: 2%;
+  background: rgba(100, 100, 100, 0.5);
+  border-radius: 10px;
+}
+
+.app-container.manager .content .floating-text {
+  display: block;
+  opacity: 0.8;
+  font-size: 4rem;
+  font-style: italic;
+  text-align: center;
 }
 
 .manager-container .meeting-strip.editing {
   padding-bottom: 1%;
 }
 
-button.create {
-  transition: 0.1s;
-  transform: scale(2) translateY(-5%);
-  margin-left: 2vw;
-  background: none;
-  border: none;
-  color: #18bc69;
-  line-height: 5rem;
-}
-button.create:hover {
-  transform: scale(2.2) translateY(-4.5%);
-  color: #0d703f;
-}
-
 @media (max-width: 800px) {
-  .app-container.manager .modal-dialogue {
-    width: 80%;
+  .app-container.manager > .content {
+    width: 100%;
   }
 }
 

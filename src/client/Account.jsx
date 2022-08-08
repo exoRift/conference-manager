@@ -1,16 +1,13 @@
 import React from 'react'
 import {
+  Link,
   Redirect
 } from 'react-router-dom'
 
 import UserBox from './modules/UserBox.jsx'
+import TenantBox from './modules/TenantBox.jsx'
+
 import interior from '../assets/images/interior.jpg'
-import {
-  ReactComponent as LogoutSVG
-} from '../assets/svg/logout.svg'
-import {
-  ReactComponent as AdminSVG
-} from '../assets/svg/admin.svg'
 
 import './styles/Account.css'
 
@@ -19,8 +16,7 @@ class Account extends React.Component {
     super(props)
 
     this.state = {
-      user: {},
-      redirect: null
+      user: {}
     }
 
     this.logout = this.logout.bind(this)
@@ -29,53 +25,59 @@ class Account extends React.Component {
 
   render () {
     if (this.state.redirect) return <Redirect to={this.state.redirect}/>
-    else if ('auth' in localStorage) {
-      return (
-        <div className='app-container account interior-bg' style={{ backgroundImage: `url(${interior})` }}>
-          <UserBox
-            user='current'
-            header='Account'
-            display={['name', 'email', 'suite', 'tenant', 'pass']}
-            locked={['suite']}
-            onSuccess={(token) => localStorage.setItem('auth', token)}
-            onError={this.props.onError}
-            onInfo={this.onInfo}>
-              <div className='nav-container'>
-                <div className='admin-container' onClick={() => this.redirect('/admin')}>
-                  {this.state.user.admin
-                    ? (
-                      <>
-                        <AdminSVG/>
 
-                        <strong>Admin Panel</strong>
-                      </>
-                      )
-                    : null}
-                </div>
+    return (
+      <div className='app-container account interior-bg' style={{ backgroundImage: `url(${interior})` }}>
+        <UserBox
+          id='self'
+          header='My Account'
+          hide={['admin']}
+          locked={['tenant']}
+          onSuccess={(token) => localStorage.setItem('auth', token)}
+          onError={this.props.onError}
+          onInfo={this.onInfo}
+          >
+            <div className='nav-container'>
+              <Link to='/admin' className='admin-container'>
+                {this.state.user.admin
+                  ? (
+                    <>
+                      <span className='material-symbols-outlined'>
+                        security
+                      </span>
 
-                <div className='logout-container' onClick={this.logout}>
-                  <LogoutSVG/>
+                      <strong>Admin Panel</strong>
+                    </>
+                    )
+                  : null}
+              </Link>
 
-                  <strong>Logout</strong>
-                </div>
+              <div className='logout-container' onClick={this.logout}>
+                <span className='material-symbols-outlined'>
+                  logout
+                </span>
+
+                <strong>Logout</strong>
               </div>
-            </UserBox>
-        </div>
-      )
-    } else return <Redirect to='/login'/>
+            </div>
+        </UserBox>
+
+        {this.state.user?.tenant
+          ? <TenantBox
+            id={this.state.user.tenant}
+            header='Tenant Info'
+            locked={['suite']}
+            onError={this.props.onError}/>
+          : null}
+      </div>
+    )
   }
 
   logout () {
     localStorage.removeItem('auth')
 
-    this.forceUpdate() // Rerender for redirect
-
-    this.props.refreshNav()
-  }
-
-  redirect (path) {
     this.setState({
-      redirect: path
+      redirect: '/'
     })
   }
 

@@ -23,6 +23,8 @@ module.exports = function (req, res, next) {
             throw req.errors.database
           })
           .then(([found]) => {
+            if (!found) found = req.meetingCore.timeouts.find((m) => m.data.id === req.params.id && m.limited)?.data
+
             const args = {
               ...found,
               ...req.args
@@ -31,7 +33,7 @@ module.exports = function (req, res, next) {
             // Title validation
             return req.db('meetings')
               .select('id')
-              .where('title', args.title)
+              .where('title', args.title || '')
               .whereNot('id', exclude || '')
               .catch((err) => {
                 console.error('db', err)
@@ -46,11 +48,10 @@ module.exports = function (req, res, next) {
 
                   throw err
                 } else {
-                  const start = new Date(args.startdate)
-                  const end = new Date(new Date(args.startdate).getTime() + args.length)
+                  const end = new Date(args.startdate.getTime() + args.length)
 
                   // Time validation
-                  if (!req.auth.limited && 'startdate' in req.args && start < Date.now()) { // Will only error if startdate is being initialized/modified
+                  if ('startdate' in req.args && req.method !== 'POST' && args.startdate < Date.now()) {
                     const err = Error('start date earlier than current date')
                     err.code = 400
                     err.type = 'argument'
@@ -63,7 +64,7 @@ module.exports = function (req, res, next) {
                     const maxLength = req.auth.limited ? 7200000 /* 2 hours */ : 14400000 /* 4 hours */
 
                     if (args.length > maxLength) {
-                      const err = Error(`meeting longer than ${req.auth.limited ? '2 hours. use an account to increase limit' : '4 hours'}`)
+                      const err = Error(`meeting longer than ${req.auth.limited ? '{2 hours}. use an account to increase limit' : '{4 hours}'}`)
                       err.code = 400
                       err.type = 'argument'
 
@@ -80,13 +81,11 @@ module.exports = function (req, res, next) {
                   }
 
                   return req.db('meetings')
-                    .select('title', 'startdate', 'length')
+                    .select('title', 'startdate', 'length', req.db.raw('EXTRACT(EPOCH FROM length) * 1000 as epochlength'))
                     .where('room', args.room)
                     .andWhere(
-                      req.db.raw('(:start::date >= startdate AND :start::date <= (startdate + length))' +
-                        'OR (:end::date >= startdate AND :end::date <= (startdate + length))',
-                      {
-                        start: start.toISOString(),
+                      req.db.raw('(:start::TIMESTAMPTZ, :end::TIMESTAMPTZ) OVERLAPS (startdate, (startdate + length))', {
+                        start: args.startdate.toISOString(),
                         end: end.toISOString()
                       })
                     )
@@ -98,13 +97,13 @@ module.exports = function (req, res, next) {
                       throw req.errors.database
                     })
                     .then(([overlap]) => {
-                      if (!overlap) overlap = req.meetingCore.findConflict(start, args.length, args.room, exclude)?.data
+                      if (!overlap) overlap = req.meetingCore.findConflict(args.startdate, args.length, args.room, exclude)?.data
 
                       if (overlap) {
-                        const enddate = new Date(new Date(overlap.startdate) + overlap.length).toISOString()
+                        const overlapEnd = new Date(overlap.startdate.getTime() + (overlap.epochlength || overlap.length))
 
-                        const err = Error(
-                          `meeting overlaps existing meeting: {${overlap.title}} which is in session from {${overlap.startdate}} to {${enddate}}`
+                        const err = new Error(
+                          `meeting overlaps existing meeting: {${overlap.title}} which is in session from {${overlap.startdate}} to {${overlapEnd}}`
                         )
                         err.code = 409
                         err.type = 'argument'
@@ -206,9 +205,7 @@ module.exports = function (req, res, next) {
               }
 
               return req.db('users')
-                .update({
-                  ...req.args
-                })
+                .update(req.args)
                 .where('id', req.params.id)
                 .then(() => req.args.token || found.token)
                 .catch((err) => {

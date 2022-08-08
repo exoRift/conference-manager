@@ -5,43 +5,37 @@ import {
 
 import postFetch from './util/postFetch.js'
 import UserBox from './modules/UserBox.jsx'
+import TenantBox from './modules/TenantBox.jsx'
 import MeetingStrip from './modules/MeetingStrip.jsx'
-import PostEditor from './modules/PostEditor.jsx'
-import {
-  ReactComponent as RefreshSVG
-} from '../assets/svg/refresh.svg'
 
 import './styles/Admin.css'
 
-const roomBounds = [1, 2]
-
 class Admin extends React.Component {
+  state = {
+    page: 'users',
+    users: [],
+    tenants: [],
+    meetings: [],
+    index: null,
+    deletingUser: null,
+    deletingTenant: null,
+    addingUser: null,
+    addingTenant: null,
+    deflect: false,
+    refreshed: false,
+    locked: false
+  }
+
   constructor (props) {
     super(props)
 
-    this.state = {
-      page: 'users',
-      users: [],
-      meetings: [],
-      posts: [],
-      userIndex: null,
-      postIndex: null,
-      deletingUser: null,
-      deletingPost: null,
-      addingUser: null,
-      addingPost: null,
-      deflect: false,
-      refreshed: false
-    }
-
     this.updateUsers = this.updateUsers.bind(this)
+    this.updateTenants = this.updateTenants.bind(this)
     this.updateMeetings = this.updateMeetings.bind(this)
-    this.updatePosts = this.updatePosts.bind(this)
-    this.onChange = this.onChange.bind(this)
   }
 
   componentDidMount () {
-    fetch('/api/user/current/admin', {
+    return fetch('/api/user/self/admin', {
       method: 'GET',
       headers: {
         Authorization: localStorage.auth
@@ -50,9 +44,8 @@ class Admin extends React.Component {
       .then(postFetch)
       .then((user) => user.json())
       .then(({ admin }) => {
-        if (admin) {
-          this.refresh()
-        } else this.setState({ deflect: true })
+        if (admin) this.refresh()
+        else this.setState({ deflect: true })
       })
       .catch(this.props.onError)
   }
@@ -73,16 +66,15 @@ class Admin extends React.Component {
 
             <div className='user-list-container'>
               {this.state.users.map((u, i) => (
-                <div className={`index user${this.state.userIndex === i ? ' expanded' : ''}`} key={i}>
-                  <div className='dropdown' onClick={this.toggleIndex.bind(this, i, 'userIndex')}>
-                    <div className={'arrow ' + (this.state.userIndex === i ? 'down' : 'right')}/>
+                <div className={`index user${this.state.index === i ? ' expanded' : ''}`} key={i}>
+                  <div className='dropdown' onClick={this.toggleIndex.bind(this, i)}>
+                    <div className={'arrow ' + (this.state.index === i ? 'down' : 'right')}/>
                   </div>
 
-                  {this.state.userIndex === i
+                  {this.state.index === i
                     ? <UserBox
-                      user={u.id}
+                      id={u.id}
                       header={'Edit User: ' + u.id}
-                      display={['name', 'email', 'suite', 'tenant', 'pass', 'admin']}
                       onError={this.props.onError}/>
                     : (
                       <>
@@ -97,38 +89,31 @@ class Admin extends React.Component {
           </div>
         )
       },
-      meetings: {
-        name: 'Meetings',
+      tenants: {
+        name: 'Tenants',
         dom: (
-          <div className='management-container meeting'>
-            {this.state.meetings.map((m) => <MeetingStrip data={m} key={m.id} onError={this.props.onError} onDelete={this.updateMeetings} admin={true}/>)}
-          </div>
-        )
-      },
-      posts: {
-        name: 'Building Announcements',
-        dom: (
-          <div className='management-container post'>
+          <div className='management-container tenant'>
             <div className='add-container'>
-              <button className='btn btn-success' onClick={() => this.setState({ addingPost: {} })}>+ Create Post</button>
+              <button className='btn btn-success' onClick={() => this.setState({ addingTenant: {} })}>+ Register Tenant</button>
             </div>
 
-            <div className='post-list-container'>
-              {this.state.posts.map((p, i) => (
-                <div className={`index post${this.state.postIndex === i ? ' expanded' : ''}`} key={i}>
-                  <div className='dropdown' onClick={this.toggleIndex.bind(this, i, 'postIndex')}>
-                    <div className={'arrow ' + (this.state.postIndex === i ? 'down' : 'right')}/>
+            <div className='tenant-list-container'>
+              {this.state.tenants.map((t, i) => (
+                <div className={`index tenant${this.state.index === i ? ' expanded' : ''}`} key={i}>
+                  <div className='dropdown' onClick={this.toggleIndex.bind(this, i)}>
+                    <div className={'arrow ' + (this.state.index === i ? 'down' : 'right')}/>
                   </div>
 
-                  {this.state.postIndex === i
-                    ? (
-                        <PostEditor data={p} key={i} onError={this.props.onError}/>
-                      )
+                  {this.state.index === i
+                    ? <TenantBox
+                      data={t}
+                      header={'Edit Tenant: ' + t.id}
+                      onError={this.props.onError}/>
                     : (
                       <>
-                        <div className={'name'}>{p.title}</div>
+                        <div className='name'>{t.name} - {t.suite}</div>
 
-                        <span className='delete-button post' onClick={() => this.setState({ deletingPost: p })}>Delete</span>
+                        <span className='delete-button tenant' onClick={() => this.setState({ deletingTenant: t })}>Delete</span>
                       </>
                       )}
                 </div>
@@ -136,94 +121,113 @@ class Admin extends React.Component {
             </div>
           </div>
         )
+      },
+      meetings: {
+        name: 'Meetings',
+        dom: (
+          <div className='management-container meeting'>
+            {this.state.meetings.map((m) => <MeetingStrip
+              data={m}
+              editable={true}
+              key={m.id}
+              onError={this.props.onError}
+              onDelete={this.updateMeetings}
+            />)}
+          </div>
+        )
       }
     }
 
-    if ('auth' in localStorage && !this.state.deflect) {
-      return (
-        <div className='app-container admin'>
-          <h1>Admin Panel</h1>
-          <RefreshSVG className={`refresh-button${this.state.refreshed ? ' refreshed' : ''}`} onClick={this.refresh.bind(this)}/>
+    if (!('auth' in localStorage) || this.state.deflect) return <Redirect to='/'/>
 
-          <div className='page-container'>
-            {Object.entries(pages).map((p, i) => (
-              <button
-                className={`btn btn-${this.state.page === p[0] ? 'success' : 'primary'} page-button ${p[0]}`}
-                onClick={() => this.setState({ page: p[0] })}
-                key={i}>
-                  {p[1].name}
-              </button>
-            ))}
-          </div>
+    return (
+      <div className='app-container admin'>
+        <h1>Admin Panel</h1>
 
-          {pages[this.state.page].dom}
+        <div className='page-container'>
+          {Object.entries(pages).map((p, i) => (
+            <button
+              className={`btn btn-${this.state.page === p[0] ? 'success' : 'primary'} page-button ${p[0]}`}
+              onClick={() => this.setState({ page: p[0], index: null })}
+              key={i}>
+                {p[1].name}
+            </button>
+          ))}
 
-          {this.state.addingUser || this.state.addingPost
-            ? (
-              <div className='create modal'>
-                <div className='modal-dialogue'>
-                  <div className='modal-header'>
-                    <h5 className='modal-title'>Create {this.state.addingUser ? 'User' : 'Post'}</h5>
-                  </div>
-
-                  <div className='modal-body'>
-                    {this.state.addingUser
-                      ? <UserBox
-                        header='New User'
-                        display={['name', 'email', 'suite', 'admin']}
-                        blank={true}
-                        onChange={(user) => this.setState({ addingUser: user })}
-                        onError={this.props.onError}/>
-                      : <PostEditor blank={true} onError={this.props.onError} onChange={this.onChange}/>}
-                  </div>
-
-                  <div className='modal-footer'>
-                    <button className='btn btn-success' onClick={this.state.addingUser
-                      ? this.createUser.bind(this)
-                      : this.createPost.bind(this)} disabled={this.state.locked}>Create</button>
-
-                    <button className='btn btn-secondary' onClick={() => this.setState({ addingUser: null, addingPost: null })}>Cancel</button>
-                  </div>
-                </div>
-              </div>
-              )
-            : null}
-
-          {this.state.deletingUser || this.state.deletingPost
-            ? (
-              <div className='delete modal'>
-                <div className='modal-dialogue'>
-                  <div className='modal-header'>
-                    <h5 className='modal-title'>Delete {this.state.deletingUser ? 'User' : 'Post'}</h5>
-                  </div>
-
-                  <div className='modal-body'>
-                    <p>Are you sure you want to delete {this.state.deletingUser
-                      ? this.state.deletingUser.firstname + ' ' + this.state.deletingUser.lastname
-                      : this.state.deletingPost.title}?</p>
-                  </div>
-
-                  <div className='modal-footer'>
-                    <button className='btn btn-danger' onClick={this.state.deletingUser
-                      ? this.deleteUser.bind(this, this.state.deletingUser.id)
-                      : this.deletePost.bind(this, this.state.deletingPost.id)}>Yes</button>
-
-                    <button className='btn btn-secondary' onClick={() => this.setState({ deletingUser: null, deletingPost: null })}>No</button>
-                  </div>
-                </div>
-              </div>
-              )
-            : null}
+          <span className={`material-symbols-outlined refresh-button${this.state.refreshed ? ' refreshed' : ''}`} onClick={this.refresh}>cached</span>
         </div>
-      )
-    } else return <Redirect to={this.state.redirect}/>
+
+        {pages[this.state.page].dom}
+
+        {this.state.addingUser || this.state.addingTenant
+          ? (
+            <div className='create modal'>
+              <div className='modal-dialogue'>
+                <div className='modal-header'>
+                  <h5 className='modal-title'>{this.state.addingUser ? 'Create User' : 'Register Tenant'}</h5>
+                </div>
+
+                <div className='modal-body'>
+                  {this.state.addingUser
+                    ? <UserBox
+                      header='New User'
+                      blank={true}
+                      hide={['pass']}
+                      onChange={(user) => this.setState({ addingUser: user })}
+                      onError={this.props.onError}/>
+                    : <TenantBox
+                      header='New Tenant'
+                      blank={true}
+                      onChange={(tenant) => this.setState({ addingTenant: tenant })}
+                      onError={this.props.onError}/>}
+                </div>
+
+                <div className='modal-footer'>
+                  <button className='btn btn-success' onClick={this.state.addingUser
+                    ? this.createUser.bind(this)
+                    : this.createTenant.bind(this)} disabled={this.state.locked}>Create</button>
+
+                  <button className='btn btn-secondary' onClick={() => this.setState({ addingUser: null, addingTenant: null })}>Cancel</button>
+                </div>
+              </div>
+            </div>
+            )
+          : null}
+
+        {this.state.deletingUser || this.state.deletingTenant
+          ? (
+            <div className='delete modal'>
+              <div className='modal-dialogue'>
+                <div className='modal-header'>
+                  <h5 className='modal-title'>{this.state.deletingUser ? 'Delete User' : 'Unregsiter Tenant'}</h5>
+                </div>
+
+                <div className='modal-body'>
+                  <p>Are you sure you want to {this.state.deletingUser ? 'delete' : 'unregsiter'} {this.state.deletingUser
+                    ? this.state.deletingUser.firstname + ' ' + this.state.deletingUser.lastname
+                    : this.state.deletingTenant.name}?</p>
+                </div>
+
+                <div className='modal-footer'>
+                  <button className='btn btn-danger' onClick={this.state.deletingUser
+                    ? this.deleteUser.bind(this, this.state.deletingUser.id)
+                    : this.deleteTenant.bind(this, this.state.deletingTenant.id)}>Yes</button>
+
+                  <button className='btn btn-secondary' onClick={() => this.setState({ deletingUser: null, deletingTenant: null })}>No</button>
+                </div>
+              </div>
+            </div>
+            )
+          : null}
+      </div>
+    )
   }
 
   refresh () {
     const promises = [
       this.updateUsers(),
       this.updateMeetings(),
-      this.updatePosts()
+      this.updateTenants()
     ]
 
     return Promise.all(promises)
@@ -262,41 +266,45 @@ class Admin extends React.Component {
       .catch(this.props.onError)
   }
 
+  updateTenants () {
+    return fetch('/api/tenant/list', {
+      method: 'GET'
+    })
+      .then(postFetch)
+      .then((tenants) => tenants.json())
+      .then((tenants) => this.setState({ tenants }))
+      .catch(this.props.onError)
+  }
+
   updateMeetings () {
     const promises = []
 
-    for (let r = roomBounds[0]; r <= roomBounds[1]; r++) {
-      promises.push(fetch('/api/room/list/' + r, {
-        method: 'GET',
-        headers: {
-          Authorization: localStorage.auth
-        }
-      })
-        .then(postFetch)
-        .then((meetings) => meetings.json()))
-    }
-
-    return Promise.all(promises)
-      .then((meetings) => this.setState({ meetings: meetings.flat() }))
-      .catch(this.props.onError)
-  }
-
-  updatePosts () {
-    fetch('/api/post/list/100', {
-      method: 'GET',
-      headers: {
-        Authorization: localStorage.auth
-      }
+    return fetch('/api/room/count', {
+      method: 'GET'
     })
       .then(postFetch)
-      .then((posts) => posts.json())
-      .then((posts) => this.setState({ posts }))
-      .catch(this.props.onError)
+      .then((count) => count.json())
+      .then((count) => {
+        for (let r = 1; r <= count; r++) {
+          promises.push(fetch('/api/room/list/' + r, {
+            method: 'GET',
+            headers: {
+              Authorization: localStorage.auth
+            }
+          })
+            .then(postFetch)
+            .then((meetings) => meetings.json()))
+        }
+
+        return Promise.all(promises)
+          .then((meetings) => this.setState({ meetings: meetings.flat() }))
+          .catch(this.props.onError)
+      })
   }
 
-  toggleIndex (index, state) {
-    if (this.state[state] === index) this.setState({ [state]: null })
-    else this.setState({ [state]: index })
+  toggleIndex (index) {
+    if (this.state.index === index) this.setState({ index: null })
+    else this.setState({ index })
   }
 
   onChange (data) {
@@ -336,25 +344,25 @@ class Admin extends React.Component {
       .finally(() => this.setState({ locked: false }))
   }
 
-  createPost () {
+  createTenant () {
     this.setState({
       locked: true
     })
 
-    return fetch('/api/post', {
+    return fetch('/api/tenant', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         Authorization: localStorage.auth
       },
-      body: JSON.stringify(this.state.addingPost)
+      body: JSON.stringify(this.state.addingTenant)
     })
       .then(postFetch)
       .then(() => {
-        this.updatePosts()
+        this.updateTenants()
 
         this.setState({
-          addingPost: null
+          addingTenant: null
         })
       })
       .catch(this.props.onError)
@@ -377,19 +385,19 @@ class Admin extends React.Component {
       .catch(this.props.onError)
   }
 
-  deletePost (id) {
+  deleteTenant (id) {
     this.setState({
-      deletingPost: null
+      deletingTenant: null
     })
 
-    return fetch('/api/post/' + id, {
+    return fetch('/api/tenant/' + id, {
       method: 'DELETE',
       headers: {
         Authorization: localStorage.auth
       }
     })
       .then(postFetch)
-      .then(this.updatePosts)
+      .then(this.updateTenants)
       .catch(this.props.onError)
   }
 }

@@ -25,7 +25,6 @@
   position: relative;
   flex: 1;
   padding: 2%;
-  overflow: hidden;
   backdrop-filter: blur(5px);
 }
 .app-container.room-panel .current::before {
@@ -35,9 +34,9 @@
   width: 100%;
   height: 100%;
   margin: -2%;
-  clip-path: polygon(100% 0, 40% 100%, 100% 100%);
+  clip-path: polygon(100vw 0, 40vw 100vh, 100vw 100vh);
   opacity: 0.4;
-  z-index: 1;
+  z-index: -1;
 }
 .app-container.room-panel .current.vacant {
   background-color: var(--vacant);
@@ -50,10 +49,6 @@
 }
 .app-container.room-panel .current.occupied::before {
   background-color: var(--occupied);
-}
-
-.app-container.room-panel .current * {
-  z-index: 2;
 }
 
 .app-container.room-panel .current .subheader {
@@ -71,8 +66,7 @@
 .app-container.room-panel .meeting-card {
   background: none;
   border: 2px solid rgba(50, 50, 50, 0.4);
-  border-radius: 10px;
-  clip-path: none;
+  overflow: auto;
 }
 
 .app-container.room-panel .current .button-container {
@@ -130,7 +124,7 @@
   text-align: start;
   padding-left: 5%;
 }
-.app-container.room-panel .meeting-card .header .title::after {
+.app-container.room-panel .meeting-card .header::after {
   content: none;
 }
 
@@ -143,20 +137,8 @@
 }
 
 .app-container.room-panel .meeting-card .description {
-  font-size: 3rem;
+  font-size: 2.4rem;
   background-color: rgba(50, 50, 50, 0.2);
-}
-.app-container.room-panel .meeting-card .description:is(:last-child) {
-  margin-bottom: 6vh;
-}
-
-.app-container.room-panel .meeting-card .attendees {
-  font-size: 2.3rem;
-  margin-top: 6vh;
-  margin-bottom: 6vh;
-}
-.app-container.room-panel .meeting-card .attendees::before {
-  margin-top: -6vh;
 }
 
 .app-container.room-panel .meeting-card .footer {
@@ -214,7 +196,7 @@
 }
 .upcoming:not(.expanded) .title::before {
   content: 'Upcoming:';
-  margin-right: 0.5rem;
+  margin: 0 0.5rem 0 1rem;
   font-size: 2.2rem;
   font-weight: normal;
 }
@@ -230,16 +212,16 @@
   content: ','
 }
 
-.upcoming.expanded .time-container {
+.upcoming.expanded .times {
   margin-left: 0.5rem;
 }
 
-.upcoming.expanded .time-container > span {
+.upcoming.expanded .times > span {
   margin: 0 0.3rem;
 }
 
 .upcoming .upcoming-entry .date,
-.upcoming .upcoming-entry .time-container {
+.upcoming .upcoming-entry .times {
   font-size: 1.5rem;
 }
 

@@ -32,16 +32,18 @@ class MeetingCard extends React.Component {
         ? 'soon'
         : ''} ${start < Date.now()
         ? 'in-session'
-        : ''}`}>
+        : ''}`}
+      >
         <div className='header'>
           <strong className='title'>{this.props.data.title}</strong>
         </div>
-        <div className='subheader'>
-          <span className='date'>{start.toLocaleDateString('en-US', {
-            dateStyle: 'short'
-          })}</span>
 
-          <span className='time-container'>
+        <div className='subheader'>
+          <strong className='date'>{start.toLocaleDateString('en-US', {
+            dateStyle: 'short'
+          })}</strong>
+
+          <span className='times'>
             <span className='starttime'>{start.toLocaleTimeString('en-US', {
               timeStyle: 'short'
             })}</span>
@@ -53,13 +55,9 @@ class MeetingCard extends React.Component {
             })}</span>
           </span>
         </div>
-        <div className='content'>
-          <div className={`description ${this.props.data.desc ? 'filled' : 'empty'}`}>{this.props.data.desc || 'No description provided'}</div>
 
-          {this.props.data.attendees.length
-            ? <div className='attendees'>{this.props.data.attendees.map((a, i) => <span className='attendee' key={i}>{a}</span>)}</div>
-            : null}
-        </div>
+        <div className={`description ${this.props.data.desc ? 'filled' : 'empty'}`}>{this.props.data.desc || 'No description provided'}</div>
+
         <div className='footer'>
           <span className='creator'>{this.state.creator
             ? `${this.state.creator.firstname} ${this.state.creator.lastname}`

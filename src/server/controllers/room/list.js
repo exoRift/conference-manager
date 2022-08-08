@@ -3,7 +3,12 @@ const {
 } = process.env
 
 module.exports = {
-  requisites: [],
+  requisites: ['authorize'],
+  options: {
+    authorize: {
+      allowLimited: true
+    }
+  },
   method: 'get',
   route: '/room/list/:id',
   action: function (req, res) {
@@ -12,7 +17,6 @@ module.exports = {
         .filter((m) => m.limited && m.data.room === parseInt(req.params.id))
         .map((m) => {
           return {
-            attendees: [],
             ...m.data,
             limited: true
           }

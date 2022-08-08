@@ -44,13 +44,10 @@ class Entry {
   }
 
   update (data) {
-    const {
-      startdate,
-      length
-    } = data
-
-    this.data.startdate = startdate || this.data.startdate
-    this.data.length = length || this.data.length
+    this.data = {
+      ...this.data,
+      ...data
+    }
 
     this.cancel()
     this.start(this.data.length)
@@ -77,13 +74,13 @@ class Core {
   }
 
   findConflict (startframe, length, room, exclude) {
-    const endframe = new Date(new Date(startframe).getTime() + length)
+    const endframe = new Date(startframe.getTime() + length)
 
     return this.timeouts.find((m) => {
-      const enddate = new Date(new Date(m.data.startdate).getTime() + m.data.length)
+      const enddate = new Date(m.data.startdate.getTime() + m.data.length)
 
       return room === m.data.room && m.data.id !== exclude &&
-        ((startframe >= m.data.startdate && startframe <= enddate) || (endframe >= m.data.startdate && endframe <= enddate))
+        ((startframe >= m.data.startdate && startframe <= enddate) || (m.data.startdate >= startframe && m.data.startdate <= endframe))
     })
   }
 }

@@ -8,7 +8,6 @@ module.exports = {
     title: 'opt:string',
     room: 'opt:number',
     desc: 'opt:string',
-    attendees: 'opt:array',
     startdate: 'opt:date',
     length: 'opt:number'
   },
@@ -35,11 +34,6 @@ module.exports = {
       const entry = req.meetingCore.timeouts.find((m) => m.data.id === req.params.id && m.limited)
 
       if (entry) {
-        req.args = {
-          ...entry.data,
-          ...req.args
-        }
-
         return req.util.meeting.validate(req.params.id)
           .then(() => {
             entry.update(req.args)
@@ -60,8 +54,7 @@ module.exports = {
                   .then(() => req.db('meetings')
                     .update({
                       ...req.args,
-                      length: req.args.length ? req.args.length + ' milliseconds' : undefined,
-                      attendees: req.args.attendees ? JSON.stringify(req.args.attendees) : undefined
+                      length: req.args.length ? req.args.length + ' milliseconds' : undefined
                     })
                     .where('id', req.params.id)
                     .then(() => {

@@ -23,6 +23,7 @@ class Register extends React.Component {
       firstname: this.query.firstname || '',
       lastname: this.query.lastname || '',
       email: this.query.email || '',
+      tenant: this.query.tenant || '',
       pass: ''
     }
 
@@ -31,9 +32,10 @@ class Register extends React.Component {
       redirect: null,
       success: false,
       invalid: {},
-      error: null
+      locked: false
     }
 
+    this.onChange = this.onChange.bind(this)
     this.submit = this.submit.bind(this)
   }
 
@@ -42,45 +44,48 @@ class Register extends React.Component {
   }
 
   render () {
-    console.log(this.state)
     if (this.state.redirect) return <Redirect to={this.state.redirect}/>
     else if ('auth' in localStorage) return <Redirect to='/'/>
-    else {
-      return (
-        <div className='app-container register interior-bg' style={{ backgroundImage: `url(${entrance})` }}>
+
+    return (
+      <div className='app-container register interior-bg' style={{ backgroundImage: `url(${entrance})` }}>
+        <div className='login-box'>
           <UserBox
             data={this.initial}
             header='Register Your Account'
-            display={['name', 'email', 'suite', 'tenant', 'pass']}
-            locked={['suite']}
+            locked={['tenant']}
             blank={true}
             invalid={this.state.invalid}
             success={this.state.success}
-            onChange={this.onChange.bind(this)}
-            onError={this.props.onError}>
-              <button className='btn btn-success' onClick={this.submit}>Finish</button>
+            onChange={this.onChange}
+            onError={this.props.onError}
+            onSubmit={this.submit}
+          >
+            <button type='submit' className='btn btn-success' disabled={this.state.locked}>Finish</button>
           </UserBox>
         </div>
-      )
-    }
+      </div>
+    )
   }
 
   onChange (data) {
     this.setState({
-      data: {
-        ...this.initial,
-        ...data
-      }
+      ...this.initial,
+      data
     })
   }
 
   submit (event) {
-    event.preventDefault() // Don't refresh page
+    event.preventDefault()
 
     const filled = Object.values(this.state.data).reduce((a, v) => a && v && v.length, true)
 
-    if (!this.state.success && document.getElementById('emailUBInput').checkValidity() && filled) {
-      fetch(`/api/user/${this.params.id}/register`, {
+    this.setState({
+      locked: true
+    })
+
+    if (!this.state.success && filled) {
+      return fetch(`/api/user/${this.params.id}/register`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json'
@@ -102,39 +107,19 @@ class Register extends React.Component {
             this.setState({
               redirect: '/'
             })
-
-            this.props.refreshNav()
           }, 1000)
         })
-        .catch((res) => {
-          if (res instanceof TypeError) this.props.onError(res) // Network errors
-          else {
-            res.json()
-              .then(({ error }) => {
-                if (res.status === 404) {
-                  this.setState({
-                    invalid: {
-                      email: 'This email is not linked to an account'
-                    }
-                  })
-                } else if (error.message === 'incorrect password') {
-                  this.setState({
-                    invalid: {
-                      pass: 'Password incorrect'
-                    }
-                  })
-                } else this.props.onError(error)
-              })
-          }
-        })
+        .catch(this.props.onError)
+        .finally(() => this.setState({ locked: false }))
     } else {
       const invalid = {}
-
-      for (const entry of Object.entries(this.state.data)) {
-        invalid[entry[0]] = entry[1].length ? null : 'Required field'
+      for (const [key, value] of Object.entries(this.state.data)) {
+        invalid[key] = value.length || key === 'tenant' ? null : 'Required field'
       }
+
       this.setState({
-        invalid
+        invalid,
+        locked: false
       })
     }
   }

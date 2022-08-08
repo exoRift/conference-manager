@@ -2,14 +2,13 @@ import React from 'react'
 import {
   BrowserRouter as Router,
   Switch,
-  Route
+  Route,
+  Link
 } from 'react-router-dom'
 import {
   parse as parseQuery
 } from 'query-string'
 
-import Navbar from './modules/Navbar.jsx'
-import UserButton from './modules/UserButton.jsx'
 import Error from './modules/Error.jsx'
 
 import routes from './util/routes.js'
@@ -20,13 +19,11 @@ class Routes extends React.Component {
     super(props)
 
     this.state = {
-      error: null,
-      navRefreshFlag: false
+      error: null
     }
 
     this.onError = this.onError.bind(this)
     this.closeError = this.closeError.bind(this)
-    this.refreshNav = this.refreshNav.bind(this)
 
     this.query = parseQuery(window.location.search)
 
@@ -41,9 +38,15 @@ class Routes extends React.Component {
   render () {
     return (
       <Router>
-        {this.hideUI ? null : <Navbar routes={routes} refreshFlag={this.state.navRefreshFlag}/>}
-
         <div id='app'>
+          {this.hideUI
+            ? null
+            : (
+                <Link to='/' className='material-symbols-outlined home-button'>
+                  home
+                </Link>
+              )}
+
           <Switch>
             {routes.map((route, index) => (
               <Route
@@ -63,8 +66,6 @@ class Routes extends React.Component {
             <Route component={NotFound}/>
           </Switch>
         </div>
-
-        {this.hideUI ? null : <UserButton onError={this.onError}/>}
 
         {this.state.error
           ? <Error error={this.state.error} onClose={this.closeError}/>
@@ -89,12 +90,6 @@ class Routes extends React.Component {
 
     this.setState({
       error: null
-    })
-  }
-
-  refreshNav () {
-    this.setState({
-      navRefreshFlag: !this.state.navRefreshFlag
     })
   }
 }
