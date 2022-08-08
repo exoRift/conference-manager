@@ -4,7 +4,7 @@ exports.up = function (knex) {
     .dropTableIfExists('posts')
     .createTable('tenants', (table) => {
       table.string('id').primary()
-      table.string('name', 20).unique().notNullable()
+      table.string('name', 50).notNullable()
       table.string('suite', 4).unique().notNullable()
     })
     .alterTable('users', (table) => {

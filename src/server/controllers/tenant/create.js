@@ -7,7 +7,7 @@ module.exports = {
   options: {
     argtypes: {
       name: {
-        maxStringLen: 20
+        maxStringLen: 50
       },
       suite: {
         maxStringLen: 4
