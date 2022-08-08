@@ -29,6 +29,7 @@ class Admin extends React.Component {
   constructor (props) {
     super(props)
 
+    this.refresh = this.refresh.bind(this)
     this.updateUsers = this.updateUsers.bind(this)
     this.updateTenants = this.updateTenants.bind(this)
     this.updateMeetings = this.updateMeetings.bind(this)
