@@ -37,24 +37,19 @@ module.exports = {
 
           return req.db('tenants')
             .select('name', 'suite')
-            .where('name', req.args.name)
-            .orWhere('suite', req.args.suite || '')
+            .where('suite', req.args.suite || '')
             .then(([tenant]) => {
-              if (tenant) {
-                return res.sendError(409, tenant.suite === req.args.suite
-                  ? 'suite'
-                  : 'name', `"${req.args.name} is already assigned to suite ${tenant.suite}"`)
-              } else {
-                return req.db('tenants')
-                  .update(req.args)
-                  .where('id', req.params.id)
-                  .then(() => res.send(200))
-                  .catch((err) => {
-                    console.error('db', err)
+              if (tenant) return res.sendError(409, 'argument', `"${tenant.name} is already assigned to suite ${tenant.suite}"`)
 
-                    return res.sendError(500, 'internal', 'database unavailable')
-                  })
-              }
+              return req.db('tenants')
+                .update(req.args)
+                .where('id', req.params.id)
+                .then(() => res.send(200))
+                .catch((err) => {
+                  console.error('db', err)
+
+                  return res.sendError(500, 'internal', 'database unavailable')
+                })
             })
             .catch((err) => {
               console.error('db', err)
