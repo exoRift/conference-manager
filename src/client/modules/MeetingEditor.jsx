@@ -17,6 +17,9 @@ class MeetingEditor extends React.Component {
     desc: 150
   }
 
+  static overlapRegex = /{(.+)}.*{(.+)}.*{(.+)}/
+  static lengthRegex = /{(.+)}/
+
   static defaultLength = 3600000 /* 1 hour */
   static minLength = 900000 /* 15 minutes */
 
@@ -162,16 +165,22 @@ class MeetingEditor extends React.Component {
 
     switch (prop) {
       case 'date':
-        field = 'date'
-        value = e.target.value + 'T' + this.dateToTime(start)
+        if (e.target.value) {
+          field = 'startdate'
+          value = e.target.value + 'T' + this.dateToTime(start)
+        }
         break
       case 'starttime':
-        field = 'startdate'
-        value = this.dateToDate(start) + 'T' + e.target.value
+        if (e.target.value) {
+          field = 'startdate'
+          value = this.dateToDate(start) + 'T' + e.target.value
+        }
         break
       case 'endtime':
-        field = 'length'
-        value = Math.max(MeetingEditor.minLength, new Date(this.dateToDate(start) + 'T' + e.target.value).getTime() - start.getTime())
+        if (e.target.value) {
+          field = 'length'
+          value = Math.max(MeetingEditor.minLength, new Date(this.dateToDate(start) + 'T' + e.target.value).getTime() - start.getTime())
+        }
         break
       case 'room':
         field = prop
@@ -210,7 +219,44 @@ class MeetingEditor extends React.Component {
         ...this.state.data,
         ...this.state.alter
       }))
-      .catch(this.props.onError)
+      .catch((res) => {
+        if (res instanceof TypeError) return this.props.onError(res) // Network errors
+        else {
+          return res.json()
+            .then(({ error }) => {
+              if (error.message === 'title taken') {
+                this.setState({
+                  invalid: {
+                    title: 'Title taken by another meeting'
+                  }
+                })
+              } else if (error.message.includes('overlap')) {
+                const [, title, start, end] = error.message.match(MeetingEditor.overlapRegex)
+                const startdate = new Date(start)
+                const enddate = new Date(end)
+
+                this.setState({
+                  invalid: {
+                    date: `Your meeting overlaps [${title}] which is in session from ${startdate.toLocaleString('en-US', {
+                      dateStyle: 'short',
+                      timeStyle: 'short'
+                    })} to ${enddate.toLocaleTimeString('en-US', {
+                      timeStyle: 'short'
+                    })}`
+                  }
+                })
+              } else if (error.message.includes('longer')) {
+                const [, max] = error.message.match(MeetingEditor.lengthRegex)
+
+                this.setState({
+                  invalid: {
+                    date: 'Meeting cannot be longer than ' + max
+                  }
+                })
+              } else return this.props.onError(error)
+            })
+        }
+      })
   }
 
   dateToDate (date) {

@@ -44,13 +44,10 @@ class Entry {
   }
 
   update (data) {
-    const {
-      startdate,
-      length
-    } = data
-
-    this.data.startdate = startdate || this.data.startdate
-    this.data.length = length || this.data.length
+    this.data = {
+      ...this.data,
+      ...data
+    }
 
     this.cancel()
     this.start(this.data.length)

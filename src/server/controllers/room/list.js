@@ -4,6 +4,11 @@ const {
 
 module.exports = {
   requisites: ['authorize'],
+  options: {
+    authorize: {
+      allowLimited: true
+    }
+  },
   method: 'get',
   route: '/room/list/:id',
   action: function (req, res) {

@@ -22,6 +22,9 @@ class RoomPanel extends React.Component {
     }
   ]
 
+  static overlapRegex = /{(.+)}.*{(.+)}.*{(.+)}/
+  static lengthRegex = /{(.+)}/
+
   state = {
     meetings: [],
     reserving: false,
@@ -247,37 +250,52 @@ class RoomPanel extends React.Component {
 
   reserve (length, editID) {
     if ('auth' in localStorage) {
-      if (this.state.extending) {
-        fetch('/api/meeting/' + editID, {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: localStorage.auth
-          },
-          body: JSON.stringify({
+      return fetch(this.state.extending ? '/api/meeting/' + editID : '/api/meeting', {
+        method: this.state.extending ? 'PATCH' : 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: localStorage.auth
+        },
+        body: this.state.extending
+          ? JSON.stringify({
             length
           })
-        })
-          .then(postFetch)
-          .then(this._postReserve)
-          .catch(this.props.onError)
-      } else {
-        fetch('/api/meeting', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: localStorage.auth
-          },
-          body: JSON.stringify({
+          : JSON.stringify({
             title: 'Manually Reserved',
             length,
             room: this.props.match.params.room
           })
+      })
+        .then(postFetch)
+        .then(this._postReserve)
+        .catch((res) => {
+          if (res instanceof TypeError) return this.props.onError(res) // Network errors
+          else {
+            return res.json()
+              .then(({ error }) => {
+                if (error.message.includes('overlap')) {
+                  const [, title, start, end] = error.message.match(RoomPanel.overlapRegex)
+                  const startdate = new Date(start)
+                  const enddate = new Date(end)
+
+                  this.props.onError({
+                    message: `Your meeting overlaps [${title}] which is in session from ${startdate.toLocaleString('en-US', {
+                      dateStyle: 'short',
+                      timeStyle: 'short'
+                    })} to ${enddate.toLocaleTimeString('en-US', {
+                      timeStyle: 'short'
+                    })}`
+                  })
+                } else if (error.message.includes('longer')) {
+                  const [, max] = error.message.match(RoomPanel.lengthRegex)
+
+                  this.props.onError({
+                    message: `Meeting cannot be longer than ${max}. Use an account for an increased limit`
+                  })
+                } else return this.props.onError(error)
+              })
+          }
         })
-          .then(postFetch)
-          .then(this._postReserve)
-          .catch(this.props.onError)
-      }
     } else {
       this.props.onError({
         message: 'This panel is not logged in and cannot properly reserve a meeting. Please contact a building administrator'

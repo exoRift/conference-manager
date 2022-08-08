@@ -23,6 +23,8 @@ module.exports = function (req, res, next) {
             throw req.errors.database
           })
           .then(([found]) => {
+            if (!found) found = req.meetingCore.timeouts.find((m) => m.data.id === req.params.id && m.limited)?.data
+
             const args = {
               ...found,
               ...req.args
@@ -31,7 +33,7 @@ module.exports = function (req, res, next) {
             // Title validation
             return req.db('meetings')
               .select('id')
-              .where('title', args.title)
+              .where('title', args.title || '')
               .whereNot('id', exclude || '')
               .catch((err) => {
                 console.error('db', err)
@@ -46,7 +48,7 @@ module.exports = function (req, res, next) {
 
                   throw err
                 } else {
-                  const end = new Date(new Date(args.startdate).getTime() + args.length)
+                  const end = new Date(args.startdate.getTime() + args.length)
 
                   // Time validation
                   if ('startdate' in req.args && req.method !== 'POST' && args.startdate < Date.now()) {
@@ -62,7 +64,7 @@ module.exports = function (req, res, next) {
                     const maxLength = req.auth.limited ? 7200000 /* 2 hours */ : 14400000 /* 4 hours */
 
                     if (args.length > maxLength) {
-                      const err = Error(`meeting longer than ${req.auth.limited ? '2 hours. use an account to increase limit' : '4 hours'}`)
+                      const err = Error(`meeting longer than ${req.auth.limited ? '{2 hours}. use an account to increase limit' : '{4 hours}'}`)
                       err.code = 400
                       err.type = 'argument'
 
@@ -98,10 +100,10 @@ module.exports = function (req, res, next) {
                       if (!overlap) overlap = req.meetingCore.findConflict(args.startdate, args.length, args.room, exclude)?.data
 
                       if (overlap) {
-                        const enddate = new Date(overlap.startdate.getTime() + overlap.epochlength)
+                        const overlapEnd = new Date(overlap.startdate.getTime() + (overlap.epochlength || overlap.length))
 
                         const err = new Error(
-                          `meeting overlaps existing meeting: {${overlap.title}} which is in session from {${overlap.startdate}} to {${enddate}}`
+                          `meeting overlaps existing meeting: {${overlap.title}} which is in session from {${overlap.startdate}} to {${overlapEnd}}`
                         )
                         err.code = 409
                         err.type = 'argument'

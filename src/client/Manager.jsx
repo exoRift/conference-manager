@@ -9,6 +9,7 @@ import './styles/Manager.css'
 
 class Manager extends React.Component {
   static overlapRegex = /{(.+)}.*{(.+)}.*{(.+)}/
+  static lengthRegex = /{(.+)}/
 
   constructor (props) {
     super(props)
@@ -136,29 +137,35 @@ class Manager extends React.Component {
           else {
             return res.json()
               .then(({ error }) => {
-                if (res.status === 409) {
-                  if (error.message === 'title taken') {
-                    this.setState({
-                      invalid: {
-                        title: 'Title taken by another meeting'
-                      }
-                    })
-                  } else if (error.message.includes('overlap')) {
-                    const [, title, start, end] = error.message.match(Manager.overlapRegex)
-                    const startdate = new Date(start)
-                    const enddate = new Date(end)
+                if (error.message === 'title taken') {
+                  this.setState({
+                    invalid: {
+                      title: 'Title taken by another meeting'
+                    }
+                  })
+                } else if (error.message.includes('overlap')) {
+                  const [, title, start, end] = error.message.match(Manager.overlapRegex)
+                  const startdate = new Date(start)
+                  const enddate = new Date(end)
 
-                    this.setState({
-                      invalid: {
-                        date: `Your meeting overlaps [${title}] which is in session from ${startdate.toLocaleString('en-US', {
-                          dateStyle: 'short',
-                          timeStyle: 'short'
-                        })} to ${enddate.toLocaleTimeString('en-US', {
-                          timeStyle: 'short'
-                        })}`
-                      }
-                    })
-                  } else return this.props.onError(error)
+                  this.setState({
+                    invalid: {
+                      date: `Your meeting overlaps [${title}] which is in session from ${startdate.toLocaleString('en-US', {
+                        dateStyle: 'short',
+                        timeStyle: 'short'
+                      })} to ${enddate.toLocaleTimeString('en-US', {
+                        timeStyle: 'short'
+                      })}`
+                    }
+                  })
+                } else if (error.message.includes('longer')) {
+                  const [, max] = error.message.match(Manager.lengthRegex)
+
+                  this.setState({
+                    invalid: {
+                      date: 'Meeting cannot be longer than ' + max
+                    }
+                  })
                 } else return this.props.onError(error)
               })
           }

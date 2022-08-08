@@ -31,6 +31,7 @@ class Account extends React.Component {
         <UserBox
           id='self'
           header='My Account'
+          hide={['admin']}
           locked={['tenant']}
           onSuccess={(token) => localStorage.setItem('auth', token)}
           onError={this.props.onError}

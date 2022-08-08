@@ -34,11 +34,6 @@ module.exports = {
       const entry = req.meetingCore.timeouts.find((m) => m.data.id === req.params.id && m.limited)
 
       if (entry) {
-        req.args = {
-          ...entry.data,
-          ...req.args
-        }
-
         return req.util.meeting.validate(req.params.id)
           .then(() => {
             entry.update(req.args)
