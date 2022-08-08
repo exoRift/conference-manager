@@ -2,6 +2,7 @@
   display: flex;
   justify-content: center;
   align-items: stretch;
+  padding: 10% 0;
 }
 
 .app-container.home .content {
@@ -18,6 +19,10 @@
 .app-container.home .content h2 {
   color: white;
   font-weight: 900;
+}
+
+.app-container.home .content h4 {
+  font-weight: bold;
 }
 
 .app-container.home #pages {
