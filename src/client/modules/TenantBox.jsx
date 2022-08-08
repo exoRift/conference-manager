@@ -11,7 +11,7 @@ class Tenant extends React.Component {
   }
 
   static maxLengths = {
-    name: 20,
+    name: 50,
     suite: 4
   }
 
