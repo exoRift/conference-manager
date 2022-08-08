@@ -18,7 +18,7 @@
   flex-flow: column;
   flex: 1;
   justify-content: space-evenly;
-  padding-top: 2%;
+  padding-top: 1%;
 }
 
 .app-container.schedule .content .room-id-label {
@@ -38,7 +38,7 @@
 
 .app-container.schedule .content .meeting-list-container {
   display: flex;
-  min-height: 22rem;
+  min-height: 15rem;
   max-height: 25rem;
   padding: 2% 0;
   background: rgba(50, 50, 50, 0.4);
