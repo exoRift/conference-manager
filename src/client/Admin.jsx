@@ -11,6 +11,14 @@ import MeetingStrip from './modules/MeetingStrip.jsx'
 import './styles/Admin.css'
 
 class Admin extends React.Component {
+  static initialUser = {
+    firstname: '',
+    lastname: '',
+    email: '',
+    tenant: '',
+    pass: ''
+  }
+
   state = {
     page: 'users',
     users: [],
@@ -21,6 +29,7 @@ class Admin extends React.Component {
     deletingTenant: null,
     addingUser: null,
     addingTenant: null,
+    invalid: {},
     deflect: false,
     refreshed: false,
     locked: false
@@ -66,7 +75,7 @@ class Admin extends React.Component {
         dom: (
           <div className='management-container user'>
             <div className='add-container'>
-              <button className='btn btn-success' onClick={() => this.setState({ addingUser: {} })}>+ Add User</button>
+              <button className='btn btn-success' onClick={() => this.setState({ addingUser: Admin.initialUser })}>+ Add User</button>
             </div>
 
             <div className='user-list-container'>
@@ -178,6 +187,7 @@ class Admin extends React.Component {
                       header='New User'
                       blank={true}
                       hide={['pass']}
+                      invalid={this.state.invalid}
                       onChange={(user) => this.setState({ addingUser: user })}
                       onSubmit={this.createUser}
                       onError={this.props.onError}
@@ -192,8 +202,8 @@ class Admin extends React.Component {
 
                 <div className='modal-footer'>
                   <button className='btn btn-success' onClick={this.state.addingUser
-                    ? this.createUser.bind(this)
-                    : this.createTenant.bind(this)} disabled={this.state.locked}>Create</button>
+                    ? this.createUser
+                    : this.createTenant} disabled={this.state.locked}>Create</button>
 
                   <button className='btn btn-secondary' onClick={() => this.setState({ addingUser: null, addingTenant: null })}>Cancel</button>
                 </div>
@@ -320,7 +330,7 @@ class Admin extends React.Component {
   }
 
   createUser () {
-    const filled = Object.values(this.state.data).reduce((a, v) => a && v && v.length, true)
+    const filled = Object.entries(this.state.addingUser).every(([k, v]) => (v && v.length) || k === 'tenant')
 
     this.setState({
       locked: true
@@ -351,11 +361,11 @@ class Admin extends React.Component {
             ]
           })
         })
-        .catch(this.createRef.current.validate)
+        .catch(this.creatingRef.current.validate)
         .finally(() => this.setState({ locked: false }))
     } else {
       const invalid = {}
-      for (const [key, value] of Object.entries(this.state.data)) {
+      for (const [key, value] of Object.entries(this.state.addingUser)) {
         invalid[key] = value.length || key === 'tenant' ? null : 'Required field'
       }
 
