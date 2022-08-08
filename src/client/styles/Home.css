@@ -2,7 +2,6 @@
   display: flex;
   justify-content: center;
   align-items: stretch;
-  padding: 10%;
 }
 
 .app-container.home .content {

@@ -127,7 +127,7 @@ class Tenant extends React.Component {
         lockSave: true
       })
 
-      fetch('/api/tenant/' + this.props.id, {
+      return fetch('/api/tenant/' + (this.props.id || this.state.tenant.id), {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
