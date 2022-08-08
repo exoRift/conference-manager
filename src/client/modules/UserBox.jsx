@@ -17,6 +17,9 @@ class UserBox extends React.Component {
     tenant: 20
   }
 
+  static lengthRegex = /.*{(.+)}.*{(.+)}.*/
+  static singleRegex = /.*{(.+)}.*/
+
   constructor (props) {
     super(props)
 
@@ -30,6 +33,7 @@ class UserBox extends React.Component {
       lockSave: false
     }
 
+    this.validate = this.validate.bind(this)
     this.submit = this.submit.bind(this)
   }
 
@@ -62,7 +66,7 @@ class UserBox extends React.Component {
 
   render () {
     return (
-      <form className='userbox' onSubmit={this.props.onSubmit || this.submit}>
+      <form className='userbox' onSubmit={(e) => this.props.onSubmit?.(e, this.validate) || this.submit(e)}>
         {this.props.header
           ? <span className='header'>{this.props.header}</span>
           : null}
@@ -231,6 +235,56 @@ class UserBox extends React.Component {
     })
   }
 
+  validate (res) {
+    if (res instanceof TypeError) return this.props.onError(res) // Network errors
+    else {
+      return res.json()
+        .then(({ error }) => {
+          if (error.message.includes('email taken')) {
+            const [
+              ,
+              name
+            ] = error.message.match(UserBox.singleRegex)
+
+            return this.setState({
+              invalid: {
+                email: 'That email is in use by ' + name
+              }
+            })
+          } else if (error.message === 'invalid email') {
+            return this.setState({
+              invalid: {
+                email: 'Invalid email'
+              }
+            })
+          } else if (error.message.includes('pass shorter than')) {
+            const [
+              ,
+              length
+            ] = error.message.match(UserBox.singleRegex)
+
+            return this.setState({
+              invalid: {
+                pass: `Password must be at least ${length} characters`
+              }
+            })
+          } else if (error.message.includes('too long')) {
+            const [
+              ,
+              arg,
+              limit
+            ] = error.message.match(UserBox.lengthRegex)
+
+            return this.setState({
+              invalid: {
+                [arg]: `Too long. Limit: ${limit} characters${arg.endsWith('name') ? ' each' : ''}`
+              }
+            })
+          } else return this.props.onError(error)
+        })
+    }
+  }
+
   submit (event) {
     event.preventDefault()
 
@@ -260,34 +314,7 @@ class UserBox extends React.Component {
 
           return this.props.onSuccess?.(token)
         })
-        .catch((res) => res.json()
-          .then(({ error }) => {
-            if (res.status === 409) {
-              return this.setState({
-                invalid: {
-                  email: error.message[0].toUpperCase() + error.message.slice(1)
-                }
-              })
-            } else if (error.message === 'invalid email') {
-              return this.setState({
-                invalid: {
-                  email: 'Invalid email'
-                }
-              })
-            } else if (error.message.includes('too long')) {
-              const [
-                ,
-                arg,
-                limit
-              ] = error.message.match(/.*{(.+)}.*{(.+)}.*/)
-
-              return this.setState({
-                invalid: {
-                  [arg]: `Too long. Limit: ${limit} characters${arg.endsWith('name') ? ' each' : ''}`
-                }
-              })
-            } else return this.props.onError(error)
-          }))
+        .catch(this.validate)
         .finally(() => this.setState({ lockSave: false }))
     } else {
       this.setState({

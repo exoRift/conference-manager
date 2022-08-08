@@ -8,9 +8,6 @@ import postFetch from './util/postFetch.js'
 import './styles/Manager.css'
 
 class Manager extends React.Component {
-  static overlapRegex = /{(.+)}.*{(.+)}.*{(.+)}/
-  static lengthRegex = /{(.+)}/
-
   constructor (props) {
     super(props)
 
@@ -66,7 +63,7 @@ class Manager extends React.Component {
                 </div>
 
                 <div className='modal-body'>
-                  <MeetingEditor blank={true} onChange={this.onChange} invalid={this.state.invalid}/>
+                  <MeetingEditor blank={true} onChange={this.onChange} onSubmit={this.submit} invalid={this.state.invalid}/>
                 </div>
 
                 <div className='modal-footer'>
@@ -111,7 +108,7 @@ class Manager extends React.Component {
     })
   }
 
-  submit (e) {
+  submit (e, validate) {
     e.preventDefault()
 
     this.setState({
@@ -132,44 +129,7 @@ class Manager extends React.Component {
           this.toggleCreate()
           this.updateMeetings()
         })
-        .catch((res) => {
-          if (res instanceof TypeError) return this.props.onError(res) // Network errors
-          else {
-            return res.json()
-              .then(({ error }) => {
-                if (error.message === 'title taken') {
-                  this.setState({
-                    invalid: {
-                      title: 'Title taken by another meeting'
-                    }
-                  })
-                } else if (error.message.includes('overlap')) {
-                  const [, title, start, end] = error.message.match(Manager.overlapRegex)
-                  const startdate = new Date(start)
-                  const enddate = new Date(end)
-
-                  this.setState({
-                    invalid: {
-                      date: `Your meeting overlaps [${title}] which is in session from ${startdate.toLocaleString('en-US', {
-                        dateStyle: 'short',
-                        timeStyle: 'short'
-                      })} to ${enddate.toLocaleTimeString('en-US', {
-                        timeStyle: 'short'
-                      })}`
-                    }
-                  })
-                } else if (error.message.includes('longer')) {
-                  const [, max] = error.message.match(Manager.lengthRegex)
-
-                  this.setState({
-                    invalid: {
-                      date: 'Meeting cannot be longer than ' + max
-                    }
-                  })
-                } else return this.props.onError(error)
-              })
-          }
-        })
+        .catch(validate)
         .finally(() => this.setState({ locked: false }))
     } else {
       this.setState({

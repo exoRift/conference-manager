@@ -1,4 +1,4 @@
-.meeting-card.editing {
+.meeting-card.editing:has(.btn.submit) {
   padding-bottom: 1%;
 }
 

@@ -42,7 +42,10 @@ class MeetingEditor extends React.Component {
       this.state.alter.room = 1
     }
 
+    this.validate = this.validate.bind(this)
     this.submit = this.submit.bind(this)
+
+    this.onSubmit = this.props.onSubmit || this.submit
   }
 
   componentDidMount () {
@@ -70,7 +73,7 @@ class MeetingEditor extends React.Component {
     const end = new Date(start.getTime() + (this.state.alter.length || this.state.data.length))
 
     return (
-      <form className='meeting-card editing' onSubmit={this.props.onSubmit || this.submit}>
+      <form className='meeting-card editing' onSubmit={(e) => this.props.onSubmit?.(e, this.validate) || this.submit(e)}>
         <div className='form-group header'>
           <input
             className={`form-control title${this.state.invalid.title || this.props.invalid.title
@@ -205,6 +208,45 @@ class MeetingEditor extends React.Component {
     })
   }
 
+  validate (res) {
+    if (res instanceof TypeError) return this.props.onError(res) // Network errors
+    else {
+      return res.json()
+        .then(({ error }) => {
+          if (error.message === 'title taken') {
+            this.setState({
+              invalid: {
+                title: 'Title taken by another meeting'
+              }
+            })
+          } else if (error.message.includes('overlap')) {
+            const [, title, start, end] = error.message.match(MeetingEditor.overlapRegex)
+            const startdate = new Date(start)
+            const enddate = new Date(end)
+
+            this.setState({
+              invalid: {
+                date: `Your meeting overlaps [${title}] which is in session from ${startdate.toLocaleString('en-US', {
+                  dateStyle: 'short',
+                  timeStyle: 'short'
+                })} to ${enddate.toLocaleTimeString('en-US', {
+                  timeStyle: 'short'
+                })}`
+              }
+            })
+          } else if (error.message.includes('longer')) {
+            const [, max] = error.message.match(MeetingEditor.lengthRegex)
+
+            this.setState({
+              invalid: {
+                date: 'Meeting cannot be longer than ' + max
+              }
+            })
+          } else return this.props.onError(error)
+        })
+    }
+  }
+
   submit () {
     return fetch('/api/meeting/' + this.state.data.id, {
       method: 'PATCH',
@@ -219,44 +261,7 @@ class MeetingEditor extends React.Component {
         ...this.state.data,
         ...this.state.alter
       }))
-      .catch((res) => {
-        if (res instanceof TypeError) return this.props.onError(res) // Network errors
-        else {
-          return res.json()
-            .then(({ error }) => {
-              if (error.message === 'title taken') {
-                this.setState({
-                  invalid: {
-                    title: 'Title taken by another meeting'
-                  }
-                })
-              } else if (error.message.includes('overlap')) {
-                const [, title, start, end] = error.message.match(MeetingEditor.overlapRegex)
-                const startdate = new Date(start)
-                const enddate = new Date(end)
-
-                this.setState({
-                  invalid: {
-                    date: `Your meeting overlaps [${title}] which is in session from ${startdate.toLocaleString('en-US', {
-                      dateStyle: 'short',
-                      timeStyle: 'short'
-                    })} to ${enddate.toLocaleTimeString('en-US', {
-                      timeStyle: 'short'
-                    })}`
-                  }
-                })
-              } else if (error.message.includes('longer')) {
-                const [, max] = error.message.match(MeetingEditor.lengthRegex)
-
-                this.setState({
-                  invalid: {
-                    date: 'Meeting cannot be longer than ' + max
-                  }
-                })
-              } else return this.props.onError(error)
-            })
-        }
-      })
+      .catch(this.validate)
   }
 
   dateToDate (date) {

@@ -70,13 +70,7 @@ button.create:hover {
 }
 
 @media (max-height: 600px) {
-  .app-container.manager .modal-dialogue .meeting-card .content {
-    padding-top: 3%;
-    flex-flow: row;
-  }
-
-  .app-container.manager .modal-dialogue .meeting-card .footer {
-    position: relative;
-    padding-top: 2%;
+  .app-container.manager .modal {
+    overflow: auto;
   }
 }

@@ -26,6 +26,8 @@ class Admin extends React.Component {
     locked: false
   }
 
+  creatingRef = React.createRef()
+
   constructor (props) {
     super(props)
 
@@ -33,6 +35,8 @@ class Admin extends React.Component {
     this.updateUsers = this.updateUsers.bind(this)
     this.updateTenants = this.updateTenants.bind(this)
     this.updateMeetings = this.updateMeetings.bind(this)
+    this.createUser = this.createUser.bind(this)
+    this.createTenant = this.createTenant.bind(this)
   }
 
   componentDidMount () {
@@ -175,11 +179,14 @@ class Admin extends React.Component {
                       blank={true}
                       hide={['pass']}
                       onChange={(user) => this.setState({ addingUser: user })}
-                      onError={this.props.onError}/>
+                      onSubmit={this.createUser}
+                      onError={this.props.onError}
+                      ref={this.creatingRef}/>
                     : <TenantBox
                       header='New Tenant'
                       blank={true}
                       onChange={(tenant) => this.setState({ addingTenant: tenant })}
+                      onSubmit={this.createTenant}
                       onError={this.props.onError}/>}
                 </div>
 
@@ -313,36 +320,50 @@ class Admin extends React.Component {
   }
 
   createUser () {
+    const filled = Object.values(this.state.data).reduce((a, v) => a && v && v.length, true)
+
     this.setState({
       locked: true
     })
 
-    return fetch('/api/user', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: localStorage.auth
-      },
-      body: JSON.stringify(this.state.addingUser)
-    })
-      .then(postFetch)
-      .then((id) => id.status === 200 ? id.text() : id.json())
-      .then((res) => {
-        const user = {
-          id: typeof res === 'string' ? res : res.id,
-          ...this.state.addingUser
-        }
-
-        this.setState({
-          addingUser: null,
-          users: [
-            ...this.state.users,
-            user
-          ]
-        })
+    if (filled) {
+      return fetch('/api/user', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: localStorage.auth
+        },
+        body: JSON.stringify(this.state.addingUser)
       })
-      .catch(this.props.onError)
-      .finally(() => this.setState({ locked: false }))
+        .then(postFetch)
+        .then((id) => id.status === 200 ? id.text() : id.json())
+        .then((res) => {
+          const user = {
+            id: typeof res === 'string' ? res : res.id,
+            ...this.state.addingUser
+          }
+
+          this.setState({
+            addingUser: null,
+            users: [
+              ...this.state.users,
+              user
+            ]
+          })
+        })
+        .catch(this.createRef.current.validate)
+        .finally(() => this.setState({ locked: false }))
+    } else {
+      const invalid = {}
+      for (const [key, value] of Object.entries(this.state.data)) {
+        invalid[key] = value.length || key === 'tenant' ? null : 'Required field'
+      }
+
+      this.setState({
+        invalid,
+        locked: false
+      })
+    }
   }
 
   createTenant () {
