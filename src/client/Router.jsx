@@ -42,8 +42,8 @@ class Routes extends React.Component {
           {this.hideUI
             ? null
             : (
-                <Link to='/' className='material-symbols-outlined home-button'>
-                  home
+                <Link to='/' className='home-button'>
+                  Return Home
                 </Link>
               )}
 
