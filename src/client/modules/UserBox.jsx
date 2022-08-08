@@ -186,21 +186,13 @@ class UserBox extends React.Component {
             <div className='form-group'>
               <label htmlFor={'adminUBInput'}>Admin</label>
 
-              <input className={`form-control${this.state.success || this.props.success
-                  ? ' is-valid'
-                  : ''}${this.state.invalid.pass || this.props.invalid.pass
-                    ? ' is-invalid'
-                    : ''}`}
+              <input className='form-control'
                 type='checkbox'
                 id='adminUBInput'
                 disabled={!this.state.editing || this.props.locked?.includes('admin')}
                 checked={this.state.alter.admin !== undefined ? this.state.alter.admin : this.state.user.admin || false}
                 onChange={this.onChange.bind(this, 'admin')}
               />
-
-              {this.state.invalid.pass || this.props.invalid.pass
-                ? <div className='invalid-feedback'>{this.state.invalid.pass || this.props.invalid.pass}</div>
-                : null}
             </div>
             )}
 
