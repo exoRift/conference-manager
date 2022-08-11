@@ -149,7 +149,7 @@ class UserBox extends React.Component {
             onChange={this.onChange.bind(this, 'tenant')}
           >
             <option value='none'>NONE</option>
-            {this.state.tenants.map((t) => <option value={t.id} key={t.id}>{t.name}</option>)}
+            {this.state.tenants.map((t) => <option value={t.id} key={t.id}>{t.name} | Suite: {t.suite}</option>)}
           </select>
 
           {this.state.invalid.tenant || this.props.invalid.tenant
