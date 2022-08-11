@@ -3,6 +3,7 @@
   flex-direction: column;
   height: 100vh;
   text-align: center;
+  font-family: 'Times New Roman', Times, serif;
 }
 
 .app-container.directory h1 {
@@ -29,9 +30,24 @@
   grid-column: span 2;
 }
 
+/* Dealing with 3 orphan items */
+.tenant-list > *:nth-last-child(3):nth-child(4n + 1) {
+  grid-column-end: 4;
+}
+
+/* Dealing with 2 orphan items */
+.tenant-list > *:nth-last-child(2):nth-child(4n + 1) {
+  grid-column-end: 5;
+}
+
+/* Dealing with a single orphan */
+.tenant-list > *:last-child:nth-child(4n - 3) {
+  grid-column-end: 6;
+}
+
 .tenant-card {
-  width: 100%;
-  height: 100%;
+  display: flex;
+  flex-direction: column;
   padding: 0.5%;
   background: rgba(250, 250, 250, 0.8);
   border-radius: 10px;
@@ -52,50 +68,31 @@
   font-weight: normal;
   font-style: italic;
 }
-.tenant-card .header .material-symbols-outlined {
+.tenant-card .header .level {
   position: absolute;
   right: 6%;
-  color: var(--info);
   letter-spacing: -0.2em;
   font-size: 150%;
 }
+.tenant-card .header .level[level='up'] {
+  color: var(--info);
+}
+.tenant-card .header .level[level='up']::before {
+  content: 'arrow_upward';
+}
+.tenant-card .header .level[level='down'] {
+  color: var(--danger);
+}
+.tenant-card .header .level[level='down']::before {
+  content: 'arrow_downward';
+}
 
 .tenant-card .body {
-  padding: 5% 0;
-  text-align: center;
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2% 0;
   font-size: var(--card-font-size);
   text-transform: uppercase;
-}
-
-@media (min-width: 1001px) {
-  /* Dealing with 3 orphan items */
-  .tenant-list > *:nth-last-child(3):nth-child(4n + 1) {
-    grid-column-end: 4;
-  }
-
-  /* Dealing with 2 orphan items */
-  .tenant-list > *:nth-last-child(2):nth-child(4n + 1) {
-    grid-column-end: 5;
-  }
-
-  /* Dealing with a single orphan */
-  .tenant-list > *:last-child:nth-child(4n - 3) {
-    grid-column-end: 6;
-  }
-}
-
-@media (max-width: 1000px) {
-  .tenant-list {
-    grid-template-columns: repeat(6, 1fr);
-  }
-
-  /* Dealing with 2 orphan items */
-  .tenant-list > *:nth-last-child(2):nth-child(3n + 1) {
-    grid-column-end: 4;
-  }
-
-  /* Dealing with a single orphan */
-  .tenant-list > *:last-child:nth-child(3n - 2) {
-    grid-column-end: 5;
-  }
 }
