@@ -38,20 +38,6 @@ class Account extends React.Component {
           onInfo={this.onInfo}
           >
             <div className='nav-container'>
-              <Link to='/admin' className='admin-container'>
-                {this.state.user.admin
-                  ? (
-                    <>
-                      <span className='material-symbols-outlined'>
-                        security
-                      </span>
-
-                      <strong>Admin Panel</strong>
-                    </>
-                    )
-                  : null}
-              </Link>
-
               <div className='logout-container' onClick={this.logout}>
                 <span className='material-symbols-outlined'>
                   logout
@@ -59,6 +45,18 @@ class Account extends React.Component {
 
                 <strong>Logout</strong>
               </div>
+
+              {this.state.user.admin
+                ? (
+                  <Link to='/admin' className='admin-container'>
+                    <span className='material-symbols-outlined'>
+                      security
+                    </span>
+
+                    <strong>Admin Panel</strong>
+                  </Link>
+                  )
+                : null}
             </div>
         </UserBox>
 
