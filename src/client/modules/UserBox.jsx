@@ -308,7 +308,7 @@ class UserBox extends React.Component {
         })
         .catch(this.validate)
         .finally(() => this.setState({ lockSave: false }))
-    } else {
+    } else if (!this.props.blank) {
       this.setState({
         editing: false
       })
