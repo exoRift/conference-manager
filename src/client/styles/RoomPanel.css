@@ -7,7 +7,7 @@
 
 .app-container.room-panel {
   display: flex;
-  flex-flow: column;
+  flex-direction: column;
   overflow: hidden;
   padding: 0;
 }

@@ -1,6 +1,6 @@
 .app-container.schedule {
   display: flex;
-  flex-flow: column;
+  flex-direction: column;
   justify-content: stretch;
   padding-top: 2%;
 }
@@ -15,7 +15,7 @@
 
 .app-container.schedule .content {
   display: flex;
-  flex-flow: column;
+  flex-direction: column;
   flex: 1;
   justify-content: space-evenly;
   padding-top: 1%;

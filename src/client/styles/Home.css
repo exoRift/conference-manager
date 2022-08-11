@@ -2,11 +2,12 @@
   display: flex;
   justify-content: center;
   align-items: stretch;
+  padding: 10% 0;
 }
 
 .app-container.home .content {
   display: flex;
-  flex-flow: column;
+  flex-direction: column;
   justify-content: center;
   padding: 0.5%;
   text-align: center;
@@ -20,6 +21,10 @@
   font-weight: 900;
 }
 
+.app-container.home .content h4 {
+  font-weight: bold;
+}
+
 .app-container.home #pages {
   display: flex;
   flex-wrap: wrap;
@@ -30,7 +35,7 @@
 .app-container.home #pages a {
   transition: 0.1s;
   display: flex;
-  flex-flow: column;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   width: 16vw;

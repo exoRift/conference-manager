@@ -53,7 +53,7 @@ class Home extends React.Component {
     return (
       <div className='app-container home' style={{ backgroundImage: `url(${background})` }}>
         <div className='content'>
-          {this.state.user ? <h2>Welcome back, {this.state.user.firstname}</h2> : null}
+          {'auth' in localStorage ? <h2>Welcome back, {this.state.user.firstname}</h2> : null}
 
           <div id='pages'>
             <Link to='/manager' disabled={!('auth' in localStorage)}>
@@ -102,7 +102,7 @@ class Home extends React.Component {
 
               {this.state.user.admin
                 ? (
-                  <Link to='/login'>
+                  <Link to='/admin'>
                     <span className='material-symbols-outlined'>
                       security
                     </span>
@@ -112,6 +112,8 @@ class Home extends React.Component {
                   )
                 : null}
           </div>
+
+          {!('auth' in localStorage) ? <h4>Tenants without accounts should contact a building administrator to have an account created</h4> : null}
         </div>
       </div>
     )
