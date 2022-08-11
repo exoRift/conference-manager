@@ -102,7 +102,7 @@ class Home extends React.Component {
 
               {this.state.user.admin
                 ? (
-                  <Link to='/login'>
+                  <Link to='/admin'>
                     <span className='material-symbols-outlined'>
                       security
                     </span>

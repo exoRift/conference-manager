@@ -6,9 +6,15 @@ import entrance from '../assets/images/entrance.jpg'
 import './styles/Directory.css'
 
 class Directory extends React.Component {
+  static startingFontSize = 300
+
   state = {
     tenants: []
   }
+
+  list = React.createRef()
+
+  calibrated = false
 
   constructor (props) {
     super(props)
@@ -22,8 +28,22 @@ class Directory extends React.Component {
     this.updateInterval = setInterval(this.update, 600000 /* 10 minutes */)
   }
 
+  componentDidUpdate () {
+    const calibrateInterval = setInterval(() => {
+      if (document.readyState === 'complete') {
+        clearInterval(calibrateInterval)
+
+        for (let s = Directory.startingFontSize; s > 0; s--) {
+          this.list.current.style.setProperty('--card-font-size', s + '%')
+
+          if (this.list.current.scrollHeight <= this.list.current.clientHeight) break
+        }
+      }
+    }, 200)
+  }
+
   componentWillUnmount () {
-    this.updateInterval = clearInterval(this.updateInterval)
+    clearInterval(this.updateInterval)
   }
 
   render () {
@@ -31,7 +51,7 @@ class Directory extends React.Component {
       <div className='app-container directory' style={{ backgroundImage: `url(${entrance})` }}>
         <h1>Directory</h1>
 
-        <div className='tenant-list'>
+        <div className='tenant-list' ref={this.list}>
           {this.state.tenants.map((t, i) => (
             <div className='tenant-card' key={i}>
               <div className='header'>
