@@ -49,7 +49,7 @@ class Directory extends React.Component {
   render () {
     return (
       <div className='app-container directory' style={{ backgroundImage: `url(${entrance})` }}>
-        <h1>Directory</h1>
+        <h1>525 Chestnut St. Directory</h1>
 
         <div className='tenant-list' ref={this.list}>
           {this.state.tenants.map((t, i) => (
@@ -57,8 +57,7 @@ class Directory extends React.Component {
               <div className='header'>
                 <span className='suite'>{t.suite}</span>
 
-                <span className='material-symbols-outlined'>
-                  {Number(t.suite.slice(0, 3)) > 103 ? 'arrow_upward' : 'arrow_downward'}
+                <span className='material-symbols-outlined level' level={Number(t.suite.slice(0, 3)) > 103 ? 'up' : 'down'}>
                   stairs
                 </span>
               </div>
