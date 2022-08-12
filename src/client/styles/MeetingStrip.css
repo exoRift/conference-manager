@@ -19,10 +19,10 @@
 
 .meeting-strip .btn:not(.submit, .room-button) {
   transition: 0.2s;
-  aspect-ratio: 1 / 1;
   margin: 0.5vw;
   padding: 0.2vw;
   font-size: 2rem;
+  line-height: 1;
   border-radius: 10px;
 }
 .meeting-strip .btn:not(.submit, .room-button):hover {

@@ -8,15 +8,17 @@ import postFetch from './util/postFetch.js'
 import './styles/Manager.css'
 
 class Manager extends React.Component {
+  state = {
+    meetings: [],
+    creating: null,
+    invalid: {},
+    locked: false
+  }
+
+  creatingRef = React.createRef()
+
   constructor (props) {
     super(props)
-
-    this.state = {
-      meetings: [],
-      creating: null,
-      invalid: {},
-      locked: false
-    }
 
     this.updateMeetings = this.updateMeetings.bind(this)
     this.toggleCreate = this.toggleCreate.bind(this)
@@ -63,7 +65,7 @@ class Manager extends React.Component {
                 </div>
 
                 <div className='modal-body'>
-                  <MeetingEditor blank={true} onChange={this.onChange} onSubmit={this.submit} invalid={this.state.invalid}/>
+                  <MeetingEditor ref={this.creatingRef} blank={true} onChange={this.onChange} onSubmit={this.submit} invalid={this.state.invalid}/>
                 </div>
 
                 <div className='modal-footer'>
@@ -108,7 +110,7 @@ class Manager extends React.Component {
     })
   }
 
-  submit (e, validate) {
+  submit (e) {
     e.preventDefault()
 
     this.setState({
@@ -129,7 +131,7 @@ class Manager extends React.Component {
           this.toggleCreate()
           this.updateMeetings()
         })
-        .catch(validate)
+        .catch(this.creatingRef.current.validate)
         .finally(() => this.setState({ locked: false }))
     } else {
       this.setState({

@@ -247,7 +247,9 @@ class MeetingEditor extends React.Component {
     }
   }
 
-  submit () {
+  submit (e) {
+    e.preventDefault()
+
     return fetch('/api/meeting/' + this.state.data.id, {
       method: 'PATCH',
       headers: {
