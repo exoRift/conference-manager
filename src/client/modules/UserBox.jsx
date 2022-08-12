@@ -277,8 +277,8 @@ class UserBox extends React.Component {
     }
   }
 
-  submit (event) {
-    event.preventDefault()
+  submit (e) {
+    e.preventDefault()
 
     if (Object.keys(this.state.alter).length) {
       this.setState({
