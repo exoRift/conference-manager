@@ -149,7 +149,7 @@ class UserBox extends React.Component {
             onChange={this.onChange.bind(this, 'tenant')}
           >
             <option value='none'>NONE</option>
-            {this.state.tenants.map((t) => <option value={t.id} key={t.id}>{t.name}</option>)}
+            {this.state.tenants.map((t) => <option value={t.id} key={t.id}>{t.name} | Suite: {t.suite}</option>)}
           </select>
 
           {this.state.invalid.tenant || this.props.invalid.tenant
@@ -308,7 +308,7 @@ class UserBox extends React.Component {
         })
         .catch(this.validate)
         .finally(() => this.setState({ lockSave: false }))
-    } else {
+    } else if (!this.props.blank) {
       this.setState({
         editing: false
       })

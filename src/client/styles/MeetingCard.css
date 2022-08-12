@@ -1,6 +1,6 @@
 .meeting-card {
   display: flex;
-  flex-flow: column;
+  flex-direction: column;
   background: rgba(200, 200, 200, 0.8);
   backdrop-filter: blur(8px);
   border-radius: 10px;

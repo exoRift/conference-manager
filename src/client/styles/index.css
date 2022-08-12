@@ -2,13 +2,13 @@
 
 #root {
   display: flex;
-  flex-flow: column;
+  flex-direction: column;
   min-height: 100vh;
 }
 
 #app {
   display: flex;
-  flex-flow: column;
+  flex-direction: column;
   flex: 1 1 auto;
   overflow: overlay;
 }

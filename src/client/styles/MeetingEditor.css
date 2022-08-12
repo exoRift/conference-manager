@@ -50,7 +50,7 @@
   border-radius: 0 0 10px 10px;
 }
 .meeting-card.editing .room-container::before {
-  content: 'Room:';
+  content: 'Conference Room:';
   margin: 0 1rem 2rem;
   font-size: 2rem;
   vertical-align: middle;

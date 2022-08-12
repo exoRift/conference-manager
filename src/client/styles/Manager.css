@@ -6,7 +6,7 @@
 
 .app-container.manager > .content {
   display: flex;
-  flex-flow: column;
+  flex-direction: column;
   justify-content: space-between;
   align-items: center;
   width: 80%;

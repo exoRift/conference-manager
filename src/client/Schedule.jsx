@@ -33,7 +33,7 @@ class Schedule extends React.Component {
   }
 
   componentWillUnmount () {
-    this.updateInterval = clearInterval(this.updateInterval)
+    clearInterval(this.updateInterval)
   }
 
   render () {
