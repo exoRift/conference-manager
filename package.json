@@ -1,6 +1,6 @@
 {
   "name": "conference-manager",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "A website and server to schedule, view, and manage conference room bookings for the 525 Chestnut St. office building",
   "scripts": {
     "dev": "concurrently 'dotenv -v NODE_ENV='development' -v PORT='5000' -e .env npm run server-dev' 'dotenv -e .env npm run static'",
@@ -43,7 +43,6 @@
   ],
   "dependencies": {
     "@polka/send-type": "^0.5.2",
-    "@uiw/react-md-editor": "^3.4.14",
     "bcrypt": "^5.0.1",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
@@ -59,9 +58,7 @@
     "polka": "^0.5.2",
     "query-string": "^7.0.0",
     "react": "^17.0.2",
-    "react-autocomplete-input": "^1.0.17",
     "react-dom": "^17.0.2",
-    "react-markdown": "^5.0.3",
     "react-moment": "^1.1.1",
     "react-router-dom": "^5.2.0",
     "react-scripts": "^5.0.0",

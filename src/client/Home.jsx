@@ -88,6 +88,14 @@ class Home extends React.Component {
                   </span>
 
                   Account
+
+                  <div className='logout-btn' onClick={this.logout}>
+                    <span className='material-symbols-outlined'>
+                      logout
+                    </span>
+
+                    Log out
+                  </div>
                 </Link>
                 )
               : (
@@ -119,10 +127,13 @@ class Home extends React.Component {
     )
   }
 
-  expand () {
-    this.setState({
-      expanded: true
-    })
+  logout (e) {
+    e.preventDefault()
+    e.stopPropagation()
+
+    localStorage.removeItem('auth')
+
+    document.location.reload()
   }
 }
 
