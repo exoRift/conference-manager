@@ -48,8 +48,6 @@ module.exports = function (req, res, next) {
 
                   throw err
                 } else {
-                  const end = new Date(args.startdate.getTime() + args.length)
-
                   // Time validation
                   if ('startdate' in req.args && req.method !== 'POST' && args.startdate < Date.now()) {
                     const err = Error('start date earlier than current date')
@@ -84,9 +82,9 @@ module.exports = function (req, res, next) {
                     .select('title', 'startdate', 'length', req.db.raw('EXTRACT(EPOCH FROM length) * 1000 as epochlength'))
                     .where('room', args.room)
                     .andWhere(
-                      req.db.raw('(:start::TIMESTAMPTZ, :end::TIMESTAMPTZ) OVERLAPS (startdate, (startdate + length))', {
+                      req.db.raw('(:start::TIMESTAMP, make_interval(secs => :duration)) OVERLAPS (startdate, length)', {
                         start: args.startdate.toISOString(),
-                        end: end.toISOString()
+                        duration: args.length / 1000
                       })
                     )
                     .whereNot('id', exclude || '')

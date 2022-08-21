@@ -35,7 +35,9 @@ class MeetingEditor extends React.Component {
     }
 
     if (props.blank) {
-      this.state.alter.startdate = new Date().toISOString()
+      this.state.alter.startdate = new Date()
+      this.state.alter.startdate.setSeconds(0)
+      this.state.alter.startdate.setMilliseconds(0)
 
       this.state.alter.length = MeetingEditor.defaultLength
 
@@ -169,20 +171,37 @@ class MeetingEditor extends React.Component {
     switch (prop) {
       case 'date':
         if (e.target.value) {
+          const [year, month, day] = e.target.value.split('-')
+
           field = 'startdate'
-          value = e.target.value + 'T' + this.dateToTime(start)
+
+          start.setFullYear(year)
+          start.setMonth(month)
+          start.setDate(day)
+          value = start
         }
         break
       case 'starttime':
         if (e.target.value) {
+          const [hours, minutes] = e.target.value.split(':')
+
           field = 'startdate'
-          value = this.dateToDate(start) + 'T' + e.target.value
+
+          start.setHours(hours)
+          start.setMinutes(minutes)
+          value = start
         }
         break
       case 'endtime':
         if (e.target.value) {
+          const [hours, minutes] = e.target.value.split(':')
+
           field = 'length'
-          value = Math.max(MeetingEditor.minLength, new Date(this.dateToDate(start) + 'T' + e.target.value).getTime() - start.getTime())
+
+          const end = new Date(start)
+          end.setHours(hours)
+          end.setMinutes(minutes)
+          value = Math.max(MeetingEditor.minLength, end.getTime() - start.getTime())
         }
         break
       case 'room':

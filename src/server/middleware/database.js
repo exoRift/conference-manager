@@ -8,7 +8,7 @@ module.exports = function (dbInfo, meetingCore) {
     .catch((err) => console.error('Unable to establish connection to database', err))
 
   db('meetings')
-    .select('id', 'startdate', db.raw('EXTRACT(EPOCH from length) * 1000 as length'), 'room')
+    .select('id', 'title', 'startdate', db.raw('EXTRACT(EPOCH from length) * 1000 as length'), 'room')
     .then((meetings) => {
       for (const meeting of meetings) meetingCore.upload(db, meeting)
     })

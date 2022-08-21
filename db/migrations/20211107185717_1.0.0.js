@@ -27,7 +27,7 @@ exports.up = function (knex) {
       table.integer('room').notNullable()
       table.string('desc', 150).nullable()
       table.jsonb('attendees').default('[]').notNullable()
-      table.datetime('startdate').notNullable()
+      table.timestamp('startdate').notNullable()
       table.specificType('length', 'interval').default('1 hour').notNullable()
     })
     .createTable('posts', (table) => {
