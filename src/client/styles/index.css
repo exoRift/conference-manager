@@ -30,7 +30,7 @@
 }
 .home-button::before {
   content: 'replyhome';
-  margin-right: 0.3rem;
+  margin-right: 0.3em;
   font-family: 'Material Symbols Outlined';
 }
 

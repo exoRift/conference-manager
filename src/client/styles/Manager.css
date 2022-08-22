@@ -33,7 +33,7 @@ button.create {
 button.create::before {
   content: '+ ';
   display: inline-block;
-  margin-right: 1rem;
+  margin-right: 0.5em;
   transform: scale(2) translateY(-2%);
 }
 button.create:hover {

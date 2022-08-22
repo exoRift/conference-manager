@@ -18,7 +18,8 @@
 }
 
 .meeting-card.in-session .header::after {
-  content: ' - IN SESSION';
+  content: '- IN SESSION';
+  margin-left: 0.2em;
 }
 
 .meeting-card .header .title::placeholder {
@@ -66,7 +67,7 @@
 }
 .meeting-card .footer .creator::before {
   content: 'Created By:';
-  margin-right: 0.5rem;
+  margin-right: 0.5em;
 }
 
 @keyframes pulse {

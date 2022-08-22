@@ -51,7 +51,7 @@
 }
 .meeting-card.editing .room-container::before {
   content: 'Conference Room:';
-  margin: 0 1rem 2rem;
+  margin: 0 0.5em;
   font-size: 2rem;
   vertical-align: middle;
 }
