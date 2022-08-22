@@ -278,7 +278,7 @@ class MeetingEditor extends React.Component {
       body: JSON.stringify(this.state.alter)
     })
       .then(postFetch)
-      .then(() => this.props.onSave?.({
+      .then(() => this.props.onSuccess?.({
         ...this.state.data,
         ...this.state.alter
       }))
