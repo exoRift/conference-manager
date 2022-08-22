@@ -20,7 +20,6 @@
   display: grid;
   grid-template-columns: repeat(8, 1fr);
   grid-gap: 2% 1%;
-  flex: 1;
   padding: 2% 2%;
   mask-image: linear-gradient(to bottom, transparent 0%, black 1%, black 99%, transparent 100%);
   overflow: hidden;
