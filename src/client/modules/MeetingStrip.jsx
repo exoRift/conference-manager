@@ -25,7 +25,7 @@ class MeetingStrip extends React.Component {
     }
 
     this.toggleEditing = this.toggleEditing.bind(this)
-    this.onSave = this.onSave.bind(this)
+    this.onSuccess = this.onSuccess.bind(this)
     this.onShare = this.onShare.bind(this)
   }
 
@@ -70,7 +70,7 @@ class MeetingStrip extends React.Component {
           </span>
 
           {this.state.editing
-            ? <MeetingEditor data={this.state.data} onSave={this.onSave} onError={this.props.onError}/>
+            ? <MeetingEditor data={this.state.data} onSuccess={this.onSuccess} onError={this.props.onError}/>
             : (
               <>
                 <span className='title'>{this.state.data.title}</span>
@@ -139,7 +139,7 @@ class MeetingStrip extends React.Component {
     })
   }
 
-  onSave (data) {
+  onSuccess (data) {
     this.setState({
       editing: false,
       saved: true,

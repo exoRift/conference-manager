@@ -25,7 +25,7 @@
 
 .index.user .name.partial::after {
   content: '(unregistered)';
-  margin-left: 0.4rem;
+  margin-left: 0.4em;
   color: var(--info);
 }
 

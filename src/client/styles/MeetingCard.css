@@ -18,7 +18,8 @@
 }
 
 .meeting-card.in-session .header::after {
-  content: ' - IN SESSION';
+  content: '- IN SESSION';
+  margin-left: 0.2em;
 }
 
 .meeting-card .header .title::placeholder {
@@ -43,7 +44,7 @@
   white-space: nowrap;
 }
 .meeting-card .subheader .times .dash {
-  margin: 0 1rem;
+  margin: 0 0.5em;
 }
 .meeting-card.soon:not(.in-session) .subheader .times .starttime {
   animation: pulse 1s ease-in-out 0s infinite alternate forwards;
@@ -66,7 +67,7 @@
 }
 .meeting-card .footer .creator::before {
   content: 'Created By:';
-  margin-right: 0.5rem;
+  margin-right: 0.5em;
 }
 
 @keyframes pulse {

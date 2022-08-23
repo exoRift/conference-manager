@@ -89,6 +89,7 @@ class Admin extends React.Component {
                     ? <UserBox
                       id={u.id}
                       header={'Edit User: ' + u.id}
+                      onSuccess={this.updateUsers}
                       onError={this.props.onError}/>
                     : (
                       <>
@@ -122,6 +123,7 @@ class Admin extends React.Component {
                     ? <TenantBox
                       data={t}
                       header={'Edit Tenant: ' + t.id}
+                      onSuccess={this.updateTenants}
                       onError={this.props.onError}/>
                     : (
                       <>
