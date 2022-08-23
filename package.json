@@ -1,6 +1,6 @@
 {
   "name": "conference-manager",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "description": "A website and server to schedule, view, and manage conference room bookings for the 525 Chestnut St. office building",
   "scripts": {
     "dev": "concurrently 'dotenv -v NODE_ENV='development' -v PORT='5000' -e .env npm run server-dev' 'dotenv -e .env npm run static'",
