@@ -44,7 +44,7 @@
   white-space: nowrap;
 }
 .meeting-card .subheader .times .dash {
-  margin: 0 1rem;
+  margin: 0 0.5em;
 }
 .meeting-card.soon:not(.in-session) .subheader .times .starttime {
   animation: pulse 1s ease-in-out 0s infinite alternate forwards;

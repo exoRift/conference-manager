@@ -98,4 +98,11 @@
   .app-container.home #pages a .material-symbols-outlined {
     font-size: 7rem;
   }
+
+  .app-container.home #pages a .logout-btn {
+    font-size: 2rem;
+  }
+  .app-container.home #pages a .logout-btn .material-symbols-outlined {
+    font-size: 2rem;
+  }
 }
