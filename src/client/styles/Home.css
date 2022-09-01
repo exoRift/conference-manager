@@ -2,7 +2,7 @@
   display: flex;
   justify-content: center;
   align-items: stretch;
-  padding: 10% 0;
+  padding: 6% 0;
 }
 
 .app-container.home .content {
@@ -29,7 +29,6 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  align-items: center;
 }
 
 .app-container.home #pages a {
@@ -39,7 +38,6 @@
   justify-content: center;
   align-items: center;
   width: 16vw;
-  height: 45vh;
   margin: 1rem;
   text-align: center;
   font-size: 2.5vw;
@@ -104,5 +102,11 @@
   }
   .app-container.home #pages a .logout-btn .material-symbols-outlined {
     font-size: 2rem;
+  }
+}
+
+@media (min-width: 801px) {
+  .app-container.home #pages a {
+    padding: 2% 0;
   }
 }
