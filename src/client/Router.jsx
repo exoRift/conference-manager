@@ -3,7 +3,7 @@ import {
   BrowserRouter as Router,
   Switch,
   Route,
-  Link
+  NavLink
 } from 'react-router-dom'
 import {
   parse as parseQuery
@@ -42,9 +42,9 @@ class Routes extends React.Component {
           {this.hideUI
             ? null
             : (
-                <Link to='/' className='home-button'>
+                <NavLink to='/' exact={true} className='home-button'>
                   Return Home
-                </Link>
+                </NavLink>
               )}
 
           <Switch>
