@@ -16,14 +16,12 @@ const users = [
   {
     firstname: 'SYSTEM',
     lastname: 'ADMINISTRATOR',
-    email: 'sys@admin',
-    admin: true
+    email: 'sys@admin'
   },
   {
     firstname: 'CR',
     lastname: 'PANEL',
-    email: 'cr@panel',
-    limited: true
+    email: 'cr@panel'
   }
 ]
 
