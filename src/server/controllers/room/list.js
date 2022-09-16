@@ -15,12 +15,10 @@ module.exports = {
     if (parseInt(req.params.id) && parseInt(req.params.id) <= parseInt(ROOM_COUNT) && req.params.id > 0) {
       const limiteds = req.meetingCore.timeouts
         .filter((m) => m.limited && m.data.room === parseInt(req.params.id))
-        .map((m) => {
-          return {
-            ...m.data,
-            limited: true
-          }
-        })
+        .map((m) => ({
+          ...m.data,
+          limited: true
+        }))
 
       return req.db('meetings')
         .select('*', req.db.raw('EXTRACT(EPOCH from length) * 1000 as length'))
