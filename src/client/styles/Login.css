@@ -37,6 +37,21 @@
   color: var(--danger);
 }
 
+.login-box .forgot {
+  width: auto;
+  margin-left: auto;
+  padding-right: 5%;
+  color: black;
+  cursor: pointer;
+}
+.login-box .forgot.sent {
+  color: darkgreen;
+  cursor: default;
+}
+.login-box .forgot:not([disabled]):hover {
+  text-decoration: underline;
+}
+
 @media (max-width: 800px) {
   .login-box {
     width: 100%;

@@ -20,7 +20,9 @@ class Login extends React.Component {
       pass: null
     },
     success: null,
-    redirect: null
+    redirect: null,
+    forgetting: false,
+    forgotten: false
   }
 
   constructor (props) {
@@ -29,6 +31,7 @@ class Login extends React.Component {
     this.query = parseQuery(window.location.search)
 
     this.submit = this.submit.bind(this)
+    this.forgetPassword = this.forgetPassword.bind(this)
   }
 
   componentWillUnmount () {
@@ -79,6 +82,16 @@ class Login extends React.Component {
           </div>
 
           <button type='submit' className='btn btn-primary' disabled={this.state.success}>Log In</button>
+
+          <div
+            className={`forgot${this.state.forgotten ? ' sent' : ''}`}
+            onClick={this.state.forgetting ? null : this.forgetPassword}
+            disabled={this.state.forgetting}
+          >
+            {this.state.forgotten
+              ? 'Email Sent!'
+              : 'Forgot Password'}
+          </div>
         </form>
       </div>
     )
@@ -144,6 +157,45 @@ class Login extends React.Component {
         invalid: {
           email: this.state.email.length ? null : 'Required field',
           pass: this.state.pass.length ? null : 'Required field'
+        }
+      })
+    }
+  }
+
+  forgetPassword () {
+    if (this.state.email.length) {
+      this.setState({
+        forgetting: true
+      })
+
+      return fetch('/api/user/requestreset', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          email: this.state.email
+        })
+      })
+        .then(postFetch)
+        .then(() => this.setState({
+          forgotten: true
+        }))
+        .catch((res) => {
+          if (res.status === 404) {
+            this.setState({
+              forgetting: false,
+              forgotten: false,
+              invalid: {
+                email: 'Could not find a user with this email'
+              }
+            })
+          } else return this.props.onError(res)
+        })
+    } else {
+      this.setState({
+        invalid: {
+          email: 'Email required to reset password'
         }
       })
     }

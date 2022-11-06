@@ -276,12 +276,10 @@ class Admin extends React.Component {
       .then((users) => Promise.all(users.map((u) => fetch(`/api/user/${u.id}/name`)
         .then(postFetch)
         .then((user) => user.json())
-        .then((user) => {
-          return {
-            ...u,
-            ...user
-          }
-        }))))
+        .then((user) => ({
+          ...u,
+          ...user
+        })))))
       .then((users) => this.setState({ users }))
       .catch(this.props.onError)
   }

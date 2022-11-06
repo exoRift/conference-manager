@@ -55,13 +55,15 @@ class UserBox extends React.Component {
         .catch(this.props.onError)
     }
 
-    fetch('/api/tenant/list', {
-      method: 'GET'
-    })
-      .then(postFetch)
-      .then((tenants) => tenants.json())
-      .then((tenants) => this.setState({ tenants }))
-      .catch(this.props.onError)
+    if (!this.props.hide?.includes?.('tenant')) {
+      fetch('/api/tenant/list', {
+        method: 'GET'
+      })
+        .then(postFetch)
+        .then((tenants) => tenants.json())
+        .then((tenants) => this.setState({ tenants }))
+        .catch(this.props.onError)
+    }
   }
 
   render () {
@@ -134,28 +136,32 @@ class UserBox extends React.Component {
 
           <small id='emailUBHelp' className='form-text text-muted sub-message'>This email is visibile to only those with an account.</small>
         </div>
-        <div className='form-group'>
-          <label htmlFor={'tenantUBInput'}>Tenant</label>
+        {this.props.hide?.includes?.('tenant')
+          ? null
+          : (
+            <div className='form-group'>
+              <label htmlFor={'tenantUBInput'}>Tenant</label>
 
-          <select
-            className={`form-control${this.state.success || this.props.success
-              ? ' is-valid'
-              : ''}${this.state.invalid.tenant || this.props.invalid.tenant
-                ? ' is-invalid'
-                : ''}`}
-            id='tenantUBInput'
-            disabled={!this.state.editing || this.props.locked?.includes('tenant')}
-            value={this.state.alter.tenant || this.state.user.tenant || 'none'}
-            onChange={this.onChange.bind(this, 'tenant')}
-          >
-            <option value='none'>NONE</option>
-            {this.state.tenants.map((t) => <option value={t.id} key={t.id}>{t.name} | Suite: {t.suite}</option>)}
-          </select>
+              <select
+                className={`form-control${this.state.success || this.props.success
+                  ? ' is-valid'
+                  : ''}${this.state.invalid.tenant || this.props.invalid.tenant
+                    ? ' is-invalid'
+                    : ''}`}
+                id='tenantUBInput'
+                disabled={!this.state.editing || this.props.locked?.includes('tenant')}
+                value={this.state.alter.tenant || this.state.user.tenant || 'none'}
+                onChange={this.onChange.bind(this, 'tenant')}
+              >
+                <option value='none'>NONE</option>
+                {this.state.tenants.map((t) => <option value={t.id} key={t.id}>{t.name} | Suite: {t.suite}</option>)}
+              </select>
 
-          {this.state.invalid.tenant || this.props.invalid.tenant
-            ? <div className='invalid-feedback'>{this.state.invalid.tenant || this.props.invalid.tenant}</div>
-            : null}
-        </div>
+              {this.state.invalid.tenant || this.props.invalid.tenant
+                ? <div className='invalid-feedback'>{this.state.invalid.tenant || this.props.invalid.tenant}</div>
+                : null}
+            </div>
+            )}
         {this.props.hide?.includes?.('pass')
           ? null
           : (
