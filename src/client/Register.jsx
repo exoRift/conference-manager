@@ -35,6 +35,8 @@ class Register extends React.Component {
       locked: false
     }
 
+    this.type = window.location.pathname.split('/')[1]
+
     this.onChange = this.onChange.bind(this)
     this.submit = this.submit.bind(this)
   }
@@ -52,9 +54,9 @@ class Register extends React.Component {
         <div className='login-box'>
           <UserBox
             data={this.initial}
-            header='Register Your Account'
-            hide={['admin']}
-            locked={['tenant']}
+            header={this.type === 'register' ? 'Register Your Account' : 'Reset Your Password'}
+            hide={this.type === 'register' ? ['admin'] : ['admin', 'tenant']}
+            locked={this.type === 'register' ? ['tenant'] : ['name', 'email']}
             blank={true}
             invalid={this.state.invalid}
             success={this.state.success}
@@ -88,32 +90,63 @@ class Register extends React.Component {
     })
 
     if (!this.state.success && filled) {
-      return fetch(`/api/user/${this.params.id}/register`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(this.state.data)
-      })
-        .then(postFetch)
-        .then((token) => token.text())
-        .then((token) => {
-          this.setState({
-            success: true,
-            invalid: {}
+      switch (this.type) {
+        case 'register':
+          return fetch(`/api/user/${this.params.id}/register`, {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(this.state.data)
           })
+            .then(postFetch)
+            .then((token) => token.text())
+            .then((token) => {
+              this.setState({
+                success: true,
+                invalid: {}
+              })
 
-          localStorage.setItem('auth', token)
+              localStorage.setItem('auth', token)
 
-          clearTimeout(this.timeout)
-          this.timeout = setTimeout(() => {
-            this.setState({
-              redirect: '/'
+              clearTimeout(this.timeout)
+              this.timeout = setTimeout(() => {
+                this.setState({
+                  redirect: '/'
+                })
+              }, 1000)
             })
-          }, 1000)
-        })
-        .catch(validate)
-        .finally(() => this.setState({ locked: false }))
+            .catch(validate)
+            .finally(() => this.setState({ locked: false }))
+        case 'reset':
+          return fetch(`/api/user/${this.params.id}/reset`, {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              pass: this.state.data.pass,
+              token: this.query.token
+            })
+          })
+            .then(postFetch)
+            .then(() => {
+              this.setState({
+                success: true,
+                invalid: {}
+              })
+
+              clearTimeout(this.timeout)
+              this.timeout = setTimeout(() => {
+                this.setState({
+                  redirect: '/login'
+                })
+              }, 1000)
+            })
+            .catch(validate)
+            .finally(() => this.setState({ locked: false }))
+        default: break
+      }
     } else {
       const invalid = {}
       for (const [key, value] of Object.entries(this.state.data)) {

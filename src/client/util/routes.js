@@ -34,6 +34,12 @@ const routes = [
     Component: Register
   },
   {
+    path: '/reset/:id',
+    name: 'Reset Password',
+    hidden: true,
+    Component: Register
+  },
+  {
     path: '/manager',
     name: 'My Meetings',
     accountOnly: true,
