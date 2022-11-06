@@ -31,7 +31,7 @@ module.exports = {
               res.sendError(400, 'token', 'reset token does not match user')
             } else if (match) {
               if (match.id === req.params.id) {
-                if (Date.now() - match.timestamp <= RESET_TIMEOUT) {
+                if (Date.now() - match.timestamp <= parseInt(RESET_TIMEOUT)) {
                   return req.util.user.validate(req.params.id)
                     .then(req.util.user.update)
                     .then(() => res.send(200))
