@@ -52,11 +52,7 @@ module.exports = {
           } catch (err) {
             console.error('jwt', err)
 
-            const pubErr = Error('token encoding error')
-            pubErr.code = 500
-            pubErr.type = 'internal'
-
-            throw pubErr
+            return res.sendError(500, 'internal', 'token encoding error')
           }
         } else return res.sendError(404, 'target', 'user not found')
       })
