@@ -182,10 +182,12 @@ class Login extends React.Component {
           forgotten: true
         }))
         .catch((res) => {
+          this.setState({
+            forgetting: false,
+            forgotten: false
+          })
           if (res.status === 404) {
             this.setState({
-              forgetting: false,
-              forgotten: false,
               invalid: {
                 email: 'Could not find a user with this email'
               }
