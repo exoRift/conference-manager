@@ -1,9 +1,10 @@
 import React from 'react'
-import Moment from 'react-moment'
 
 class Clock extends React.Component {
   constructor (props) {
     super(props)
+
+    this.date = this.finalizeDate(this.props.date || new Date())
 
     this.refresh = setInterval(() => this.setState({}) /* Rerender */, this.props.interval || 1000)
   }
@@ -13,15 +14,10 @@ class Clock extends React.Component {
   }
 
   render () {
-    return (
-      <Moment
-        className={this.props.className}
-        format={this.props.format}
-        date={this.format(new Date())}/>
-    )
+    return this.format(this.date)
   }
 
-  format (date) {
+  finalizeDate (date) {
     if (this.props.countdown) {
       date.setHours(this.props.countdown.getHours() - date.getHours())
       date.setMinutes(this.props.countdown.getMinutes() - date.getMinutes())
@@ -29,6 +25,15 @@ class Clock extends React.Component {
 
       return date
     } else return date
+  }
+
+  format (date) {
+    return this.props.format
+      .replace('HH', date.getHours().toString().padStart(2, '0'))
+      .replace('h', date.getHours() % 12 || 12)
+      .replace('mm', date.getMinutes().toString().padStart(2, '0'))
+      .replace('ss', date.getSeconds().toString().padStart(2, '0'))
+      .replace('a', date.getHours() >= 12 ? 'pm' : 'am')
   }
 }
 

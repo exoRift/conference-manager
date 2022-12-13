@@ -1,7 +1,7 @@
-const https = require('https')
+/* const https = require('https') */
 const polka = require('polka')
 const serve = require('sirv')
-const fs = require('fs')
+/* const fs = require('fs') */
 const path = require('path')
 const {
   json
@@ -27,20 +27,22 @@ const controllers = require('./controllers/')
 const {
   NODE_ENV,
   PORT,
-  REDIRECT_PORT,
+  /* REDIRECT_PORT, */
   MAILER_HOST,
   MAILER_PORT,
   MAILER_USER,
   MAILER_PASS,
-  SALT_ROUNDS,
+  SALT_ROUNDS/*,
   SSL_CRT_FILE,
-  SSL_KEY_FILE
+  SSL_KEY_FILE */
 } = process.env
 
+/*
 const ssl = {
   cert: fs.readFileSync(SSL_CRT_FILE),
   key: fs.readFileSync(SSL_KEY_FILE)
 }
+*/
 
 const app = polka()
 
@@ -79,6 +81,7 @@ if (NODE_ENV !== 'development') {
     ignores: '/api/*'
   }))
 
+  /*
   // Force HTTPS
   polka()
     .use((req, res) => {
@@ -89,10 +92,12 @@ if (NODE_ENV !== 'development') {
       res.end()
     })
     .listen(REDIRECT_PORT, () => console.info('HTTPS redirect online'))
+  */
 
   console.info('Frontend mounted')
 }
 
+/*
 const server = https.createServer(ssl, app.handler).listen(PORT, () => {
   const {
     port
@@ -100,3 +105,6 @@ const server = https.createServer(ssl, app.handler).listen(PORT, () => {
 
   console.info('Server online listening at https://localhost:%s', port)
 })
+*/
+
+app.listen(PORT, () => console.info('Server online listening at http://localhost:%s', PORT))
