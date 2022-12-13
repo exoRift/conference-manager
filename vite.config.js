@@ -1,5 +1,5 @@
 import { defineConfig } from 'vite'
-import fs from 'fs'
+/* import fs from 'fs' */
 import react from '@vitejs/plugin-react'
 import svgr from 'vite-plugin-svgr'
 import autoprefixer from 'autoprefixer'
@@ -9,13 +9,13 @@ export default defineConfig({
   plugins: [react(), svgr()],
   server: {
     port: 3000,
-    https: {
+    /* https: {
       key: fs.readFileSync('./ssl/localhost.key'),
       cert: fs.readFileSync('./ssl/localhost.crt')
-    },
+    }, */
     proxy: {
       '/api': {
-        target: 'https://localhost:5000/api',
+        target: 'http://localhost:5000/api',
         changeOrigin: true,
         secure: false,
         rewrite: (path) => path.replace(/^\/api/, '')
