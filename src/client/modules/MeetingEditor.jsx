@@ -176,10 +176,10 @@ class MeetingEditor extends React.Component {
           field = 'startdate'
 
           start.setFullYear(year)
-          start.setMonth(month)
-          start.setDate(day)
+          start.setMonth(parseInt(month) - 1, day)
           value = start
         }
+
         break
       case 'starttime':
         if (e.target.value) {
@@ -191,6 +191,7 @@ class MeetingEditor extends React.Component {
           start.setMinutes(minutes)
           value = start
         }
+
         break
       case 'endtime':
         if (e.target.value) {
@@ -203,14 +204,17 @@ class MeetingEditor extends React.Component {
           end.setMinutes(minutes)
           value = Math.max(MeetingEditor.minLength, end.getTime() - start.getTime())
         }
+
         break
       case 'room':
         field = prop
         value = e
+
         break
       default:
         field = prop
         value = e.target.value
+
         break
     }
 
@@ -286,16 +290,16 @@ class MeetingEditor extends React.Component {
   }
 
   dateToDate (date) {
-    return `${date.getFullYear()}-${this.formatNumber(date.getMonth())}-${this.formatNumber(date.getDate())}`
+    return `${this.formatNumber(date.getFullYear(), 4)}-${this.formatNumber(date.getMonth() + 1, 2)}-${this.formatNumber(date.getDate(), 2)}`
   }
 
   dateToTime (date) {
-    return `${this.formatNumber(date.getHours())}:${this.formatNumber(date.getMinutes())}`
+    return `${this.formatNumber(date.getHours(), 2)}:${this.formatNumber(date.getMinutes(), 2)}`
   }
 
-  formatNumber (num) {
+  formatNumber (num, len) {
     return num.toLocaleString('en-US', {
-      minimumIntegerDigits: 2,
+      minimumIntegerDigits: len,
       useGrouping: false
     })
   }
