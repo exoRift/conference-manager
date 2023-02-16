@@ -286,7 +286,7 @@ class MeetingEditor extends React.Component {
   }
 
   dateToDate (date) {
-    return `${date.getFullYear()}-${this.formatNumber(date.getMonth() + 1)}-${this.formatNumber(date.getDate())}`
+    return `${date.getFullYear()}-${this.formatNumber(date.getMonth())}-${this.formatNumber(date.getDate())}`
   }
 
   dateToTime (date) {
