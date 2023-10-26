@@ -25,7 +25,7 @@ module.exports = {
         .where('room', req.params.id)
         .orderBy('startdate', 'asc')
         .limit(20)
-        .then((meetings) => res.send(200, limiteds.concat(meetings)))
+        .then((meetings) => res.send(200, limiteds.concat(meetings.map((m) => ({ ...m, length: parseInt(m.length) })))))
         .catch((err) => {
           console.error('db', err)
 
