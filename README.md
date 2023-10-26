@@ -1,6 +1,6 @@
 ## Initialization
 > *Steps marked with blue line are for local only*
-- > `sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout ./ssl/localhost.key -out ./ssl/localhost.crt
+- > `mkdir ./ssl/ && sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout ./ssl/localhost.key -out ./ssl/localhost.crt`
 - Make sure your SSL files are positioned properly in `./ssl/`
 - Set up environment variables
 
