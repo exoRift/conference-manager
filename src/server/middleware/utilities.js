@@ -23,7 +23,7 @@ module.exports = function (req, res, next) {
             throw req.errors.database
           })
           .then(([found]) => {
-            if (!found) found = req.meetingCore.timeouts.find((m) => m.data.id === req.params.id && m.limited)?.data
+            if (!found) found = req.meetingCore.entries.find((m) => m.data.id === req.params.id && m.limited)?.data
 
             const args = {
               ...found,

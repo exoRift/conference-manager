@@ -13,7 +13,7 @@ module.exports = {
   route: '/room/list/:id',
   action: function (req, res) {
     if (parseInt(req.params.id) && parseInt(req.params.id) <= parseInt(ROOM_COUNT) && req.params.id > 0) {
-      const limiteds = req.meetingCore.timeouts
+      const limiteds = req.meetingCore.entries
         .filter((m) => m.limited && m.data.room === parseInt(req.params.id))
         .map((m) => ({
           ...m.data,
