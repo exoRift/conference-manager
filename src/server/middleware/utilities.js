@@ -23,8 +23,8 @@ module.exports = function (req, res, next) {
             throw req.errors.database
           })
           .then(([found]) => {
-            if (!found) found = req.meetingCore.entries.find((m) => m.data.id === req.params.id && m.limited)?.data
-            found.length = parseInt(found.length)
+            if (found) found.length = parseInt(found.length)
+            else found = req.meetingCore.entries.find((m) => m.data.id === req.params.id && m.limited)?.data
 
             const args = {
               ...found,

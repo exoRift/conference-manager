@@ -50,7 +50,7 @@ class Entry {
     }
 
     this.cancel()
-    this.start(this.data.length)
+    this.start()
   }
 }
 
