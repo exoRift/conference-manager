@@ -10,7 +10,12 @@ module.exports = function (dbInfo, meetingCore) {
   db('meetings')
     .select('id', 'title', 'startdate', db.raw('EXTRACT(EPOCH from length) * 1000 as length'), 'room')
     .then((meetings) => {
-      for (const meeting of meetings) meetingCore.upload(db, meeting)
+      for (const meeting of meetings) {
+        meetingCore.upload(db, {
+          ...meeting,
+          length: parseInt(meeting.length)
+        })
+      }
     })
     .catch((err) => console.error('db', err))
 

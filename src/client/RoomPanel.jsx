@@ -53,7 +53,7 @@ class RoomPanel extends React.Component {
 
     document.addEventListener('gesturestart', this._cancelGesture)
 
-    this.updateInterval = setInterval(this.update, 60000 /* 1 minute */)
+    this.updateInterval = setInterval(this.update, 10000 /* 10 seconds */)
   }
 
   componentWillUnmount () {

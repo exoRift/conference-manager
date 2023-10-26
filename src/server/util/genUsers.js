@@ -43,6 +43,7 @@ bcrypt.hash(SYSADMIN_PASS, salt, (err, pass) => {
         id,
         pass,
         token,
+        admin: user.email === 'sys@admin',
         ...user
       })
       .then(() => console.info(`${user.firstname} ${user.lastname} created`))

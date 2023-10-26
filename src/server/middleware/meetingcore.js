@@ -8,14 +8,14 @@ class Entry {
 
     this.delete = this.delete.bind(this)
     this.remove = this.remove.bind(this)
-
-    this.timeout = this.start(data.length)
   }
 
-  start (length) {
+  start () {
     const startdate = new Date(this.data.startdate)
 
-    if (startdate.getTime() - Date.now() < 172800000 /* 48 hours */) return setTimeout(this.delete, startdate.getTime() + length - Date.now())
+    if (startdate.getTime() - Date.now() < 86400000 /* 24 hours */) {
+      this.timeout = setTimeout(this.delete, startdate.getTime() + this.data.length - Date.now())
+    }
   }
 
   delete () {
@@ -50,33 +50,42 @@ class Entry {
     }
 
     this.cancel()
-    this.start(this.data.length)
+    this.start()
   }
 }
 
 class Core {
   constructor () {
-    this.timeouts = []
+    this.entries = []
+
+    this.interval = setInterval(() => { // Refresh timeouts every 24 hours
+      for (const entry of this.entries) {
+        entry.cancel()
+
+        entry.start()
+      }
+    }, 86400000 /* 24 hours */)
   }
 
   upload (db, data, limited) {
     const entry = new Entry(this, db, data, limited)
+    entry.start()
 
-    this.timeouts.push(entry)
+    this.entries.push(entry)
 
     return entry
   }
 
   remove (id) {
-    this.timeouts.splice(this.timeouts.findIndex((m) => m.data.id === id), 1)
+    this.entries.splice(this.entries.findIndex((m) => m.data.id === id), 1)
 
-    return this.timeouts
+    return this.entries
   }
 
   findConflict (startframe, length, room, exclude) {
     const endframe = new Date(startframe.getTime() + length)
 
-    return this.timeouts.find((m) => {
+    return this.entries.find((m) => {
       const enddate = new Date(m.data.startdate.getTime() + m.data.length)
 
       return room === m.data.room && m.data.id !== exclude &&

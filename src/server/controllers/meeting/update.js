@@ -31,7 +31,7 @@ module.exports = {
   route: '/meeting/:id',
   action: function (req, res) {
     if (req.auth.limited) {
-      const entry = req.meetingCore.timeouts.find((m) => m.data.id === req.params.id && m.limited)
+      const entry = req.meetingCore.entries.find((m) => m.data.id === req.params.id && m.limited)
 
       if (entry) {
         return req.util.meeting.validate(req.params.id)
@@ -58,6 +58,9 @@ module.exports = {
                     })
                     .where('id', req.params.id)
                     .then(() => {
+                      const entry = req.meetingCore.entries.find((m) => m.data.id === req.params.id)
+                      entry?.update(req.args)
+
                       console.log('MEETING UPDATED: ', req.auth.id, req.params.id)
 
                       return res.send(200)

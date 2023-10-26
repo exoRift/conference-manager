@@ -23,7 +23,8 @@ module.exports = function (req, res, next) {
             throw req.errors.database
           })
           .then(([found]) => {
-            if (!found) found = req.meetingCore.timeouts.find((m) => m.data.id === req.params.id && m.limited)?.data
+            if (found) found.length = parseInt(found.length)
+            else found = req.meetingCore.entries.find((m) => m.data.id === req.params.id && m.limited)?.data
 
             const args = {
               ...found,
@@ -98,7 +99,7 @@ module.exports = function (req, res, next) {
                       if (!overlap) overlap = req.meetingCore.findConflict(args.startdate, args.length, args.room, exclude)?.data
 
                       if (overlap) {
-                        const overlapEnd = new Date(overlap.startdate.getTime() + (overlap.epochlength || overlap.length))
+                        const overlapEnd = new Date(overlap.startdate.getTime() + (parseInt(overlap.epochlength)))
 
                         const err = new Error(
                           `meeting overlaps existing meeting: {${overlap.title}} which is in session from {${overlap.startdate}} to {${overlapEnd}}`

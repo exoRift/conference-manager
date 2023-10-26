@@ -9,7 +9,7 @@ module.exports = {
   },
   action: function (req, res) {
     if (req.auth.limited) {
-      const entry = req.meetingCore.timeouts.find((m) => m.data.id === req.params.id && m.limited)
+      const entry = req.meetingCore.entries.find((m) => m.data.id === req.params.id && m.limited)
 
       if (entry) {
         entry.cancel()
@@ -28,7 +28,7 @@ module.exports = {
                 .delete()
                 .where('id', req.params.id)
                 .then(() => {
-                  const entry = req.meetingCore.timeouts.find((m) => m.data.id === req.params.id)
+                  const entry = req.meetingCore.entries.find((m) => m.data.id === req.params.id)
 
                   if (entry) {
                     entry.cancel()
