@@ -30,7 +30,8 @@ class RoomPanel extends React.Component {
     reserving: false,
     custom: false,
     extending: false,
-    expanded: false
+    expanded: false,
+    lockButtons: false
   }
 
   constructor (props) {
@@ -117,6 +118,7 @@ class RoomPanel extends React.Component {
                           <Picker columns={RoomPanel.pickerColumns} onUpdate={this.setCustom}/>
 
                           <button
+                            disabled={this.state.lockButtons}
                             className='btn btn-success time-option submit'
                             onClick={() => this.reserve((this.state.extending ? ongoing.length : 0) +
                               ((this.customTime[0] + (this.customTime[1] / 60)) * 3600000), ongoing?.id)}>
@@ -133,7 +135,8 @@ class RoomPanel extends React.Component {
                           <button
                             className='btn btn-outline-primary time-option'
                             onClick={() => this.reserve((this.state.extending ? ongoing.length : 0) + (factor * 3600000), ongoing?.id)}
-                            disabled={(this.state.extending ? ongoing.length / 3600000 : 0) + factor /* 1 hour */ > 4 /* 4 hours */}
+                            disabled={this.state.lockButtons ||
+                              (this.state.extending ? ongoing.length / 3600000 : 0) + factor /* 1 hour */ > 4 /* 4 hours */}
                             key={i}>
                             {`${hours}:${minutes.toLocaleString('en-US', {
                                 minimumIntegerDigits: 2
@@ -142,10 +145,10 @@ class RoomPanel extends React.Component {
                         )
                       })}
 
-                    <button className='btn btn-danger time-option' onClick={() => this.setStatus(false)}>Cancel</button>
+                    <button disabled={this.state.lockButtons} className='btn btn-danger time-option' onClick={() => this.setStatus(false)}>Cancel</button>
                     {this.state.custom
-                      ? <button className='btn btn-outline-primary time-option' onClick={() => this.setStatus(true, false)}>Quick Options</button>
-                      : <button className='btn btn-outline-primary time-option' onClick={() => this.setStatus(true, true)}>Custom</button>}
+                      ? <button disabled={this.state.lockButtons} className='btn btn-outline-primary time-option' onClick={() => this.setStatus(true, false)}>Quick Options</button>
+                      : <button disabled={this.state.lockButtons} className='btn btn-outline-primary time-option' onClick={() => this.setStatus(true, true)}>Custom</button>}
                   </div>
                 </>
                 )
@@ -153,12 +156,12 @@ class RoomPanel extends React.Component {
                 ? ongoing.limited
                   ? (
                     <div className='limited-container'>
-                      <button className='btn btn-outline-danger cancel' onClick={() => this.cancel(ongoing.id)}>Cancel</button>
-                      <button className='btn btn-outline-primary extend' onClick={() => this.setStatus(true, false, true)}>Extend</button>
+                      <button disabled={this.state.lockButtons} className='btn btn-outline-danger cancel' onClick={() => this.cancel(ongoing.id)}>Cancel</button>
+                      <button disabled={this.state.lockButtons} className='btn btn-outline-primary extend' onClick={() => this.setStatus(true, false, true)}>Extend</button>
                     </div>
                     )
                   : null
-                : <button className='btn btn-outline-primary book' onClick={() => this.setStatus(true)}>Reserve</button>}
+                : <button disabled={this.state.lockButtons} className='btn btn-outline-primary book' onClick={() => this.setStatus(true)}>Reserve</button>}
           </div>
         </div>
 
@@ -250,6 +253,10 @@ class RoomPanel extends React.Component {
 
   reserve (length, editID) {
     if ('auth' in localStorage) {
+      this.setState({
+        lockButtons: true
+      })
+
       return fetch(this.state.extending ? '/api/meeting/' + editID : '/api/meeting', {
         method: this.state.extending ? 'PATCH' : 'POST',
         headers: {
@@ -296,6 +303,7 @@ class RoomPanel extends React.Component {
               })
           }
         })
+        .finally(() => this.setState({ lockButtons: false }))
     } else {
       this.props.onError({
         message: 'This panel is not logged in and cannot properly reserve a meeting. Please contact a building administrator'
@@ -304,6 +312,10 @@ class RoomPanel extends React.Component {
   }
 
   cancel (id) {
+    this.setState({
+      lockButtons: true
+    })
+
     return fetch('/api/meeting/' + id, {
       method: 'DELETE',
       headers: {
@@ -313,6 +325,7 @@ class RoomPanel extends React.Component {
       .then(postFetch)
       .then(this.update)
       .catch(this.props.onError)
+      .finally(() => this.setState({ lockButtons: false }))
   }
 
   setCustom (columns) {

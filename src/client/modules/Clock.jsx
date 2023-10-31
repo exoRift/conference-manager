@@ -4,17 +4,25 @@ class Clock extends React.Component {
   constructor (props) {
     super(props)
 
-    this.date = this.finalizeDate(this.props.date || new Date())
+    this.refresh()
 
-    this.refresh = setInterval(() => this.setState({}) /* Rerender */, this.props.interval || 1000)
+    this.interval = setInterval(() => {
+      this.refresh()
+
+      this.setState({})
+    }, this.props.interval || 1000)
   }
 
   componentWillUnmount () {
-    clearInterval(this.refresh)
+    clearInterval(this.interval)
   }
 
   render () {
     return this.format(this.date)
+  }
+
+  refresh () {
+    this.date = this.finalizeDate(this.props.date || new Date())
   }
 
   finalizeDate (date) {
