@@ -221,7 +221,7 @@ class RoomPanel extends React.Component {
       .then((meetings) => {
         this.refreshes = meetings.reduce((a, m, i) => {
           if (i) a.push(setTimeout(this.update, new Date(m.startdate).getTime() - Date.now()))
-          else a.push(setTimeout(this.update, m.length))
+          a.push(setTimeout(this.update, new Date(m.startdate).getTime() - Date.now() + m.length))
 
           return a
         }, [])
@@ -245,8 +245,8 @@ class RoomPanel extends React.Component {
     if (reserving) this.cancelReserveTimeout = setTimeout(() => this.setStatus(false), 60000)
   }
 
-  _postReserve (res) {
-    if (res.ok) this.update()
+  async _postReserve (res) {
+    if (res.ok) await this.update()
 
     this.setStatus(false)
   }
