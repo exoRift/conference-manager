@@ -31,85 +31,65 @@ module.exports = function (req, res, next) {
               ...req.args
             }
 
-            // Title validation
+            // Time validation
+            if ('startdate' in req.args && req.method !== 'POST' && args.startdate < Date.now()) {
+              const err = Error('start date earlier than current date')
+              err.code = 400
+              err.type = 'argument'
+
+              throw err
+            }
+
+            // Admins are immune to length restrictions
+            if (!req.auth.admin) {
+              const maxLength = req.auth.limited ? 7200000 /* 2 hours */ : 14400000 /* 4 hours */
+
+              if (args.length > maxLength) {
+                const err = Error(`meeting longer than ${req.auth.limited ? '{2 hours}. use an account to increase limit' : '{4 hours}'}`)
+                err.code = 400
+                err.type = 'argument'
+
+                throw err
+              }
+            }
+
+            if (args.length < 900000 /* 15 minutes */) {
+              const err = Error('meeting must be at least 15 minutes')
+              err.code = 400
+              err.type = 'argument'
+
+              throw err
+            }
+
             return req.db('meetings')
-              .select('id')
-              .where('title', args.title || '')
+              .select('title', 'startdate', 'length', req.db.raw('EXTRACT(EPOCH FROM length) * 1000 as epochlength'))
+              .where('room', args.room)
+              .andWhere(
+                req.db.raw('(:start::TIMESTAMP, make_interval(secs => :duration)) OVERLAPS (startdate, length)', {
+                  start: args.startdate.toISOString(),
+                  duration: args.length / 1000
+                })
+              )
               .whereNot('id', exclude || '')
+              .limit(1)
               .catch((err) => {
                 console.error('db', err)
 
                 throw req.errors.database
               })
-              .then(([existing]) => {
-                if (existing && !req.auth.limited) {
-                  const err = Error('title taken')
+              .then(([overlap]) => {
+                if (!overlap) overlap = req.meetingCore.findConflict(args.startdate, args.length, args.room, exclude)?.data
+
+                if (overlap) {
+                  const overlapEnd = new Date(overlap.startdate.getTime() + (parseInt(overlap.epochlength)))
+
+                  const err = new Error(
+                    `meeting overlaps existing meeting: {${overlap.title}} which is in session from {${overlap.startdate}} to {${overlapEnd}}`
+                  )
                   err.code = 409
                   err.type = 'argument'
 
                   throw err
-                } else {
-                  // Time validation
-                  if ('startdate' in req.args && req.method !== 'POST' && args.startdate < Date.now()) {
-                    const err = Error('start date earlier than current date')
-                    err.code = 400
-                    err.type = 'argument'
-
-                    throw err
-                  }
-
-                  // Admins are immune to length restrictions
-                  if (!req.auth.admin) {
-                    const maxLength = req.auth.limited ? 7200000 /* 2 hours */ : 14400000 /* 4 hours */
-
-                    if (args.length > maxLength) {
-                      const err = Error(`meeting longer than ${req.auth.limited ? '{2 hours}. use an account to increase limit' : '{4 hours}'}`)
-                      err.code = 400
-                      err.type = 'argument'
-
-                      throw err
-                    }
-                  }
-
-                  if (args.length < 900000 /* 15 minutes */) {
-                    const err = Error('meeting must be at least 15 minutes')
-                    err.code = 400
-                    err.type = 'argument'
-
-                    throw err
-                  }
-
-                  return req.db('meetings')
-                    .select('title', 'startdate', 'length', req.db.raw('EXTRACT(EPOCH FROM length) * 1000 as epochlength'))
-                    .where('room', args.room)
-                    .andWhere(
-                      req.db.raw('(:start::TIMESTAMP, make_interval(secs => :duration)) OVERLAPS (startdate, length)', {
-                        start: args.startdate.toISOString(),
-                        duration: args.length / 1000
-                      })
-                    )
-                    .whereNot('id', exclude || '')
-                    .limit(1)
-                    .catch((err) => {
-                      console.error('db', err)
-
-                      throw req.errors.database
-                    })
-                    .then(([overlap]) => {
-                      if (!overlap) overlap = req.meetingCore.findConflict(args.startdate, args.length, args.room, exclude)?.data
-
-                      if (overlap) {
-                        const overlapEnd = new Date(overlap.startdate.getTime() + (parseInt(overlap.epochlength)))
-
-                        const err = new Error(
-                          `meeting overlaps existing meeting: {${overlap.title}} which is in session from {${overlap.startdate}} to {${overlapEnd}}`
-                        )
-                        err.code = 409
-                        err.type = 'argument'
-
-                        throw err
-                      }
-                    })
                 }
               })
           })
