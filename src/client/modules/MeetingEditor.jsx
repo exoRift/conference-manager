@@ -236,13 +236,7 @@ class MeetingEditor extends React.Component {
     else {
       return res.json()
         .then(({ error }) => {
-          if (error.message === 'title taken') {
-            this.setState({
-              invalid: {
-                title: 'Title taken by another meeting'
-              }
-            })
-          } else if (error.message.includes('overlap')) {
+          if (error.message.includes('overlap')) {
             const [, title, start, end] = error.message.match(MeetingEditor.overlapRegex)
             const startdate = new Date(start)
             const enddate = new Date(end)
